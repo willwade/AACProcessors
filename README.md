@@ -9,7 +9,7 @@
 A Python library to read, import, export and modify pagesets from different AAC (Augmentative and Alternative Communication) providers. Currently supports:
 
 - Grid 3 (`.gridset`)
-- CoughDrop (`.obf`, `.obz`)
+- CoughDrop (OpenBoard) (`.obf`, `.obz`)
 - TouchChat (`.touchChat`)
 - Snap Core First (`.spb`)
 
@@ -286,5 +286,5 @@ aac-processors convert input.obf --to grid --output custom_name.gridset
 Available formats for conversion:
 - `grid` - Grid3 format
 - `touchchat` - TouchChat format
-- `snap` - Snap! format
-- `coughdrop` - CoughDrop format
+- `snap` - TD Snap format
+- `coughdrop` - Openboardformat (CoughDrop) format
