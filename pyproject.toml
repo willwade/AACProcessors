@@ -1,0 +1,29 @@
+[project]
+name = "aac-translator"
+version = "0.1.0"
+description = "AAC Pageset Translation Tool"
+requires-python = ">=3.11"
+dependencies = [
+    "flask==3.1.0",
+    "flask-cors==5.0.0",
+    "deep-translator==1.11.4",
+    "lxml==5.3.0",
+    "python-dotenv==0.19.0"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build]
+packages = ["backend"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[tool.app.env]
+FLASK_PORT = "5001"
+API_BASE_URL = "http://localhost:5001"
