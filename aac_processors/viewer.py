@@ -2,14 +2,12 @@
 
 import os
 import sys
-from typing import Set, Optional, cast, List, Dict, Union
+from typing import Set, Optional, List, Dict, Union
 from .gridset_processor import GridsetProcessor
 from .touchchat_processor import TouchChatProcessor
 from .snap_processor import SnapProcessor
 from .coughdrop_processor import CoughDropProcessor
 from .tree_structure import AACTree, AACPage, AACButton, ButtonType
-from .file_processor import FileProcessor
-from .base_processor import AACProcessor
 
 
 ProcessorType = Union[
@@ -54,7 +52,7 @@ def print_button(
     Args:
         button: The button to print.
         indent: Number of spaces to indent the output.
-        visited_pages: Set of page IDs that have already been visited (for circular reference detection).
+        visited_pages: Set of visited page IDs (for circular reference detection).
     """
     if visited_pages is None:
         visited_pages = set()
@@ -92,7 +90,7 @@ def print_page(
         page: The page to print.
         tree: The complete AAC tree (needed for navigation).
         indent: Number of spaces to indent the output.
-        visited_pages: Set of page IDs that have already been visited (for circular reference detection).
+        visited_pages: Set of visited page IDs (for circular reference detection).
     """
     if visited_pages is None:
         visited_pages = set()
