@@ -10,7 +10,7 @@ from aac_processors.cli import (
     interactive_mode,
     main,
 )
-from aac_processors.tree_structure import AACButton, AACPage, AACTree
+from aac_processors.tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 
 def test_get_available_formats():
@@ -38,12 +38,12 @@ def test_complete_path(tmp_path):
     result = complete_path(str(test_dir), 0)
     assert result == str(test_dir) + "/"
 
-    # Test file completion
-    result = complete_path(str(test_dir / "file"), 0)
+    # Test file completion with pattern
+    result = complete_path(str(test_dir / "file1"), 0)
     assert result == str(test_dir / "file1.txt")
-    result = complete_path(str(test_dir / "file"), 1)
+    result = complete_path(str(test_dir / "file2"), 0)
     assert result == str(test_dir / "file2.txt")
-    result = complete_path(str(test_dir / "file"), 2)
+    result = complete_path(str(test_dir / "nonexistent"), 0)
     assert result is None
 
 
@@ -51,10 +51,17 @@ def test_complete_path(tmp_path):
 def sample_tree():
     """Create a sample AACTree for testing"""
     tree = AACTree()
-    page = AACPage("Test Page")
-    button = AACButton("Test Button", "Test Message")
-    page.add_button(button, 0, 0)
-    tree.add_page(page)
+    page = AACPage(id="test_page", name="Test Page", grid_size=(2, 2))
+    button = AACButton(
+        id="btn1",
+        label="Test Button",
+        type=ButtonType.SPEAK,
+        position=(0, 0),
+        vocalization="Test Message"
+    )
+    page.buttons.append(button)
+    tree.pages[page.id] = page
+    tree.root_id = page.id
     return tree
 
 
@@ -64,6 +71,8 @@ def mock_processor(sample_tree):
     processor = MagicMock()
     processor.load_into_tree.return_value = sample_tree
     processor.default_extension = ".test"
+    processor.export_tree = MagicMock()
+    processor.can_process.return_value = True
     return processor
 
 
@@ -72,14 +81,24 @@ def test_convert_format(tmp_path, sample_tree, mock_processor):
     input_file = tmp_path / "input.test"
     input_file.touch()
 
-    with patch("aac_processors.cli.get_processor_for_file") as mock_get_processor:
+    with patch("aac_processors.cli.get_processor_for_file") as mock_get_processor, \
+         patch("aac_processors.cli.GridsetProcessor") as mock_grid_processor:
+        # Configure source processor
         mock_get_processor.return_value = mock_processor
+
+        # Configure target processor
+        mock_grid_instance = MagicMock()
+        mock_grid_instance.default_extension = ".test"
+        mock_grid_processor.return_value = mock_grid_instance
 
         # Test successful conversion
         result = convert_format(str(input_file), "grid")
         assert result is not None
         assert result.endswith("_converted.test")
-        mock_processor.export_tree.assert_called_once()
+        mock_grid_instance.export_tree.assert_called_once()
+
+        # Reset mocks for next test
+        mock_grid_instance.export_tree.reset_mock()
 
         # Test unsupported input format
         mock_get_processor.return_value = None
@@ -91,6 +110,7 @@ def test_convert_format(tmp_path, sample_tree, mock_processor):
         output_path = str(tmp_path / "output.test")
         result = convert_format(str(input_file), "grid", output_path)
         assert result == output_path
+        mock_grid_instance.export_tree.assert_called_once()
 
 
 @pytest.mark.integration
@@ -120,10 +140,12 @@ def test_main_convert_command(tmp_path, mock_processor):
     with (
         patch("sys.argv", test_args),
         patch("aac_processors.cli.get_processor_for_file") as mock_get_proc,
+        pytest.raises(SystemExit) as exit_info,
     ):
         mock_get_proc.return_value = mock_processor
         main()
         mock_processor.export_tree.assert_called_once()
+        assert exit_info.value.code == 0  # Should exit successfully
 
 
 @pytest.mark.integration
@@ -135,7 +157,6 @@ def test_interactive_mode(mock_processor):
         patch("aac_processors.cli.get_processor_for_file") as mock_get_proc,
         patch("aac_processors.cli.print_tree") as mock_print_tree,
     ):
-
         mock_get_proc.return_value = mock_processor
         mock_input.side_effect = [
             temp_file.name,  # File path

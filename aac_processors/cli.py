@@ -25,20 +25,27 @@ def complete_path(text: str, state: int) -> Optional[str]:
     if "~" in text:
         text = os.path.expanduser(text)
 
+    # If text is a directory, return it with a trailing slash
     if os.path.isdir(text):
-        text = os.path.join(text, "")
+        return text + "/" if not text.endswith("/") else text
 
     dir_name = os.path.dirname(text)
     if dir_name and not os.path.exists(dir_name):
         return None
 
+    # Get pattern for matching
     if dir_name:
         pattern = os.path.join(dir_name, os.path.basename(text) + "*")
     else:
         pattern = text + "*"
 
+    # Get matches and sort them (directories first)
     matches = glob.glob(pattern)
-    matches = [f"{m}{'/' if os.path.isdir(m) else ''}" for m in matches]
+    matches = sorted(
+        [f"{m}{'/' if os.path.isdir(m) else ''}" for m in matches],
+        key=lambda x: (not x.endswith("/"), x)  # Sort directories first
+    )
+    
     return matches[state] if state < len(matches) else None
 
 
@@ -100,12 +107,8 @@ def convert_format(
 
         print(f"Converting to {output_format} format at {output_path}")
         # Export tree using target processor
-        if hasattr(target_processor, "export_tree"):
-            target_processor.export_tree(tree, output_path)
-            return output_path
-        else:
-            print(f"Error: {output_format} processor does not support exporting")
-            return None
+        target_processor.export_tree(tree, output_path)
+        return output_path
 
     except Exception as e:
         print(f"Error during conversion: {str(e)}")

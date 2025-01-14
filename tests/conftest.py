@@ -389,3 +389,11 @@ def test_coughdrop_obz(temp_dir, test_coughdrop_obf):
         zip_ref.write(board_path, "boards/home.obf")
 
     return obz_path
+
+
+def pytest_configure(config):
+    """Register custom marks"""
+    config.addinivalue_line(
+        "markers",
+        "integration: mark test as an integration test"
+    )
