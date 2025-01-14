@@ -32,8 +32,8 @@ jobs:
         
     - name: Run linting
       run: |
-        uv pip install ruff
         ruff check .
+        black --check .
         
     - name: Run type checking
       run: |

@@ -6,7 +6,8 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "AGPL-3.0-or-later" }
 authors = [
-    { name = "Will Wade", email = "willwade@gmail.com" }
+    { name = "Will Wade", email = "willwade@gmail.com" },
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

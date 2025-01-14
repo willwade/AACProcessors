@@ -339,7 +339,7 @@ class FileProcessor(AACProcessor):
 
             shutil.copy2(self.file_path, temp_copy)
 
-            with open(temp_copy, "r", encoding="utf-8") as f:
+            with open(temp_copy, encoding="utf-8") as f:
                 return f.read()
         finally:
             if os.path.exists(temp_copy):

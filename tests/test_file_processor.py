@@ -26,7 +26,7 @@ def test_processor():
                         if file.endswith(".test"):
                             input_path = os.path.join(root, file)
                             try:
-                                with open(input_path, "r") as f:
+                                with open(input_path) as f:
                                     content = json.load(f)
 
                                 # Apply translations
@@ -42,7 +42,7 @@ def test_processor():
                                     json.dump(content, f)
                             except json.JSONDecodeError:
                                 # Handle non-JSON content
-                                with open(input_path, "r") as f:
+                                with open(input_path) as f:
                                     content = f.read()
                                 if content in translations:
                                     with open(input_path, "w") as f:

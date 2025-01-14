@@ -39,7 +39,7 @@ class CoughDropProcessor(FileProcessor):
             tree (AACTree): Tree to load into.
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 board_data = json.load(f)
 
             # Get grid size
@@ -187,7 +187,7 @@ class CoughDropProcessor(FileProcessor):
                 # Process all board files
                 manifest_path = os.path.join(extract_dir, "manifest.json")
                 if os.path.exists(manifest_path):
-                    with open(manifest_path, "r", encoding="utf-8") as f:
+                    with open(manifest_path, encoding="utf-8") as f:
                         manifest = json.load(f)
                         paths = manifest.get("paths", {})
                         boards = paths.get("boards", {})
@@ -347,7 +347,7 @@ class CoughDropProcessor(FileProcessor):
             # Look for manifest.json first (for .obz files)
             manifest_path = os.path.join(directory, "manifest.json")
             if os.path.exists(manifest_path):
-                with open(manifest_path, "r", encoding="utf-8") as f:
+                with open(manifest_path, encoding="utf-8") as f:
                     manifest = json.load(f)
                     paths = manifest.get("paths", {})
                     boards = paths.get("boards", {})
@@ -476,7 +476,7 @@ class CoughDropProcessor(FileProcessor):
                 if not os.path.exists(manifest_path):
                     raise ValueError("Invalid OBZ file: missing manifest.json")
 
-                with open(manifest_path, "r", encoding="utf-8") as f:
+                with open(manifest_path, encoding="utf-8") as f:
                     manifest = json.load(f)
                     paths = manifest.get("paths", {})
                     boards = paths.get("boards", {})
@@ -606,7 +606,7 @@ class CoughDropProcessor(FileProcessor):
                 # Process all board files
                 manifest_path = os.path.join(extract_dir, "manifest.json")
                 if os.path.exists(manifest_path):
-                    with open(manifest_path, "r", encoding="utf-8") as f:
+                    with open(manifest_path, encoding="utf-8") as f:
                         manifest = json.load(f)
                         paths = manifest.get("paths", {})
                         boards = paths.get("boards", {})
