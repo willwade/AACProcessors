@@ -393,7 +393,4 @@ def test_coughdrop_obz(temp_dir, test_coughdrop_obf):
 
 def pytest_configure(config):
     """Register custom marks"""
-    config.addinivalue_line(
-        "markers",
-        "integration: mark test as an integration test"
-    )
+    config.addinivalue_line("markers", "integration: mark test as an integration test")

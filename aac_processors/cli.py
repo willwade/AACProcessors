@@ -43,9 +43,9 @@ def complete_path(text: str, state: int) -> Optional[str]:
     matches = glob.glob(pattern)
     matches = sorted(
         [f"{m}{'/' if os.path.isdir(m) else ''}" for m in matches],
-        key=lambda x: (not x.endswith("/"), x)  # Sort directories first
+        key=lambda x: (not x.endswith("/"), x),  # Sort directories first
     )
-    
+
     return matches[state] if state < len(matches) else None
 
 

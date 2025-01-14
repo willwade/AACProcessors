@@ -57,7 +57,7 @@ def sample_tree():
         label="Test Button",
         type=ButtonType.SPEAK,
         position=(0, 0),
-        vocalization="Test Message"
+        vocalization="Test Message",
     )
     page.buttons.append(button)
     tree.pages[page.id] = page
@@ -81,8 +81,10 @@ def test_convert_format(tmp_path, sample_tree, mock_processor):
     input_file = tmp_path / "input.test"
     input_file.touch()
 
-    with patch("aac_processors.cli.get_processor_for_file") as mock_get_processor, \
-         patch("aac_processors.cli.GridsetProcessor") as mock_grid_processor:
+    with (
+        patch("aac_processors.cli.get_processor_for_file") as mock_get_processor,
+        patch("aac_processors.cli.GridsetProcessor") as mock_grid_processor,
+    ):
         # Configure source processor
         mock_get_processor.return_value = mock_processor
 
