@@ -20,6 +20,8 @@ A Python library to read, import, export and modify pagesets from different AAC 
 - Support for multiple AAC software formats
 - Translation support for extracted text
 - Consistent API across different AAC formats
+- Convert between different AAC formats
+- Analyze vocabulary usage and structure
 
 ## Installation
 
@@ -47,6 +49,98 @@ translations = {
     "Goodbye": "Adiós"
 }
 translated_file = processor.process_texts("path/to/your.gridset", translations, "path/to/output.gridset")
+```
+
+## Usage Examples
+
+### Converting Between Formats (OBZ Import/Export)
+
+```python
+from aac_processors import GridsetProcessor, CoughDropProcessor
+
+# Convert Grid3 to CoughDrop OBZ
+grid_processor = GridsetProcessor()
+cough_processor = CoughDropProcessor()
+
+# Load Grid3 file into common tree structure
+tree = grid_processor.load_into_tree("path/to/your.gridset")
+
+# Export tree to CoughDrop OBZ format
+cough_processor.export_tree(tree, "output.obz")
+
+# Import from OBZ
+imported_tree = cough_processor.load_into_tree("path/to/board.obz")
+```
+
+### Viewing File Structure
+
+The library includes a viewer utility to inspect AAC board structures. You can either use the command-line tool:
+
+```bash
+python -m aac_processors.viewer path/to/your/board.gridset
+```
+
+Or programmatically:
+
+```python
+from aac_processors import GridsetProcessor
+from aac_processors.tree_structure import ButtonType
+
+processor = GridsetProcessor()
+tree = processor.load_into_tree("path/to/your.gridset")
+
+# Print basic structure
+for page_id, page in tree.pages.items():
+    print(f"Page: {page.name} ({page.grid_size[0]}x{page.grid_size[1]} grid)")
+    for button in page.buttons:
+        if button.type == ButtonType.SPEAK:
+            print(f"  - Speech Button: {button.label} says '{button.message}'")
+        elif button.type == ButtonType.NAVIGATE:
+            print(f"  - Navigation Button: {button.label} -> {button.target_page_id}")
+
+# Analyze navigation
+analysis = tree.analyze_navigation()
+print(f"\nTotal Pages: {analysis['total_pages']}")
+print(f"Dead End Pages: {len(analysis['dead_ends'])}")
+print(f"Orphaned Pages: {len(analysis['orphaned_pages'])}")
+```
+
+### Vocabulary Analysis
+
+```python
+from aac_processors import GridsetProcessor
+from collections import Counter
+import re
+
+def analyze_vocabulary(file_path):
+    processor = GridsetProcessor()
+    tree = processor.load_into_tree(file_path)
+    
+    # Collect all text from buttons
+    words = []
+    for page in tree.pages.values():
+        for button in page.buttons:
+            if button.label:
+                # Split into words and clean
+                button_words = re.findall(r'\w+', button.label.lower())
+                words.extend(button_words)
+            if button.message:
+                message_words = re.findall(r'\w+', button.message.lower())
+                words.extend(message_words)
+    
+    # Count word frequencies
+    word_counts = Counter(words)
+    
+    # Print statistics
+    print(f"Total unique words: {len(word_counts)}")
+    print("\nMost common words:")
+    for word, count in word_counts.most_common(10):
+        print(f"  {word}: {count}")
+    
+    return word_counts
+
+# Example usage
+vocabulary = analyze_vocabulary("path/to/your.gridset")
 ```
 
 ## Supported Formats
