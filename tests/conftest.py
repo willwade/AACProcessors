@@ -4,6 +4,7 @@ import shutil
 import sqlite3
 import tempfile
 import zipfile
+from lxml import etree as ET
 
 import pytest
 
