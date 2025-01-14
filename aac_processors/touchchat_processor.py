@@ -25,10 +25,10 @@ class TouchChatProcessor(SQLiteProcessor):
 
     def can_process(self, file_path: str) -> bool:
         """Check if file is a TouchChat export.
-        
+
         Args:
             file_path (str): Path to the file to check.
-            
+
         Returns:
             bool: True if file is a TouchChat export.
         """
@@ -38,7 +38,7 @@ class TouchChatProcessor(SQLiteProcessor):
         self,
         file_path: str,
         translations: Optional[Dict[str, str]] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> Union[List[str], str, None]:
         """Process texts from a TouchChat file.
 
@@ -68,7 +68,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 self._temp_dirs.append(self.create_temp_dir())
             temp_dir = self._temp_dirs[0]
             self.debug(f"Using temp dir: {temp_dir}")
-            
+
             # Clean temp dir before use
             for item in os.listdir(temp_dir):
                 item_path = os.path.join(temp_dir, item)
@@ -76,62 +76,77 @@ class TouchChatProcessor(SQLiteProcessor):
                     os.remove(item_path)
                 elif os.path.isdir(item_path):
                     shutil.rmtree(item_path)
-            
+
             # Extract the archive
             self.debug("Extracting archive...")
             self.extract_archive(file_path, temp_dir)
             self.debug(f"Temp dir contents after extraction: {os.listdir(temp_dir)}")
-            
+
             # Process the files
             self.debug("Processing files...")
             result = self.process_files(temp_dir, translations)
             self.debug(f"Process files result: {result}")
 
             if translations is None:
-                #self.debug(f"Returning collected texts: {self.collected_texts}")
+                # self.debug(f"Returning collected texts: {self.collected_texts}")
                 return self.collected_texts
 
             if result:
                 # Create output path if not provided
-                target_lang = translations.get('target_lang', 'translated')
+                target_lang = translations.get("target_lang", "translated")
                 final_output = output_path or os.path.join(
                     os.path.dirname(file_path),
-                    f"{self.original_filename}_{target_lang}.ce"
+                    f"{self.original_filename}_{target_lang}.ce",
                 )
                 self.debug(f"Creating output file: {final_output}")
-                
+
                 # Create CE file
-                with zipfile.ZipFile(final_output, "w", zipfile.ZIP_DEFLATED) as zip_ref:
+                with zipfile.ZipFile(
+                    final_output, "w", zipfile.ZIP_DEFLATED
+                ) as zip_ref:
                     # First, copy all files from original archive except .c4v
-                    with zipfile.ZipFile(file_path, 'r') as orig_zip:
+                    with zipfile.ZipFile(file_path, "r") as orig_zip:
                         for item in orig_zip.namelist():
-                            if not item.endswith('.c4v'):
+                            if not item.endswith(".c4v"):
                                 self.debug(f"Copying original file: {item}")
                                 zip_ref.writestr(item, orig_zip.read(item))
-                    
+
                     # Find and add the translated c4v file
                     c4v_found = False
                     for root, _, files in os.walk(result):
                         for file in files:
-                            if file.endswith('.c4v'):
+                            if file.endswith(".c4v"):
                                 file_path = os.path.join(root, file)
                                 self.debug(f"Adding translated c4v file: {file_path}")
                                 # Get original c4v filename from the archive
-                                with zipfile.ZipFile(self.original_file_path, 'r') as orig_zip:
-                                    orig_c4v = next((name for name in orig_zip.namelist() if name.endswith('.c4v')), None)
+                                with zipfile.ZipFile(
+                                    self.original_file_path, "r"
+                                ) as orig_zip:
+                                    orig_c4v = next(
+                                        (
+                                            name
+                                            for name in orig_zip.namelist()
+                                            if name.endswith(".c4v")
+                                        ),
+                                        None,
+                                    )
                                     if orig_c4v:
-                                        zip_ref.write(file_path, orig_c4v)  # Use original path
+                                        zip_ref.write(
+                                            file_path, orig_c4v
+                                        )  # Use original path
                                     else:
-                                        zip_ref.write(file_path, os.path.basename(file_path))
+                                        zip_ref.write(
+                                            file_path, os.path.basename(file_path)
+                                        )
                                 c4v_found = True
                                 break
                         if c4v_found:
                             break
-                    
+
                     if not c4v_found:
                         self.debug("No .c4v file found to add to archive")
                         return None
-                
+
                 self.debug(f"Successfully created output file: {final_output}")
                 return final_output
 
@@ -153,14 +168,14 @@ class TouchChatProcessor(SQLiteProcessor):
         """
         if not file_path:
             return False
-        
+
         # Check if it's a .ce file
         if not file_path.lower().endswith(".ce"):
             return False
-            
+
         # Verify it's a valid ZIP file
         try:
-            with zipfile.ZipFile(file_path, 'r') as zf:
+            with zipfile.ZipFile(file_path, "r") as zf:
                 # Try reading the file list
                 zf.namelist()
                 return True
@@ -170,41 +185,47 @@ class TouchChatProcessor(SQLiteProcessor):
 
     def extract_archive(self, file_path: str, target_dir: str) -> None:
         """Extract TouchChat .ce archive.
-        
+
         Args:
             file_path (str): Path to .ce file
             target_dir (str): Directory to extract to
         """
-        self.debug(f"Extract archive called with file: {file_path}, target: {target_dir}")
+        self.debug(
+            f"Extract archive called with file: {file_path}, target: {target_dir}"
+        )
         self.debug(f"File exists check: {os.path.exists(file_path)}")
         self.debug(f"File size: {os.path.getsize(file_path)} bytes")
         self.debug(f"Target dir exists check: {os.path.exists(target_dir)}")
-        
+
         try:
-            with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            with zipfile.ZipFile(file_path, "r") as zip_ref:
                 # List all files in archive
                 files = zip_ref.namelist()
                 self.debug(f"Files in archive: {files}")
-                
+
                 # Look for any .c4v file
                 c4v_file = None
                 for f in files:
-                    if f.endswith('.c4v'):
+                    if f.endswith(".c4v"):
                         c4v_file = f
                         self.debug(f"Found .c4v file in archive: {c4v_file}")
                         break
-                
+
                 if not c4v_file:
                     self.debug("No .c4v file found in archive")
                     return
-                
+
                 # Extract the .c4v file
                 self.debug(f"Extracting {c4v_file} to {target_dir}")
                 zip_ref.extract(c4v_file, target_dir)
-                self.debug(f"Extraction complete. Target dir contents: {os.listdir(target_dir)}")
-                
+                self.debug(
+                    f"Extraction complete. Target dir contents: {os.listdir(target_dir)}"
+                )
+
         except zipfile.BadZipFile as e:
-            self.debug(f"Failed to extract .ce file - not a valid ZIP archive: {str(e)}")
+            self.debug(
+                f"Failed to extract .ce file - not a valid ZIP archive: {str(e)}"
+            )
             # If extraction fails, copy the file as-is
             shutil.copy2(file_path, target_dir)
         except Exception as e:
@@ -215,11 +236,11 @@ class TouchChatProcessor(SQLiteProcessor):
         self, directory: str, translations: Optional[Dict[str, str]] = None
     ) -> Optional[str]:
         """Process files in directory.
-        
+
         Args:
             directory (str): Path to directory containing files.
             translations (Optional[Dict[str, str]]): Dictionary of translations.
-            
+
         Returns:
             Optional[str]: Path to processed file if successful, None if error.
         """
@@ -229,7 +250,7 @@ class TouchChatProcessor(SQLiteProcessor):
             self.debug(f"Process files called with directory: {directory}")
             self.debug(f"Directory exists check: {os.path.exists(directory)}")
             self.debug(f"Directory contents: {os.listdir(directory)}")
-            
+
             for file in os.listdir(directory):
                 if file.endswith(".c4v"):
                     c4v_file = os.path.join(directory, file)
@@ -254,13 +275,13 @@ class TouchChatProcessor(SQLiteProcessor):
             if translations:
                 self.debug(f"Processing translations: {translations}")
                 modified = False
-                
+
                 # Update button labels and messages
                 for original, translated in translations.items():
                     if original == "target_lang":
                         continue
                     self.debug(f"Translating '{original}' to '{translated}'")
-                    
+
                     # Update button labels
                     cursor.execute(
                         """
@@ -273,7 +294,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     if cursor.rowcount > 0:
                         modified = True
                         self.debug(f"Updated {cursor.rowcount} button labels")
-                    
+
                     # Update button messages
                     cursor.execute(
                         """
@@ -286,7 +307,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     if cursor.rowcount > 0:
                         modified = True
                         self.debug(f"Updated {cursor.rowcount} button messages")
-                    
+
                     # Update page names
                     cursor.execute(
                         """
@@ -340,16 +361,16 @@ class TouchChatProcessor(SQLiteProcessor):
 
         except Exception as e:
             self.debug(f"Error processing files: {e}")
-            if 'conn' in locals():
+            if "conn" in locals():
                 conn.close()
             return None
 
     def extract_texts(self, file_path: str) -> List[str]:
         """Extract texts from TouchChat file.
-        
+
         Args:
             file_path (str): Path to the file to extract texts from.
-            
+
         Returns:
             List[str]: List of extracted texts.
         """
@@ -360,7 +381,7 @@ class TouchChatProcessor(SQLiteProcessor):
 
             # Prepare workspace
             workspace = self._prepare_workspace(file_path)
-            
+
             # Process the files
             self.process_files(workspace, None)
             return self.collected_texts
@@ -372,7 +393,7 @@ class TouchChatProcessor(SQLiteProcessor):
 
     def _check_database_schema(self, cursor: sqlite3.Cursor) -> None:
         """Check and create database schema if needed.
-        
+
         Args:
             cursor (sqlite3.Cursor): Database cursor.
         """
@@ -390,7 +411,7 @@ class TouchChatProcessor(SQLiteProcessor):
         existing_tables = {row[0] for row in cursor.fetchall()}
 
         # Create missing tables
-        if 'special_pages' not in existing_tables:
+        if "special_pages" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE special_pages (
@@ -401,7 +422,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'pages' not in existing_tables:
+        if "pages" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE pages (
@@ -411,7 +432,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'resources' not in existing_tables:
+        if "resources" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE resources (
@@ -423,7 +444,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'buttons' not in existing_tables:
+        if "buttons" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE buttons (
@@ -436,7 +457,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'button_boxes' not in existing_tables:
+        if "button_boxes" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE button_boxes (
@@ -447,7 +468,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'button_box_instances' not in existing_tables:
+        if "button_box_instances" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE button_box_instances (
@@ -458,7 +479,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'button_box_cells' not in existing_tables:
+        if "button_box_cells" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE button_box_cells (
@@ -472,7 +493,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'actions' not in existing_tables:
+        if "actions" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE actions (
@@ -483,7 +504,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-        if 'action_data' not in existing_tables:
+        if "action_data" not in existing_tables:
             cursor.execute(
                 """
                 CREATE TABLE action_data (
@@ -495,7 +516,9 @@ class TouchChatProcessor(SQLiteProcessor):
                 """
             )
 
-    def create_translated_file(self, file_path: str, translations: Dict[str, str]) -> str:
+    def create_translated_file(
+        self, file_path: str, translations: Dict[str, str]
+    ) -> str:
         """Create a translated version of the TouchChat file.
 
         Args:
@@ -517,7 +540,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     button.vocalization = translations[button.vocalization]
 
         # Save the translated tree
-        target_lang = translations.get('target_lang', 'translated')
+        target_lang = translations.get("target_lang", "translated")
         base_name = os.path.splitext(os.path.basename(file_path))[0]
         output_name = f"{base_name}_{target_lang}.ce"
         output_path = os.path.join(os.path.dirname(file_path), output_name)
@@ -526,7 +549,7 @@ class TouchChatProcessor(SQLiteProcessor):
 
     def save_from_tree(self, tree: AACTree, output_path: str) -> None:
         """Save tree to TouchChat format.
-        
+
         Args:
             tree (AACTree): Tree structure to save.
             output_path (str): Path where to save the file.
@@ -613,7 +636,7 @@ class TouchChatProcessor(SQLiteProcessor):
                             button_resource_id,
                             button.label,
                             button.vocalization,
-                            db_page_id
+                            db_page_id,
                         ),
                     )
 
@@ -645,7 +668,11 @@ class TouchChatProcessor(SQLiteProcessor):
                             (action_id, key, value)
                             VALUES (?, ?, ?)
                             """,
-                            (action_id, 1, button.target_page_id),  # key 1 = target page
+                            (
+                                action_id,
+                                1,
+                                button.target_page_id,
+                            ),  # key 1 = target page
                         )
 
                 # Set home page if this is the root page
@@ -673,13 +700,13 @@ class TouchChatProcessor(SQLiteProcessor):
 
     def load_into_tree(self, file_path: str) -> AACTree:
         """Load TouchChat file into tree structure.
-        
+
         Args:
             file_path (str): Path to the file to load.
-            
+
         Returns:
             AACTree: Tree structure representing the file contents.
-            
+
         Raises:
             ValueError: If the file is not a valid TouchChat archive.
             Exception: If there is an error loading the file.
@@ -762,7 +789,7 @@ class TouchChatProcessor(SQLiteProcessor):
                         location,
                         span_x,
                         span_y,
-                        action_code
+                        action_code,
                     ) = row
 
                     # Calculate position from location
@@ -809,10 +836,7 @@ class TouchChatProcessor(SQLiteProcessor):
             raise
 
     def process_translations(
-        self, 
-        input_path: str, 
-        translations: Dict[str, str], 
-        output_path: str
+        self, input_path: str, translations: Dict[str, str], output_path: str
     ) -> None:
         """Process translations and create translated file.
 
@@ -825,6 +849,6 @@ class TouchChatProcessor(SQLiteProcessor):
         """
         # Copy original file to output path
         shutil.copy2(input_path, output_path)
-        
+
         # Update translations in the copied file
         self.create_translated_file(output_path, translations)

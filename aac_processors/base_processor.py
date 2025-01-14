@@ -47,15 +47,15 @@ class AACProcessor(ABC):
 
     def _prepare_workspace(self, file_path: str) -> str:
         """Prepare workspace based on file type.
-        
+
         Args:
             file_path (str): Path to the source file
-            
+
         Returns:
             str: Path to the working directory
         """
         workspace = self.get_session_workspace()
-        
+
         if self.is_archive and zipfile.is_zipfile(file_path):
             self._debug_print(f"Extracting archive to workspace: {workspace}")
             with zipfile.ZipFile(file_path, "r") as zip_ref:
@@ -63,12 +63,12 @@ class AACProcessor(ABC):
         else:
             self._debug_print(f"Copying file to workspace: {workspace}")
             shutil.copy2(file_path, workspace)
-            
+
         return workspace
 
     def _create_output(self, workspace: str, output_path: str) -> None:
         """Create final output file from workspace.
-        
+
         Args:
             workspace (str): Path to the working directory
             output_path (str): Desired output path
@@ -103,7 +103,7 @@ class AACProcessor(ABC):
         """
         if not self._original_filename:
             raise ValueError("No source file has been set")
-        
+
         # Use original filename but in session workspace
         output_name = f"{self._original_filename}_{target_lang or 'translated'}"
         return os.path.join(self.get_session_workspace(), output_name)
@@ -140,10 +140,10 @@ class AACProcessor(ABC):
         pass
 
     def process_texts(
-        self, 
-        file_path: str, 
+        self,
+        file_path: str,
         translations: Optional[Dict[str, str]] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> Union[List[str], str, None]:
         """Process texts in a file.
 

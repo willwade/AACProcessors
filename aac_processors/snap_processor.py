@@ -33,7 +33,12 @@ class SnapProcessor(SQLiteProcessor):
         Returns:
             bool: True if file is a Snap export.
         """
-        return file_path.lower().endswith((".sps", ".spb",))
+        return file_path.lower().endswith(
+            (
+                ".sps",
+                ".spb",
+            )
+        )
 
     def process_files(
         self, directory: str, translations: Optional[Dict[str, str]] = None
@@ -100,7 +105,9 @@ class SnapProcessor(SQLiteProcessor):
                             )
                             for (text,) in cursor.fetchall():
                                 if text in translations:
-                                    self._debug_print(f"Translating {text} to {translations[text]} in {table}.{column}")
+                                    self._debug_print(
+                                        f"Translating {text} to {translations[text]} in {table}.{column}"
+                                    )
                                     cursor.execute(
                                         f"""
                                         UPDATE {table}
@@ -115,19 +122,21 @@ class SnapProcessor(SQLiteProcessor):
                     if modified:
                         conn.commit()
                         # Create new file with translations
-                        target_lang = translations.get('target_lang', 'translated')
+                        target_lang = translations.get("target_lang", "translated")
                         original_ext = os.path.splitext(self.original_file_path)[1]
-                        output_name = f"{self.original_filename}_{target_lang}{original_ext}"
+                        output_name = (
+                            f"{self.original_filename}_{target_lang}{original_ext}"
+                        )
                         output_path = os.path.join(directory, output_name)
                         shutil.copy2(db_path, output_path)
-                        
+
                         # Verify translations were applied
                         with sqlite3.connect(output_path) as verify_conn:
                             verify_cursor = verify_conn.cursor()
                             for table, columns in self.get_translatable_columns():
                                 for column in columns:
                                     for original, translated in translations.items():
-                                        if original == 'target_lang':
+                                        if original == "target_lang":
                                             continue
                                         verify_cursor.execute(
                                             f"""
@@ -135,11 +144,13 @@ class SnapProcessor(SQLiteProcessor):
                                             FROM {table}
                                             WHERE {column} = ?
                                             """,
-                                            (translated,)
+                                            (translated,),
                                         )
                                         count = verify_cursor.fetchone()[0]
-                                        self._debug_print(f"Found {count} instances of {translated} in {table}.{column}")
-                        
+                                        self._debug_print(
+                                            f"Found {count} instances of {translated} in {table}.{column}"
+                                        )
+
                         return output_path
 
         except Exception as e:
@@ -224,7 +235,9 @@ class SnapProcessor(SQLiteProcessor):
                             label=label or "",
                             type=button_type,
                             position=(pos_y or 0, pos_x or 0),
-                            target_page_id=str(target_page_id) if target_page_id else None,
+                            target_page_id=(
+                                str(target_page_id) if target_page_id else None
+                            ),
                             vocalization=message,
                         )
                         page.buttons.append(button)
@@ -330,15 +343,15 @@ class SnapProcessor(SQLiteProcessor):
         self,
         file_path: str,
         translations: Optional[Dict[str, str]] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> Union[List[str], str, None]:
         """Process texts in Snap file.
-        
+
         Args:
             file_path: Path to the file to process.
             translations: Dictionary of translations.
             output_path: Optional path where to save the translated file.
-            
+
         Returns:
             Union[List[str], str, None]: List of texts if extracting,
             path to translated file if translating, None if error.
@@ -352,11 +365,11 @@ class SnapProcessor(SQLiteProcessor):
 
             # Create temp directory for processing
             temp_dir = tempfile.mkdtemp()
-            
+
             # Copy file to temp directory
             temp_file = Path(temp_dir) / Path(file_path).name
             shutil.copy2(file_path, temp_file)
-            
+
             # Process the files
             result = self.process_files(temp_dir, translations)
 
@@ -367,7 +380,8 @@ class SnapProcessor(SQLiteProcessor):
                 target_lang = translations.get("target_lang", "translated")
                 original_ext = Path(file_path).suffix
                 final_output = output_path or str(
-                    Path(file_path).parent / f"{Path(file_path).stem}_{target_lang}{original_ext}"
+                    Path(file_path).parent
+                    / f"{Path(file_path).stem}_{target_lang}{original_ext}"
                 )
                 shutil.copy2(result, final_output)
                 return final_output

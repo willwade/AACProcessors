@@ -68,11 +68,11 @@ def test_save_tree(test_touchchat_ce, temp_dir):
 def test_translation(test_touchchat_ce, temp_dir):
     """Test translation functionality."""
     processor = TouchChatProcessor()
-    
+
     # Extract texts
     texts = processor.extract_texts(test_touchchat_ce)
     assert texts is not None and len(texts) > 0
-    
+
     # Translate texts
     translations = {"Test Button": "Botón de prueba", "Hello": "Hola"}
     translated_file = processor.process_texts(test_touchchat_ce, translations)
@@ -108,6 +108,7 @@ def test_process_workflow(test_touchchat_ce, temp_dir):
     """Test the complete workflow as it happens in app.py"""
     # Create a temp dir like app.py does
     import tempfile
+
     work_dir = tempfile.mkdtemp()
 
     # Initialize processor with the work dir
@@ -116,13 +117,16 @@ def test_process_workflow(test_touchchat_ce, temp_dir):
 
     # Set up debug logging like app.py does
     import logging
+
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     # Add a stream handler if none exists
     if not logger.handlers:
         handler = logging.StreamHandler()
         handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
         handler.setFormatter(formatter)
         logger.addHandler(handler)
     processor._debug_output = logger.debug
@@ -130,6 +134,7 @@ def test_process_workflow(test_touchchat_ce, temp_dir):
     try:
         # Copy test file to work dir (like app.py does with uploaded file)
         import shutil
+
         test_file = os.path.join(work_dir, "test.ce")
         shutil.copy2(test_touchchat_ce, test_file)
         processor.debug(f"Copied test file from {test_touchchat_ce} to {test_file}")
@@ -146,11 +151,13 @@ def test_process_workflow(test_touchchat_ce, temp_dir):
         translations = {
             "Test Button": "Botón de Prueba",
             "Hello": "Hola",
-            "target_lang": "es"
+            "target_lang": "es",
         }
 
         # Process translations
-        output_path = os.path.join(work_dir, f"{os.path.splitext(os.path.basename(test_file))[0]}_es.ce")
+        output_path = os.path.join(
+            work_dir, f"{os.path.splitext(os.path.basename(test_file))[0]}_es.ce"
+        )
         result = processor.process_texts(test_file, translations, output_path)
         assert result is not None, "Translation failed"
 

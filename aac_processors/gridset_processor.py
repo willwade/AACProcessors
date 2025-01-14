@@ -75,7 +75,9 @@ class GridsetProcessor(FileProcessor):
                         for element in grid_root.xpath(".//Parameter[@Key='text']"):
                             try:
                                 full_text, metadata, original_parts = (
-                                    self._extract_text_and_metadata_from_element(element)
+                                    self._extract_text_and_metadata_from_element(
+                                        element
+                                    )
                                 )
                                 if full_text.strip():
                                     if translations is None:
@@ -241,7 +243,7 @@ class GridsetProcessor(FileProcessor):
         """
         texts = []
         temp_dir = self.create_temp_dir()
-        
+
         with zipfile.ZipFile(file_path, "r") as zf:
             zf.extractall(temp_dir)
 
@@ -312,13 +314,13 @@ class GridsetProcessor(FileProcessor):
 
                     # Get grid dimensions
                     rows = len(grid_root.findall(".//RowDefinitions/RowDefinition"))
-                    cols = len(grid_root.findall(".//ColumnDefinitions/ColumnDefinition"))
+                    cols = len(
+                        grid_root.findall(".//ColumnDefinitions/ColumnDefinition")
+                    )
 
                     # Create page
                     page = AACPage(
-                        id=grid_dir,
-                        name=grid_dir,
-                        grid_size=(rows or 1, cols or 1)
+                        id=grid_dir, name=grid_dir, grid_size=(rows or 1, cols or 1)
                     )
 
                     # Process cells
@@ -340,7 +342,7 @@ class GridsetProcessor(FileProcessor):
                                 label=caption.text.strip(),
                                 type=ButtonType.SPEAK,
                                 position=(x, y),
-                                vocalization=caption.text.strip()
+                                vocalization=caption.text.strip(),
                             )
 
                             # Check for navigation
@@ -362,8 +364,11 @@ class GridsetProcessor(FileProcessor):
                                 id=f"{grid_dir}_word_{text.text}",
                                 label=text.text.strip(),
                                 type=ButtonType.SPEAK,
-                                position=(0, 0),  # Position doesn't matter for wordlists
-                                vocalization=text.text.strip()
+                                position=(
+                                    0,
+                                    0,
+                                ),  # Position doesn't matter for wordlists
+                                vocalization=text.text.strip(),
                             )
                             page.buttons.append(button)
 
@@ -408,10 +413,7 @@ class GridsetProcessor(FileProcessor):
         start_grid.text = tree.root_id or next(iter(tree.pages.keys()))
         settings_path = os.path.join(settings_dir, "settings.xml")
         ET.ElementTree(settings).write(
-            settings_path,
-            encoding="utf-8",
-            xml_declaration=True,
-            pretty_print=True
+            settings_path, encoding="utf-8", xml_declaration=True, pretty_print=True
         )
 
         # Process each page
@@ -459,7 +461,9 @@ class GridsetProcessor(FileProcessor):
                     param.text = button.target_page_id
 
             # Add wordlist items
-            wordlist_buttons = [b for b in page.buttons if b.id.startswith(f"{page_id}_word_")]
+            wordlist_buttons = [
+                b for b in page.buttons if b.id.startswith(f"{page_id}_word_")
+            ]
             if wordlist_buttons:
                 wordlist = ET.SubElement(grid, "WordList")
                 wordlist.set("Name", page.name)
@@ -472,10 +476,7 @@ class GridsetProcessor(FileProcessor):
             # Save grid XML
             grid_path = os.path.join(grid_dir, "grid.xml")
             ET.ElementTree(grid).write(
-                grid_path,
-                encoding="utf-8",
-                xml_declaration=True,
-                pretty_print=True
+                grid_path, encoding="utf-8", xml_declaration=True, pretty_print=True
             )
 
         # Create FileMap.xml
@@ -487,10 +488,7 @@ class GridsetProcessor(FileProcessor):
 
         filemap_path = os.path.join(temp_dir, "FileMap.xml")
         ET.ElementTree(filemap).write(
-            filemap_path,
-            encoding="utf-8",
-            xml_declaration=True,
-            pretty_print=True
+            filemap_path, encoding="utf-8", xml_declaration=True, pretty_print=True
         )
 
         # Create gridset file
@@ -503,7 +501,9 @@ class GridsetProcessor(FileProcessor):
 
         self.debug(f"Created gridset file: {output_path}")
 
-    def create_translated_file(self, file_path: str, translations: Dict[str, str]) -> Optional[str]:
+    def create_translated_file(
+        self, file_path: str, translations: Dict[str, str]
+    ) -> Optional[str]:
         """Create a translated version of the gridset.
 
         Args:
@@ -555,7 +555,7 @@ class GridsetProcessor(FileProcessor):
                         grid_path,
                         encoding="utf-8",
                         xml_declaration=True,
-                        pretty_print=True
+                        pretty_print=True,
                     )
                     modified = True
 
@@ -568,14 +568,14 @@ class GridsetProcessor(FileProcessor):
             if not target_lang:
                 self.debug("No target language found in translations")
                 return None
-            
+
             # Create base name without any existing language suffix
             base_name = os.path.splitext(file_path)[0]
-            if '_' in base_name:
-                base_parts = base_name.split('_')
+            if "_" in base_name:
+                base_parts = base_name.split("_")
                 if len(base_parts[-1]) <= 5:  # Assuming language codes are <= 5 chars
-                    base_name = '_'.join(base_parts[:-1])
-            
+                    base_name = "_".join(base_parts[:-1])
+
             # Create new filename with target language
             translated_path = f"{base_name}_{target_lang}.gridset"
 

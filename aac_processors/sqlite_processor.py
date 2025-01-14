@@ -45,7 +45,7 @@ class SQLiteProcessor(AACProcessor):
         self,
         file_path: str,
         translations: Optional[Dict[str, str]] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> Union[List[str], str, None]:
         """Process texts in SQLite database.
 
@@ -65,7 +65,7 @@ class SQLiteProcessor(AACProcessor):
 
             # Prepare workspace and get working directory
             workspace = self._prepare_workspace(file_path)
-            
+
             # Process the files
             result = self.process_files(workspace, translations)
 
@@ -245,24 +245,30 @@ class SQLiteProcessor(AACProcessor):
         if self._debug_output:
             self._debug_output(message)
 
-    def process_files(self, directory: str, translations: Optional[Dict[str, str]] = None) -> Optional[str]:
+    def process_files(
+        self, directory: str, translations: Optional[Dict[str, str]] = None
+    ) -> Optional[str]:
         modified = False
         try:
             # Log the texts we're trying to translate
-            self.debug(f"Processing texts for translation. Total translations available: {len(translations) if translations else 0}")
-            
+            self.debug(
+                f"Processing texts for translation. Total translations available: {len(translations) if translations else 0}"
+            )
+
             # Get all texts from database
             query = "SELECT DISTINCT message FROM resources WHERE message IS NOT NULL AND message != ''"
             texts = self._execute_query(query)
-            
+
             for text in texts:
                 message = text[0]
                 if translations and message in translations:
-                    self.debug(f"Found translation for: {message} -> {translations[message]}")
+                    self.debug(
+                        f"Found translation for: {message} -> {translations[message]}"
+                    )
                     modified = True
                 else:
                     self.debug(f"No translation found for: {message}")
-            
+
             # Update translations in database if we have them
             if translations and modified:
                 update_query = "UPDATE resources SET message = ? WHERE message = ?"
@@ -272,7 +278,7 @@ class SQLiteProcessor(AACProcessor):
                     if text in [t[0] for t in texts]
                 ]
                 self._execute_many(update_query, updates)
-            
+
             return modified
 
         except Exception as e:

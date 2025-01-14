@@ -90,7 +90,7 @@ def test_snap_db(temp_dir):
 def test_gridset(temp_dir):
     """Create a test Grid3 gridset with realistic content"""
     gridset_dir = os.path.join(temp_dir, "test_gridset_dir")
-    
+
     # Create Grids directory
     grids_dir = os.path.join(gridset_dir, "Grids")
     os.makedirs(grids_dir, exist_ok=True)
@@ -161,15 +161,17 @@ def test_gridset(temp_dir):
     start_grid.text = "Test Grid"
 
     settings_path = os.path.join(settings_dir, "settings.xml")
-    ET.ElementTree(settings).write(settings_path, encoding="utf-8", xml_declaration=True)
+    ET.ElementTree(settings).write(
+        settings_path, encoding="utf-8", xml_declaration=True
+    )
 
     # Create FileMap.xml
     filemap = ET.Element("FileMap")
     entries = ET.SubElement(filemap, "Entries")
-    
+
     entry1 = ET.SubElement(entries, "Entry")
     entry1.set("StaticFile", "Grids\\Test Grid\\grid.xml")
-    
+
     entry2 = ET.SubElement(entries, "Entry")
     entry2.set("StaticFile", "Grids\\Test List\\grid.xml")
 
@@ -279,9 +281,7 @@ def test_touchchat_ce(temp_dir):
     )
 
     # Create button box for the page
-    cursor.execute(
-        "INSERT INTO button_boxes (init_size_x, init_size_y) VALUES (2, 2)"
-    )
+    cursor.execute("INSERT INTO button_boxes (init_size_x, init_size_y) VALUES (2, 2)")
     button_box_id = cursor.lastrowid
 
     # Link button box to page

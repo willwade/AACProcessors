@@ -112,13 +112,17 @@ class AACTree:
 
         # First find all reachable pages from root
         reachable_pages = set()
+
         def find_reachable_pages(page_id: str):
             if page_id in reachable_pages:
                 return
             reachable_pages.add(page_id)
             page = self.pages[page_id]
             for button in page.buttons:
-                if button.type == ButtonType.NAVIGATE and button.target_page_id in self.pages:
+                if (
+                    button.type == ButtonType.NAVIGATE
+                    and button.target_page_id in self.pages
+                ):
                     find_reachable_pages(button.target_page_id)
 
         if self.root_id:
@@ -148,7 +152,11 @@ class AACTree:
                     analysis["navigation_stats"]["command_buttons"] += 1
 
             # If page is reachable but has no valid navigation buttons and isn't the root, it's a dead end
-            if not has_valid_navigation and page_id != self.root_id and page_id in reachable_pages:
+            if (
+                not has_valid_navigation
+                and page_id != self.root_id
+                and page_id in reachable_pages
+            ):
                 analysis["dead_ends"].append(page_id)
 
         # Calculate max depth

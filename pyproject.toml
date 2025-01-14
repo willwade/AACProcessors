@@ -1,29 +1,51 @@
 [project]
-name = "aac-translator"
+name = "aac-processors"
 version = "0.1.0"
-description = "AAC Pageset Translation Tool"
+description = "AAC Pageset Processing Tools"
+authors = [
+    {name = "Will Wade", email = "will@willwade.co.uk"},
+]
+readme = "README.md"
 requires-python = ">=3.11"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+]
 dependencies = [
-    "flask==3.1.0",
-    "flask-cors==5.0.0",
-    "deep-translator==1.11.4",
-    "lxml==5.3.0",
-    "python-dotenv==0.19.0"
+    "lxml>=5.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.9",
+    "black>=23.12.1",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.metadata]
-allow-direct-references = true
+[tool.ruff]
+select = ["E", "F", "I", "B", "W", "C90"]
+ignore = []
+line-length = 100
+target-version = "py311"
 
-[tool.hatch.build]
-packages = ["backend"]
+[tool.ruff.isort]
+known-first-party = ["aac_processors"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["backend"]
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --cov=aac_processors"
+testpaths = [
+    "tests",
+]
 
-[tool.app.env]
-FLASK_PORT = "5001"
-API_BASE_URL = "http://localhost:5001"
+[tool.coverage.run]
+source = ["aac_processors"]

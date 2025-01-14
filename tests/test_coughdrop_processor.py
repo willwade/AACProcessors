@@ -115,13 +115,15 @@ def test_translation_obf(test_coughdrop_obf, temp_dir):
 
     # Create translations
     translations = {
-        "Test Button": "Botón de Prueba", 
+        "Test Button": "Botón de Prueba",
         "Hello": "Hola",
-        "target_lang": "es"
+        "target_lang": "es",
     }
 
     # Create translated file
-    output_path = os.path.join(temp_dir, f"{os.path.splitext(os.path.basename(test_coughdrop_obf))[0]}_es.obf")
+    output_path = os.path.join(
+        temp_dir, f"{os.path.splitext(os.path.basename(test_coughdrop_obf))[0]}_es.obf"
+    )
     result = processor.process_texts(test_coughdrop_obf, translations, output_path)
     assert result is not None, "Translation failed"
     assert os.path.exists(output_path), f"Output file not created at {output_path}"
@@ -149,11 +151,13 @@ def test_translation_obz(test_coughdrop_obz, temp_dir):
         "Navigate": "Navegar",
         "Test Board": "Tablero de Prueba",
         "Hello": "Hola",
-        "target_lang": "es"
+        "target_lang": "es",
     }
 
     # Create translated file
-    output_path = os.path.join(temp_dir, f"{os.path.splitext(os.path.basename(test_coughdrop_obz))[0]}_es.obz")
+    output_path = os.path.join(
+        temp_dir, f"{os.path.splitext(os.path.basename(test_coughdrop_obz))[0]}_es.obz"
+    )
     result = processor.process_texts(test_coughdrop_obz, translations, output_path)
     assert result is not None, "Translation failed"
     assert os.path.exists(output_path), f"Output file not created at {output_path}"

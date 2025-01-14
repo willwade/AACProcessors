@@ -120,19 +120,23 @@ def test_process_workflow(test_snap_db, temp_dir):
         logger.debug(f"Extracted texts: {texts}")
 
         # Verify file paths after extraction
-        assert processor.file_path == test_file, "File path not set correctly after extraction"
+        assert (
+            processor.file_path == test_file
+        ), "File path not set correctly after extraction"
 
         # Second phase: Translate texts
         translations = {
             "Speak Button": "Botón de Hablar",
             "Hello": "Hola",
             "Go to Page 2": "Ir a Página 2",
-            "target_lang": "es"
+            "target_lang": "es",
         }
         logger.debug(f"Created translations: {translations}")
 
         # Construct output path like app.py does
-        output_path = os.path.join(work_dir, f"{os.path.splitext(os.path.basename(test_file))[0]}_es.spb")
+        output_path = os.path.join(
+            work_dir, f"{os.path.splitext(os.path.basename(test_file))[0]}_es.spb"
+        )
         result = processor.process_texts(test_file, translations, output_path)
 
         # Verify translation succeeded

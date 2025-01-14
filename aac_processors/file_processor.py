@@ -67,18 +67,18 @@ class FileProcessor(AACProcessor):
         """
         if not self.file_path:
             raise ValueError("No file path is set")
-        
+
         dir_name = os.path.dirname(self.file_path)
         base_name = (
             self.original_filename
             or os.path.splitext(os.path.basename(self.file_path))[0]
         )
         # Remove any existing language suffix if present
-        if '_' in base_name:
-            base_parts = base_name.split('_')
+        if "_" in base_name:
+            base_parts = base_name.split("_")
             if len(base_parts[-1]) <= 5:  # Assuming language codes are <= 5 chars
-                base_name = '_'.join(base_parts[:-1])
-        
+                base_name = "_".join(base_parts[:-1])
+
         ext = os.path.splitext(self.file_path)[1]
         suffix = f"_{target_lang}" if target_lang else "_translated"
         return os.path.join(dir_name, f"{base_name}{suffix}{ext}")
@@ -103,7 +103,7 @@ class FileProcessor(AACProcessor):
         self,
         file_path: str,
         translations: Optional[Dict[str, str]] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> Union[List[str], str, None]:
         """Process texts in a single file - extract or translate.
 
@@ -119,17 +119,21 @@ class FileProcessor(AACProcessor):
         try:
             # Reset state for new translation
             self.collected_texts = []
-            
+
             if file_path:
                 # Always update file_path to the current file
                 self.file_path = file_path
-                
+
                 # If this is a new original file, update original paths
-                if not self.original_file_path or (translations is None and file_path != self.original_file_path):
+                if not self.original_file_path or (
+                    translations is None and file_path != self.original_file_path
+                ):
                     self.original_file_path = file_path
                     basename = os.path.basename(file_path)
                     self.original_filename = os.path.splitext(basename)[0]
-                    self.debug(f"Set original paths: file={self.original_file_path}, name={self.original_filename}")
+                    self.debug(
+                        f"Set original paths: file={self.original_file_path}, name={self.original_filename}"
+                    )
 
             # Create working directory
             temp_dir = self.create_temp_dir()
@@ -139,7 +143,7 @@ class FileProcessor(AACProcessor):
             if not self.file_path:
                 self.debug("No file path set")
                 return None
-                           
+
             # Check if file is an archive and set the flag
             try:
                 self.is_archive = self.check_is_archive(self.file_path)
@@ -147,7 +151,7 @@ class FileProcessor(AACProcessor):
             except Exception as e:
                 self.debug(f"Error checking if file is archive: {str(e)}")
                 raise
-            
+
             if self.is_archive:
                 self.debug(f"Extracting archive: {self.file_path} to {temp_dir}")
                 self.extract_archive(self.file_path, temp_dir)
@@ -174,7 +178,7 @@ class FileProcessor(AACProcessor):
                     return output_path  # Return path to translated file
                 else:
                     # Create default output path if none provided
-                    target_lang = translations.get('target_lang', 'unknown')
+                    target_lang = translations.get("target_lang", "unknown")
                     base_name = os.path.splitext(self.file_path)[0]
                     ext = os.path.splitext(self.file_path)[1]
                     default_output = f"{base_name}_{target_lang}{ext}"
@@ -207,7 +211,7 @@ class FileProcessor(AACProcessor):
         """
         self.collected_texts = []
         self.file_path = None
-        
+
         pass
 
     def check_is_archive(self, file_path: Optional[str]) -> bool:
@@ -221,14 +225,14 @@ class FileProcessor(AACProcessor):
         """
         if not file_path:
             return False
-        
+
         # First check extension
         if not file_path.lower().endswith((".zip", ".gridset", ".obz")):
             return False
-            
+
         # Then verify it's a valid ZIP file
         try:
-            with zipfile.ZipFile(file_path, 'r') as zf:
+            with zipfile.ZipFile(file_path, "r") as zf:
                 # Try reading the file list - this will fail if not a valid ZIP
                 zf.namelist()
             return True
@@ -256,7 +260,9 @@ class FileProcessor(AACProcessor):
             output_path (str): Path where to save archive.
         """
         with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zip_ref:
-            for root, dirs, files in os.walk(directory):  # type: Iterator[Tuple[str, List[str], List[str]]]
+            for root, dirs, files in os.walk(
+                directory
+            ):  # type: Iterator[Tuple[str, List[str], List[str]]]
                 for file in files:
                     file_path = os.path.join(root, file)
                     arc_name = os.path.relpath(file_path, directory)
