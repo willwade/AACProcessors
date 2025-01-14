@@ -1,7 +1,8 @@
 import os
 import shutil
 import zipfile
-from lxml import etree as ET
+
+from lxml import etree as et
 
 from aac_processors.gridset_processor import GridsetProcessor
 
@@ -52,7 +53,7 @@ def test_save_tree(test_gridset, temp_dir):
         zip_ref.extract("Grids/Test Grid/grid.xml", temp_dir)
         grid_path = os.path.join(temp_dir, "Grids/Test Grid/grid.xml")
 
-        grid_tree = ET.parse(grid_path)
+        grid_tree = et.parse(grid_path)
         grid_root = grid_tree.getroot()
 
         # Check grid name
@@ -69,7 +70,7 @@ def test_save_tree(test_gridset, temp_dir):
         zip_ref.extract("Grids/Test List/grid.xml", temp_dir)
         wordlist_path = os.path.join(temp_dir, "Grids/Test List/grid.xml")
 
-        wordlist_tree = ET.parse(wordlist_path)
+        wordlist_tree = et.parse(wordlist_path)
         wordlist_root = wordlist_tree.getroot()
 
         # Check wordlist name

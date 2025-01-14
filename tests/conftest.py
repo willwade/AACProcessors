@@ -4,9 +4,9 @@ import shutil
 import sqlite3
 import tempfile
 import zipfile
-from lxml import etree as ET
 
 import pytest
+from lxml import etree as et
 
 
 @pytest.fixture
@@ -104,80 +104,80 @@ def test_gridset(temp_dir):
     grid1_dir = os.path.join(grids_dir, "Test Grid")
     os.makedirs(grid1_dir, exist_ok=True)
 
-    grid1 = ET.Element("Grid")
+    grid1 = et.Element("Grid")
     grid1.set("Name", "Test Grid")
     grid1.set("GridGuid", "1")
 
     # Add row and column definitions
-    row_defs = ET.SubElement(grid1, "RowDefinitions")
+    row_defs = et.SubElement(grid1, "RowDefinitions")
     for _ in range(2):
-        ET.SubElement(row_defs, "RowDefinition")
+        et.SubElement(row_defs, "RowDefinition")
 
-    col_defs = ET.SubElement(grid1, "ColumnDefinitions")
+    col_defs = et.SubElement(grid1, "ColumnDefinitions")
     for _ in range(2):
-        ET.SubElement(col_defs, "ColumnDefinition")
+        et.SubElement(col_defs, "ColumnDefinition")
 
     # Add cells
-    cells = ET.SubElement(grid1, "Cells")
-    cell = ET.SubElement(cells, "Cell")
+    cells = et.SubElement(grid1, "Cells")
+    cell = et.SubElement(cells, "Cell")
     cell.set("X", "0")
     cell.set("Y", "0")
 
-    content = ET.SubElement(cell, "Content")
-    caption_and_image = ET.SubElement(content, "CaptionAndImage")
-    caption = ET.SubElement(caption_and_image, "Caption")
+    content = et.SubElement(cell, "Content")
+    caption_and_image = et.SubElement(content, "CaptionAndImage")
+    caption = et.SubElement(caption_and_image, "Caption")
     caption.text = "Test Button"
 
     grid1_path = os.path.join(grid1_dir, "grid.xml")
-    ET.ElementTree(grid1).write(grid1_path, encoding="utf-8", xml_declaration=True)
+    et.ElementTree(grid1).write(grid1_path, encoding="utf-8", xml_declaration=True)
 
     # Create second grid directory (wordlist) and grid.xml
     grid2_dir = os.path.join(grids_dir, "Test List")
     os.makedirs(grid2_dir, exist_ok=True)
 
-    grid2 = ET.Element("Grid")
+    grid2 = et.Element("Grid")
     grid2.set("Name", "Test List")
     grid2.set("GridGuid", "2")
 
     # Add row and column definitions
-    row_defs = ET.SubElement(grid2, "RowDefinitions")
-    ET.SubElement(row_defs, "RowDefinition")
-    col_defs = ET.SubElement(grid2, "ColumnDefinitions")
-    ET.SubElement(col_defs, "ColumnDefinition")
+    row_defs = et.SubElement(grid2, "RowDefinitions")
+    et.SubElement(row_defs, "RowDefinition")
+    col_defs = et.SubElement(grid2, "ColumnDefinitions")
+    et.SubElement(col_defs, "ColumnDefinition")
 
     # Add wordlist
-    wordlist = ET.SubElement(grid2, "WordList")
+    wordlist = et.SubElement(grid2, "WordList")
     wordlist.set("Name", "Test List")
-    items = ET.SubElement(wordlist, "Items")
-    item = ET.SubElement(items, "WordListItem")
-    text = ET.SubElement(item, "Text")
+    items = et.SubElement(wordlist, "Items")
+    item = et.SubElement(items, "WordListItem")
+    text = et.SubElement(item, "Text")
     text.text = "Test Word"
 
     grid2_path = os.path.join(grid2_dir, "grid.xml")
-    ET.ElementTree(grid2).write(grid2_path, encoding="utf-8", xml_declaration=True)
+    et.ElementTree(grid2).write(grid2_path, encoding="utf-8", xml_declaration=True)
 
     # Create settings.xml
-    settings = ET.Element("GridSetSettings")
-    start_grid = ET.SubElement(settings, "StartGrid")
+    settings = et.Element("GridSetSettings")
+    start_grid = et.SubElement(settings, "StartGrid")
     start_grid.text = "Test Grid"
 
     settings_path = os.path.join(settings_dir, "settings.xml")
-    ET.ElementTree(settings).write(
+    et.ElementTree(settings).write(
         settings_path, encoding="utf-8", xml_declaration=True
     )
 
     # Create FileMap.xml
-    filemap = ET.Element("FileMap")
-    entries = ET.SubElement(filemap, "Entries")
+    filemap = et.Element("FileMap")
+    entries = et.SubElement(filemap, "Entries")
 
-    entry1 = ET.SubElement(entries, "Entry")
+    entry1 = et.SubElement(entries, "Entry")
     entry1.set("StaticFile", "Grids\\Test Grid\\grid.xml")
 
-    entry2 = ET.SubElement(entries, "Entry")
+    entry2 = et.SubElement(entries, "Entry")
     entry2.set("StaticFile", "Grids\\Test List\\grid.xml")
 
     filemap_path = os.path.join(gridset_dir, "FileMap.xml")
-    ET.ElementTree(filemap).write(filemap_path, encoding="utf-8", xml_declaration=True)
+    et.ElementTree(filemap).write(filemap_path, encoding="utf-8", xml_declaration=True)
 
     # Create gridset file
     zip_path = os.path.join(temp_dir, "test.gridset")
