@@ -4,7 +4,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/aac-processors.svg)](https://pypi.org/project/aac-processors/)
 [![Tests](https://github.com/willwade/AACProcessors/actions/workflows/tests.yml/badge.svg)](https://github.com/willwade/AACProcessors/actions/workflows/tests.yml)
 [![Coverage](https://codecov.io/gh/willwade/AACProcessors/branch/main/graph/badge.svg)](https://codecov.io/gh/willwade/AACProcessors)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 A Python library to read, import, export and modify pagesets from different AAC (Augmentative and Alternative Communication) providers. Currently supports:
 
@@ -146,10 +146,9 @@ Current test coverage: 52%
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the AGPLv3 License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Thanks to all AAC software providers for their documentation
-- Contributors to the project
+- OpenAAC 
 - The AAC community for their feedback and support
