@@ -74,36 +74,37 @@ imported_tree = cough_processor.load_into_tree("path/to/board.obz")
 
 ### Viewing File Structure
 
-The library includes a viewer utility to inspect AAC board structures. You can either use the command-line tool:
+The library includes two ways to view AAC board structures:
 
+1. Using the command-line viewer:
 ```bash
+# Using the standalone viewer script
+python demo_viewer.py path/to/your/board.gridset
+
+# Or using the package module
 python -m aac_processors.viewer path/to/your/board.gridset
 ```
 
-Or programmatically:
-
+2. Programmatically:
 ```python
-from aac_processors import GridsetProcessor
+from aac_processors import viewer, GridsetProcessor
 from aac_processors.tree_structure import ButtonType
 
+# Load and print a board structure
 processor = GridsetProcessor()
 tree = processor.load_into_tree("path/to/your.gridset")
+viewer.print_tree(tree)
 
-# Print basic structure
-for page_id, page in tree.pages.items():
-    print(f"Page: {page.name} ({page.grid_size[0]}x{page.grid_size[1]} grid)")
-    for button in page.buttons:
-        if button.type == ButtonType.SPEAK:
-            print(f"  - Speech Button: {button.label} says '{button.message}'")
-        elif button.type == ButtonType.NAVIGATE:
-            print(f"  - Navigation Button: {button.label} -> {button.target_page_id}")
-
-# Analyze navigation
-analysis = tree.analyze_navigation()
-print(f"\nTotal Pages: {analysis['total_pages']}")
-print(f"Dead End Pages: {len(analysis['dead_ends'])}")
-print(f"Orphaned Pages: {len(analysis['orphaned_pages'])}")
+# Or use the auto-detection feature
+viewer.main()  # Will prompt for file path
 ```
+
+The viewer will show:
+- Complete board structure with pages and buttons
+- Button types (🗣️ Speech, 🔀 Navigation, ⚡ Action)
+- Grid layout and button positions
+- Navigation analysis (dead ends, orphaned pages)
+- Circular references in navigation
 
 ### Vocabulary Analysis
 
