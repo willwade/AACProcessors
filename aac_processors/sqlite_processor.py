@@ -4,7 +4,7 @@ import sqlite3
 import tempfile
 from abc import abstractmethod
 from threading import Lock
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 from .base_processor import AACProcessor
 from .tree_structure import AACButton, AACPage, ButtonType
@@ -13,7 +13,7 @@ from .tree_structure import AACButton, AACPage, ButtonType
 class SQLiteProcessor(AACProcessor):
     """Base class for processors that handle SQLite database files."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the SQLite processor."""
         super().__init__()
         self.collected_texts = []
@@ -44,9 +44,9 @@ class SQLiteProcessor(AACProcessor):
     def process_texts(
         self,
         file_path: str,
-        translations: Optional[Dict[str, str]] = None,
+        translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[List[str], str, None]:
+    ) -> Union[list[str], str, None]:
         """Process texts in SQLite database.
 
         Args:
@@ -81,7 +81,7 @@ class SQLiteProcessor(AACProcessor):
         finally:
             self.cleanup_temp_files()
 
-    def _execute_query(self, query: str, params: Tuple = ()) -> List[Tuple]:
+    def _execute_query(self, query: str, params: tuple = ()) -> list[tuple]:
         """Thread-safe query execution.
 
         Args:
@@ -96,7 +96,7 @@ class SQLiteProcessor(AACProcessor):
                 cursor = conn.cursor()
                 return cursor.execute(query, params).fetchall()
 
-    def _execute_many(self, query: str, params: List[Tuple]):
+    def _execute_many(self, query: str, params: list[tuple]) -> None:
         """Common batch execution logic.
 
         Args:
@@ -110,7 +110,7 @@ class SQLiteProcessor(AACProcessor):
 
     @abstractmethod
     def process_files(
-        self, directory: str, translations: Optional[Dict[str, str]] = None
+        self, directory: str, translations: Optional[dict[str, str]] = None
     ) -> Optional[str]:
         """Process files in the directory - implement in child class.
 
@@ -227,7 +227,7 @@ class SQLiteProcessor(AACProcessor):
 
         return page
 
-    def debug(self, message: str):
+    def debug(self, message: str) -> None:
         """Output debug message.
 
         Args:
@@ -236,7 +236,7 @@ class SQLiteProcessor(AACProcessor):
         if self._debug_output:
             self._debug_output(f"{self.__class__.__name__}: {message}")
 
-    def _debug_print(self, message: str):
+    def _debug_print(self, message: str) -> None:
         """Print debug message.
 
         Args:
@@ -244,43 +244,3 @@ class SQLiteProcessor(AACProcessor):
         """
         if self._debug_output:
             self._debug_output(message)
-
-    def process_files(
-        self, directory: str, translations: Optional[Dict[str, str]] = None
-    ) -> Optional[str]:
-        modified = False
-        try:
-            # Log the texts we're trying to translate
-            self.debug(
-                f"Processing texts for translation. Total translations available: {len(translations) if translations else 0}"
-            )
-
-            # Get all texts from database
-            query = "SELECT DISTINCT message FROM resources WHERE message IS NOT NULL AND message != ''"
-            texts = self._execute_query(query)
-
-            for text in texts:
-                message = text[0]
-                if translations and message in translations:
-                    self.debug(
-                        f"Found translation for: {message} -> {translations[message]}"
-                    )
-                    modified = True
-                else:
-                    self.debug(f"No translation found for: {message}")
-
-            # Update translations in database if we have them
-            if translations and modified:
-                update_query = "UPDATE resources SET message = ? WHERE message = ?"
-                updates = [
-                    (translations[text], text)
-                    for text in translations
-                    if text in [t[0] for t in texts]
-                ]
-                self._execute_many(update_query, updates)
-
-            return modified
-
-        except Exception as e:
-            self.debug(f"Error processing files: {str(e)}")
-            return None

@@ -166,6 +166,43 @@ vocabulary = analyze_vocabulary("path/to/your.gridset")
 - Text extraction from buttons and pages
 - Basic translation support
 
+
+
+## Command Line Interface
+
+The package provides a command-line interface (CLI) for viewing and converting AAC files. After installation, you can use it in two ways:
+
+### Interactive Mode
+
+Simply run without arguments to enter interactive mode:
+
+```bash
+aac-processors
+```
+
+This will guide you through:
+1. Selecting an AAC file (with tab completion)
+2. Choosing to view its structure or convert it
+3. If converting, selecting the target format and output path
+
+### Command Line Mode
+
+For direct command-line usage:
+
+1. View an AAC file structure:
+```bash
+aac-processors view input.gridset
+```
+
+2. Convert between formats:
+```bash
+# Basic conversion (auto-generates output filename)
+aac-processors convert input.gridset --to coughdrop
+
+# Specify custom output path
+aac-processors convert input.obf --to grid --output custom_name.gridset
+```
+
 ## API Documentation
 
 ### Base Classes
@@ -248,43 +285,7 @@ This project is licensed under the AGPLv3 License - see the [LICENSE](LICENSE) f
 - OpenAAC 
 - The AAC community for their feedback and support
 
-## Command Line Interface
+## Contributors
 
-The package provides a command-line interface (CLI) for viewing and converting AAC files. After installation, you can use it in two ways:
-
-### Interactive Mode
-
-Simply run without arguments to enter interactive mode:
-
-```bash
-aac-processors
-```
-
-This will guide you through:
-1. Selecting an AAC file (with tab completion)
-2. Choosing to view its structure or convert it
-3. If converting, selecting the target format and output path
-
-### Command Line Mode
-
-For direct command-line usage:
-
-1. View an AAC file structure:
-```bash
-aac-processors view input.gridset
-```
-
-2. Convert between formats:
-```bash
-# Basic conversion (auto-generates output filename)
-aac-processors convert input.gridset --to coughdrop
-
-# Specify custom output path
-aac-processors convert input.obf --to grid --output custom_name.gridset
-```
-
-Available formats for conversion:
-- `grid` - Grid3 format
-- `touchchat` - TouchChat format
-- `snap` - TD Snap format
-- `coughdrop` - Openboardformat (CoughDrop) format
+- [Will Wade](https://github.com/willwade)
+- [OpenAAC](https://github.com/OpenAAC)

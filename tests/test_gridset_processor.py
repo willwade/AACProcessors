@@ -2,8 +2,6 @@ import os
 import shutil
 import zipfile
 
-from lxml import etree as ET
-
 from aac_processors.gridset_processor import GridsetProcessor
 
 

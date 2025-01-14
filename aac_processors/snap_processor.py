@@ -3,7 +3,7 @@ import shutil
 import sqlite3
 import tempfile
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable, Optional, Union
 
 from .sqlite_processor import SQLiteProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
@@ -20,7 +20,7 @@ class SnapProcessor(SQLiteProcessor):
         """
         super().__init__()  # Call SQLiteProcessor's __init__
         self._debug_output = debug_output or print
-        self.collected_texts: List[str] = []
+        self.collected_texts: list[str] = []
         self.file_path: Optional[str] = None
         self.original_filename: Optional[str] = None
         self.original_file_path: Optional[str] = None
@@ -42,7 +42,7 @@ class SnapProcessor(SQLiteProcessor):
         )
 
     def process_files(
-        self, directory: str, translations: Optional[Dict[str, str]] = None
+        self, directory: str, translations: Optional[dict[str, str]] = None
     ) -> Optional[str]:
         """Process files in the extracted directory.
 
@@ -107,7 +107,8 @@ class SnapProcessor(SQLiteProcessor):
                             for (text,) in cursor.fetchall():
                                 if text in translations:
                                     self._debug_print(
-                                        f"Translating {text} to {translations[text]} in {table}.{column}"
+                                        f"Translating {text} to {translations[text]} "
+                                        f"in {table}.{column}"
                                     )
                                     cursor.execute(
                                         f"""
@@ -149,7 +150,8 @@ class SnapProcessor(SQLiteProcessor):
                                         )
                                         count = verify_cursor.fetchone()[0]
                                         self._debug_print(
-                                            f"Found {count} instances of {translated} in {table}.{column}"
+                                            f"Found {count} instances of {translated} "
+                                            f"in {table}.{column}"
                                         )
 
                         return output_path
@@ -158,7 +160,7 @@ class SnapProcessor(SQLiteProcessor):
             self._debug_print(f"Error processing files: {e}")
             return None
 
-    def get_translatable_columns(self) -> List[Tuple[str, List[str]]]:
+    def get_translatable_columns(self) -> list[tuple[str, list[str]]]:
         """Return list of (table_name, [column_names]) for translatable text.
 
         Returns:
@@ -343,9 +345,9 @@ class SnapProcessor(SQLiteProcessor):
     def process_texts(
         self,
         file_path: str,
-        translations: Optional[Dict[str, str]] = None,
+        translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[List[str], str, None]:
+    ) -> Union[list[str], str, None]:
         """Process texts in Snap file.
 
         Args:
@@ -396,7 +398,7 @@ class SnapProcessor(SQLiteProcessor):
             if temp_dir and Path(temp_dir).exists():
                 shutil.rmtree(temp_dir)
 
-    def extract_texts(self, file_path: str) -> List[str]:
+    def extract_texts(self, file_path: str) -> list[str]:
         """Extract translatable texts from Snap file.
 
         Args:

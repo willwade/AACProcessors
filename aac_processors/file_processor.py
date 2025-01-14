@@ -4,7 +4,7 @@ import shutil
 import tempfile
 import zipfile
 from abc import abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from .base_processor import AACProcessor
 from .tree_structure import AACPage, AACTree
@@ -20,9 +20,9 @@ class FileProcessor(AACProcessor):
             debug_output: Function to use for debug output.
         """
         super().__init__()  # Call AACProcessor's __init__
-        self._temp_dirs: List[str] = []
+        self._temp_dirs: list[str] = []
         self._debug_output = debug_output or print
-        self.collected_texts: List[str] = []
+        self.collected_texts: list[str] = []
         self.file_path: Optional[str] = None
         self.original_filename: Optional[str] = None
         self.original_file_path: Optional[str] = None
@@ -83,7 +83,7 @@ class FileProcessor(AACProcessor):
         suffix = f"_{target_lang}" if target_lang else "_translated"
         return os.path.join(dir_name, f"{base_name}{suffix}{ext}")
 
-    def analyze_vocabulary(self) -> Dict[str, Any]:
+    def analyze_vocabulary(self) -> dict[str, Any]:
         """File-specific vocabulary analysis.
 
         Returns:
@@ -102,9 +102,9 @@ class FileProcessor(AACProcessor):
     def process_texts(
         self,
         file_path: str,
-        translations: Optional[Dict[str, str]] = None,
+        translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[List[str], str, None]:
+    ) -> Union[list[str], str, None]:
         """Process texts in a single file - extract or translate.
 
         Args:
@@ -132,7 +132,9 @@ class FileProcessor(AACProcessor):
                     basename = os.path.basename(file_path)
                     self.original_filename = os.path.splitext(basename)[0]
                     self.debug(
-                        f"Set original paths: file={self.original_file_path}, name={self.original_filename}"
+                        "Set original paths: "
+                        f"file={self.original_file_path}, "
+                        f"name={self.original_filename}"
                     )
 
             # Create working directory
@@ -198,13 +200,14 @@ class FileProcessor(AACProcessor):
 
     @abstractmethod
     def process_files(
-        self, directory: str, translations: Optional[Dict[str, str]] = None
+        self, directory: str, translations: Optional[dict[str, str]] = None
     ) -> Optional[str]:
         """Process all files in directory - implement in child class.
 
         Args:
             directory (str): Path to directory containing files.
-            translations (Optional[Dict[str, str]]): Dictionary of translations to apply.
+            translations (Optional[Dict[str, str]]): Dictionary of
+                translations to apply.
 
         Returns:
             str: Path to translated file if any files were modified, None otherwise.

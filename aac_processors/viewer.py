@@ -2,7 +2,7 @@
 
 import os
 import sys
-from typing import Dict, List, Optional, Set, Union
+from typing import Optional, Union
 
 from .coughdrop_processor import CoughDropProcessor
 from .gridset_processor import GridsetProcessor
@@ -25,7 +25,7 @@ def get_processor_for_file(file_path: str) -> Optional[ProcessorType]:
         A processor instance that can handle the file type, or None if no suitable
         processor is found.
     """
-    processors: List[ProcessorType] = [
+    processors: list[ProcessorType] = [
         GridsetProcessor(),
         TouchChatProcessor(),
         SnapProcessor(),
@@ -40,7 +40,7 @@ def get_processor_for_file(file_path: str) -> Optional[ProcessorType]:
 
 
 def print_button(
-    button: AACButton, indent: int = 0, visited_pages: Optional[Set[str]] = None
+    button: AACButton, indent: int = 0, visited_pages: Optional[set[str]] = None
 ) -> None:
     """Print button details with indentation.
 
@@ -77,7 +77,7 @@ def print_page(
     page: AACPage,
     tree: AACTree,
     indent: int = 0,
-    visited_pages: Optional[Set[str]] = None,
+    visited_pages: Optional[set[str]] = None,
 ) -> None:
     """Print page details with indentation.
 
@@ -100,7 +100,7 @@ def print_page(
     print(f"{indent_str}📄 {page.name} ({page.grid_size[0]}x{page.grid_size[1]} grid)")
 
     # Group buttons by row and column
-    buttons_by_position: Dict[tuple[int, int], AACButton] = {}
+    buttons_by_position: dict[tuple[int, int], AACButton] = {}
     for button in page.buttons:
         row, col = button.position
         if 0 <= row < page.grid_size[0] and 0 <= col < page.grid_size[1]:

@@ -4,7 +4,7 @@ import os.path
 import shutil
 import sqlite3
 import zipfile
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 from .sqlite_processor import SQLiteProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
@@ -13,7 +13,7 @@ from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 class TouchChatProcessor(SQLiteProcessor):
     """Processor for TouchChat files (.ce)."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize TouchChat processor."""
         super().__init__()
         self.logger = logging.getLogger(__name__)
@@ -36,9 +36,9 @@ class TouchChatProcessor(SQLiteProcessor):
     def process_texts(
         self,
         file_path: str,
-        translations: Optional[Dict[str, str]] = None,
+        translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[List[str], str, None]:
+    ) -> Union[list[str], str, None]:
         """Process texts from a TouchChat file.
 
         Process and optionally translate texts from a TouchChat file.
@@ -218,7 +218,8 @@ class TouchChatProcessor(SQLiteProcessor):
                 self.debug(f"Extracting {c4v_file} to {target_dir}")
                 zip_ref.extract(c4v_file, target_dir)
                 self.debug(
-                    f"Extraction complete. Target dir contents: {os.listdir(target_dir)}"
+                    "Extraction complete. "
+                    f"Target dir contents: {os.listdir(target_dir)}"
                 )
 
         except zipfile.BadZipFile as e:
@@ -232,7 +233,7 @@ class TouchChatProcessor(SQLiteProcessor):
             raise
 
     def process_files(
-        self, directory: str, translations: Optional[Dict[str, str]] = None
+        self, directory: str, translations: Optional[dict[str, str]] = None
     ) -> Optional[str]:
         """Process files in directory.
 
@@ -364,7 +365,7 @@ class TouchChatProcessor(SQLiteProcessor):
                 conn.close()
             return None
 
-    def extract_texts(self, file_path: str) -> List[str]:
+    def extract_texts(self, file_path: str) -> list[str]:
         """Extract texts from TouchChat file.
 
         Args:
@@ -516,7 +517,7 @@ class TouchChatProcessor(SQLiteProcessor):
             )
 
     def create_translated_file(
-        self, file_path: str, translations: Dict[str, str]
+        self, file_path: str, translations: dict[str, str]
     ) -> str:
         """Create a translated version of the TouchChat file.
 
@@ -835,7 +836,7 @@ class TouchChatProcessor(SQLiteProcessor):
             raise
 
     def process_translations(
-        self, input_path: str, translations: Dict[str, str], output_path: str
+        self, input_path: str, translations: dict[str, str], output_path: str
     ) -> None:
         """Process translations and create translated file.
 

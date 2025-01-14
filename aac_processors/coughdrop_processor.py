@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 import zipfile
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 from .file_processor import FileProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
@@ -12,10 +12,10 @@ from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 class CoughDropProcessor(FileProcessor):
     """Processor for CoughDrop OBZ/OBF files."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize CoughDrop processor."""
         super().__init__()
-        self.collected_texts: List[str] = []
+        self.collected_texts: list[str] = []
         self.file_path: Optional[str] = None
         self.original_filename: Optional[str] = None
         self.original_file_path: Optional[str] = None
@@ -104,7 +104,7 @@ class CoughDropProcessor(FileProcessor):
         except Exception as e:
             self.debug(f"Error loading board file {file_path}: {str(e)}")
 
-    def _convert_page_to_board(self, page: AACPage) -> Dict[str, Any]:
+    def _convert_page_to_board(self, page: AACPage) -> dict[str, Any]:
         """Convert a page to a board format.
 
         Args:
@@ -114,12 +114,12 @@ class CoughDropProcessor(FileProcessor):
             Dict[str, Any]: Board data.
         """
         rows, cols = page.grid_size
-        grid_order = [[None] * cols for _ in range(rows)]
-        buttons_data = []
+        grid_order: list[list[Optional[str]]] = [[None] * cols for _ in range(rows)]
+        buttons_data: list[dict[str, Any]] = []
 
         for button in page.buttons:
             # Create button data
-            button_data = {"id": button.id, "label": button.label}
+            button_data: dict[str, Any] = {"id": button.id, "label": button.label}
 
             if button.vocalization and button.vocalization != button.label:
                 button_data["vocalization"] = button.vocalization
@@ -148,9 +148,9 @@ class CoughDropProcessor(FileProcessor):
     def process_texts(
         self,
         file_path: str,
-        translations: Optional[Dict[str, str]] = None,
+        translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[List[str], str, None]:
+    ) -> Union[list[str], str, None]:
         """Process texts in CoughDrop file.
 
         Args:
@@ -262,7 +262,8 @@ class CoughDropProcessor(FileProcessor):
 
             # Create output file
             if file_path.endswith(".obz"):
-                output_name = f"{self.original_filename}_{translations.get('target_lang', 'translated')}.obz"
+                target_lang = translations.get("target_lang", "translated")
+                output_name = f"{self.original_filename}_{target_lang}.obz"
                 temp_output = os.path.join(temp_dir, output_name)
                 with zipfile.ZipFile(temp_output, "w", zipfile.ZIP_DEFLATED) as zip_ref:
                     for root, _, files in os.walk(extract_dir):
@@ -279,7 +280,8 @@ class CoughDropProcessor(FileProcessor):
             else:
                 # For single OBF file
                 original_ext = os.path.splitext(self.original_file_path)[1]
-                output_name = f"{self.original_filename}_{translations.get('target_lang', 'translated')}{original_ext}"
+                target_lang = translations.get("target_lang", "translated")
+                output_name = f"{self.original_filename}_{target_lang}{original_ext}"
                 temp_output = os.path.join(temp_dir, output_name)
                 shutil.copy2(temp_file, temp_output)
                 # Move to permanent location
@@ -297,7 +299,7 @@ class CoughDropProcessor(FileProcessor):
                 shutil.rmtree(temp_dir)
 
     def process_files(
-        self, directory: str, translations: Optional[Dict[str, str]] = None
+        self, directory: str, translations: Optional[dict[str, str]] = None
     ) -> Optional[str]:
         """Process files in the directory - extract or update texts.
 
@@ -561,7 +563,7 @@ class CoughDropProcessor(FileProcessor):
             self.debug(f"Error saving tree: {str(e)}")
             raise
 
-    def extract_texts(self, file_path: str) -> List[str]:
+    def extract_texts(self, file_path: str) -> list[str]:
         """Extract translatable texts from OBF/OBZ file.
 
         Args:
@@ -576,7 +578,7 @@ class CoughDropProcessor(FileProcessor):
         return []
 
     def create_translated_file(
-        self, file_path: str, translations: Dict[str, str]
+        self, file_path: str, translations: dict[str, str]
     ) -> Optional[str]:
         """Create a translated version of the file.
 

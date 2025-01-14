@@ -5,7 +5,7 @@ import glob
 import os
 import readline
 import sys
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from .coughdrop_processor import CoughDropProcessor
 from .gridset_processor import GridsetProcessor
@@ -49,7 +49,7 @@ def complete_path(text: str, state: int) -> Optional[str]:
     return matches[state] if state < len(matches) else None
 
 
-def get_available_formats() -> List[str]:
+def get_available_formats() -> list[str]:
     """Get list of available format names"""
     return ["grid", "touchchat", "snap", "coughdrop"]
 

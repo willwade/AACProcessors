@@ -5,7 +5,7 @@ import uuid
 import zipfile
 from abc import ABC, abstractmethod
 from threading import Lock
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 from .tree_structure import AACTree
 
@@ -142,9 +142,9 @@ class AACProcessor(ABC):
     def process_texts(
         self,
         file_path: str,
-        translations: Optional[Dict[str, str]] = None,
+        translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[List[str], str, None]:
+    ) -> Union[list[str], str, None]:
         """Process texts in a file.
 
         Args:

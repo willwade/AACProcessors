@@ -6,7 +6,6 @@ import tempfile
 import zipfile
 
 import pytest
-from lxml import etree as ET
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ name = "aac-processors"
 version = "0.1.0"
 description = "Process and convert between different AAC file formats"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = { text = "AGPL-3.0-or-later" }
 authors = [
     { name = "Will Wade", email = "willwade@gmail.com" },
@@ -13,7 +13,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -32,6 +31,12 @@ dev = [
     "black>=23.9.1",
     "mypy>=1.5.1",
     "ruff>=0.0.291",
+    "cssselect",
+    "types-lxml",
+    "types-beautifulsoup4",
+    "pandas-stubs",
+    "types-openpyxl",
+    "types-html5lib",
 ]
 
 [project.urls]
@@ -54,15 +59,18 @@ markers = [
 
 [tool.black]
 line-length = 88
-target-version = ["py38"]
+target-version = ["py39"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py39"
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "UP"]
+ignore = ["F821"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

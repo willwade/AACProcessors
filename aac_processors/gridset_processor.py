@@ -1,9 +1,9 @@
 import logging
 import os
 import zipfile
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
-from lxml import etree as ET
+from lxml import etree
 
 from .file_processor import FileProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class GridsetProcessor(FileProcessor):
     """Processor for Grid3 files (.gridset)."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the GridsetProcessor."""
         super().__init__()
         self.collected_texts = []
@@ -32,7 +32,7 @@ class GridsetProcessor(FileProcessor):
         return file_path.lower().endswith(".gridset")
 
     def process_files(
-        self, directory: str, translations: Optional[Dict[str, str]] = None
+        self, directory: str, translations: Optional[dict[str, str]] = None
     ) -> Optional[str]:
         """Process XML files in the gridset directory.
 
@@ -58,8 +58,8 @@ class GridsetProcessor(FileProcessor):
                 if file == "grid.xml":
                     grid_path = os.path.join(root, file)
                     try:
-                        parser = ET.XMLParser(remove_blank_text=True)
-                        tree = ET.parse(grid_path, parser)
+                        parser = etree.XMLParser(remove_blank_text=True)
+                        tree = etree.parse(grid_path, parser)
                         grid_root = tree.getroot()
 
                         # Process all captions
@@ -144,15 +144,16 @@ class GridsetProcessor(FileProcessor):
         return None
 
     def _extract_text_and_metadata_from_element(
-        self, element: ET.Element
-    ) -> Tuple[str, List[Dict], List[Tuple[str, bool]]]:
+        self, element: etree.Element
+    ) -> tuple[str, list[dict], list[tuple[str, bool]]]:
         """Extract text and metadata from an element.
 
         Args:
-            element (ET.Element): XML element to process.
+            element (etree.Element): XML element to process.
 
         Returns:
-            Tuple[str, List[Dict], List[Tuple[str, bool]]]: Text, metadata, and text parts.
+            Tuple[str, List[Dict], List[Tuple[str, bool]]]:
+                Text, metadata, and text parts.
         """
         text_parts = []
         metadata = []
@@ -174,15 +175,15 @@ class GridsetProcessor(FileProcessor):
 
     def _update_element_with_translation(
         self,
-        element: ET.Element,
+        element: etree.Element,
         translated_text: str,
-        metadata: List[Dict],
-        original_parts: Optional[List[Tuple[str, bool]]] = None,
+        metadata: list[dict],
+        original_parts: Optional[list[tuple[str, bool]]] = None,
     ) -> None:
         """Update an element with translated text and preserve metadata.
 
         Args:
-            element (ET.Element): XML element to update.
+            element (etree.Element): XML element to update.
             translated_text (str): Translated text to insert.
             metadata (List[Dict]): List of metadata dictionaries.
             original_parts (Optional[List[Tuple[str, bool]]]): Original text parts.
@@ -192,7 +193,7 @@ class GridsetProcessor(FileProcessor):
             element.remove(child)
 
         # Rebuild the structure with translated text
-        p_elem = ET.SubElement(element, "p")
+        p_elem = etree.SubElement(element, "p")
 
         # Split the translated text while preserving spaces
         words = []
@@ -212,28 +213,28 @@ class GridsetProcessor(FileProcessor):
 
         # Create elements for each word/space
         for i, (word, is_space) in enumerate(words):
-            s_elem = ET.SubElement(p_elem, "s")
+            s_elem = etree.SubElement(p_elem, "s")
             if i < len(metadata):
                 for k, v in metadata[i].items():
                     s_elem.set(k, v)
-            r_elem = ET.SubElement(s_elem, "r")
+            r_elem = etree.SubElement(s_elem, "r")
             if is_space:
-                r_elem.text = ET.CDATA(" ")
+                r_elem.text = etree.CDATA(" ")
             else:
                 r_elem.text = word
 
-    def _create_cdata(self, text: str) -> ET.CDATA:
+    def _create_cdata(self, text: str) -> etree.CDATA:
         """Create a CDATA section.
 
         Args:
             text (str): Text to wrap in CDATA.
 
         Returns:
-            ET.CDATA: CDATA section.
+            etree.CDATA: CDATA section.
         """
-        return ET.CDATA(text)
+        return etree.CDATA(text)
 
-    def extract_texts(self, file_path: str) -> List[str]:
+    def extract_texts(self, file_path: str) -> list[str]:
         """Extract translatable texts from gridset.
 
         Args:
@@ -257,7 +258,7 @@ class GridsetProcessor(FileProcessor):
                         continue
 
                     try:
-                        tree = ET.parse(grid_path)
+                        tree = etree.parse(grid_path)
                         root = tree.getroot()
 
                         # Extract grid name
@@ -310,7 +311,7 @@ class GridsetProcessor(FileProcessor):
                     continue
 
                 try:
-                    grid_tree = ET.parse(grid_path)
+                    grid_tree = etree.parse(grid_path)
                     grid_root = grid_tree.getroot()
 
                     # Get grid dimensions
@@ -383,7 +384,7 @@ class GridsetProcessor(FileProcessor):
             settings_path = os.path.join(temp_dir, "Settings0", "settings.xml")
             if os.path.exists(settings_path):
                 try:
-                    settings_tree = ET.parse(settings_path)
+                    settings_tree = etree.parse(settings_path)
                     start_grid = settings_tree.find(".//StartGrid")
                     if start_grid is not None and start_grid.text:
                         tree.root_id = start_grid.text
@@ -409,11 +410,11 @@ class GridsetProcessor(FileProcessor):
         os.makedirs(settings_dir)
 
         # Save settings
-        settings = ET.Element("GridSetSettings")
-        start_grid = ET.SubElement(settings, "StartGrid")
+        settings = etree.Element("GridSetSettings")
+        start_grid = etree.SubElement(settings, "StartGrid")
         start_grid.text = tree.root_id or next(iter(tree.pages.keys()))
         settings_path = os.path.join(settings_dir, "settings.xml")
-        ET.ElementTree(settings).write(
+        etree.ElementTree(settings).write(
             settings_path, encoding="utf-8", xml_declaration=True, pretty_print=True
         )
 
@@ -424,40 +425,40 @@ class GridsetProcessor(FileProcessor):
             os.makedirs(grid_dir)
 
             # Create grid XML
-            grid = ET.Element("Grid")
+            grid = etree.Element("Grid")
             grid.set("Name", page.name)
             grid.set("GridGuid", page.id)
 
             # Add row and column definitions
-            row_defs = ET.SubElement(grid, "RowDefinitions")
+            row_defs = etree.SubElement(grid, "RowDefinitions")
             for _ in range(page.grid_size[0]):
-                ET.SubElement(row_defs, "RowDefinition")
+                etree.SubElement(row_defs, "RowDefinition")
 
-            col_defs = ET.SubElement(grid, "ColumnDefinitions")
+            col_defs = etree.SubElement(grid, "ColumnDefinitions")
             for _ in range(page.grid_size[1]):
-                ET.SubElement(col_defs, "ColumnDefinition")
+                etree.SubElement(col_defs, "ColumnDefinition")
 
             # Add cells
-            cells = ET.SubElement(grid, "Cells")
+            cells = etree.SubElement(grid, "Cells")
             for button in page.buttons:
                 # Skip wordlist items - they go in the WordList section
                 if button.id.startswith(f"{page_id}_word_"):
                     continue
 
-                cell = ET.SubElement(cells, "Cell")
+                cell = etree.SubElement(cells, "Cell")
                 cell.set("X", str(button.position[0]))
                 cell.set("Y", str(button.position[1]))
 
-                content = ET.SubElement(cell, "Content")
-                caption_and_image = ET.SubElement(content, "CaptionAndImage")
-                caption = ET.SubElement(caption_and_image, "Caption")
+                content = etree.SubElement(cell, "Content")
+                caption_and_image = etree.SubElement(content, "CaptionAndImage")
+                caption = etree.SubElement(caption_and_image, "Caption")
                 caption.text = button.label
 
                 if button.type == ButtonType.NAVIGATE:
-                    commands = ET.SubElement(content, "Commands")
-                    command = ET.SubElement(commands, "Command")
+                    commands = etree.SubElement(content, "Commands")
+                    command = etree.SubElement(commands, "Command")
                     command.set("ID", "Jump.To")
-                    param = ET.SubElement(command, "Parameter")
+                    param = etree.SubElement(command, "Parameter")
                     param.set("Key", "grid")
                     param.text = button.target_page_id
 
@@ -466,29 +467,29 @@ class GridsetProcessor(FileProcessor):
                 b for b in page.buttons if b.id.startswith(f"{page_id}_word_")
             ]
             if wordlist_buttons:
-                wordlist = ET.SubElement(grid, "WordList")
+                wordlist = etree.SubElement(grid, "WordList")
                 wordlist.set("Name", page.name)
-                items = ET.SubElement(wordlist, "Items")
+                items = etree.SubElement(wordlist, "Items")
                 for button in wordlist_buttons:
-                    item = ET.SubElement(items, "WordListItem")
-                    text = ET.SubElement(item, "Text")
+                    item = etree.SubElement(items, "WordListItem")
+                    text = etree.SubElement(item, "Text")
                     text.text = button.label
 
             # Save grid XML
             grid_path = os.path.join(grid_dir, "grid.xml")
-            ET.ElementTree(grid).write(
+            etree.ElementTree(grid).write(
                 grid_path, encoding="utf-8", xml_declaration=True, pretty_print=True
             )
 
         # Create FileMap.xml
-        filemap = ET.Element("FileMap")
-        entries = ET.SubElement(filemap, "Entries")
+        filemap = etree.Element("FileMap")
+        entries = etree.SubElement(filemap, "Entries")
         for page_id in tree.pages:
-            entry = ET.SubElement(entries, "Entry")
+            entry = etree.SubElement(entries, "Entry")
             entry.set("StaticFile", f"Grids\\{page_id}\\grid.xml")
 
         filemap_path = os.path.join(temp_dir, "FileMap.xml")
-        ET.ElementTree(filemap).write(
+        etree.ElementTree(filemap).write(
             filemap_path, encoding="utf-8", xml_declaration=True, pretty_print=True
         )
 
@@ -503,7 +504,7 @@ class GridsetProcessor(FileProcessor):
         self.debug(f"Created gridset file: {output_path}")
 
     def create_translated_file(
-        self, file_path: str, translations: Dict[str, str]
+        self, file_path: str, translations: dict[str, str]
     ) -> Optional[str]:
         """Create a translated version of the gridset.
 
@@ -529,7 +530,7 @@ class GridsetProcessor(FileProcessor):
                 continue
 
             try:
-                tree = ET.parse(grid_path)
+                tree = etree.parse(grid_path)
                 root = tree.getroot()
                 grid_modified = False
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Optional
 
 
 class ButtonType(Enum):
@@ -37,9 +37,9 @@ class AACButton:
     target_page_id: Optional[str] = None
     action: Optional[str] = None
     style: ButtonStyle = field(default_factory=ButtonStyle)
-    metadata: Dict = field(default_factory=dict)
+    metadata: dict = field(default_factory=dict)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize any additional attributes after dataclass initialization"""
         # Ensure style exists
         if not hasattr(self, "style"):
@@ -56,19 +56,19 @@ class AACPage:
     id: str
     name: str
     grid_size: tuple[int, int]  # (rows, cols)
-    buttons: List[AACButton] = field(default_factory=list)
+    buttons: list[AACButton] = field(default_factory=list)
     parent_id: Optional[str] = None
     is_wordlist: bool = False
-    metadata: Dict = field(default_factory=dict)
+    metadata: dict = field(default_factory=dict)
 
 
 class AACTree:
     """Tree structure representing an entire AAC system"""
 
-    def __init__(self):
-        self.pages: Dict[str, AACPage] = {}
+    def __init__(self) -> None:
+        self.pages: dict[str, AACPage] = {}
         self.root_id: Optional[str] = None
-        self.metadata: Dict = {}
+        self.metadata: dict = {}
 
     def add_page(self, page: AACPage) -> None:
         """Add a page to the tree"""
@@ -76,11 +76,11 @@ class AACTree:
         if not self.root_id:
             self.root_id = page.id
 
-    def get_children(self, page_id: str) -> List[AACPage]:
+    def get_children(self, page_id: str) -> list[AACPage]:
         """Get child pages of the given page"""
         return [p for p in self.pages.values() if p.parent_id == page_id]
 
-    def get_path_to_page(self, target_id: str) -> List[str]:
+    def get_path_to_page(self, target_id: str) -> list[str]:
         """Find navigation path to a specific page"""
         if target_id not in self.pages:
             return []
@@ -94,7 +94,7 @@ class AACTree:
                 break
         return list(reversed(path))
 
-    def analyze_navigation(self) -> Dict:
+    def analyze_navigation(self) -> dict:
         """Analyze navigation structure"""
         analysis = {
             "total_pages": len(self.pages),
@@ -113,7 +113,7 @@ class AACTree:
         # First find all reachable pages from root
         reachable_pages = set()
 
-        def find_reachable_pages(page_id: str):
+        def find_reachable_pages(page_id: str) -> None:
             if page_id in reachable_pages:
                 return
             reachable_pages.add(page_id)
@@ -151,7 +151,9 @@ class AACTree:
                 elif button.type == ButtonType.COMMAND:
                     analysis["navigation_stats"]["command_buttons"] += 1
 
-            # If page is reachable but has no valid navigation buttons and isn't the root, it's a dead end
+            # If page is reachable but has no
+            #  valid navigation buttons and isn't the root,
+            #  it's a dead end
             if (
                 not has_valid_navigation
                 and page_id != self.root_id
