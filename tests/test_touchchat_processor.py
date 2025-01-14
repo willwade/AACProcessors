@@ -1,6 +1,7 @@
 import os
-import zipfile
 import sqlite3
+import zipfile
+
 from aac_processors.touchchat_processor import TouchChatProcessor
 from aac_processors.tree_structure import ButtonType
 

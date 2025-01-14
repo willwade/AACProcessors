@@ -1,10 +1,10 @@
 import os
 import shutil
-import pytest
 import zipfile
+
 from lxml import etree as ET
+
 from aac_processors.gridset_processor import GridsetProcessor
-from aac_processors.tree_structure import ButtonType
 
 
 def test_can_process():

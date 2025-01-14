@@ -2,28 +2,25 @@
 
 import os
 import sys
-from typing import Set, Optional, List, Dict, Union
-from .gridset_processor import GridsetProcessor
-from .touchchat_processor import TouchChatProcessor
-from .snap_processor import SnapProcessor
-from .coughdrop_processor import CoughDropProcessor
-from .tree_structure import AACTree, AACPage, AACButton, ButtonType
+from typing import Dict, List, Optional, Set, Union
 
+from .coughdrop_processor import CoughDropProcessor
+from .gridset_processor import GridsetProcessor
+from .snap_processor import SnapProcessor
+from .touchchat_processor import TouchChatProcessor
+from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 ProcessorType = Union[
-    GridsetProcessor,
-    TouchChatProcessor,
-    SnapProcessor,
-    CoughDropProcessor
+    GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor
 ]
 
 
 def get_processor_for_file(file_path: str) -> Optional[ProcessorType]:
     """Get appropriate processor for file type.
-    
+
     Args:
         file_path: Path to the file to process.
-        
+
     Returns:
         A processor instance that can handle the file type, or None if no suitable
         processor is found.
@@ -43,12 +40,10 @@ def get_processor_for_file(file_path: str) -> Optional[ProcessorType]:
 
 
 def print_button(
-    button: AACButton, 
-    indent: int = 0, 
-    visited_pages: Optional[Set[str]] = None
+    button: AACButton, indent: int = 0, visited_pages: Optional[Set[str]] = None
 ) -> None:
     """Print button details with indentation.
-    
+
     Args:
         button: The button to print.
         indent: Number of spaces to indent the output.
@@ -56,7 +51,7 @@ def print_button(
     """
     if visited_pages is None:
         visited_pages = set()
-        
+
     indent_str = "  " * indent
     type_str = {
         ButtonType.SPEAK: "🗣️ ",
@@ -69,7 +64,7 @@ def print_button(
     position_info = f"({button.position[0]}, {button.position[1]})"
     print(f"{button_info} {position_info}")
 
-    if hasattr(button, 'vocalization') and button.vocalization:
+    if hasattr(button, "vocalization") and button.vocalization:
         print(f"{indent_str}  └─ Says: {button.vocalization}")
     if button.target_page_id:
         if visited_pages and button.target_page_id in visited_pages:
@@ -79,13 +74,13 @@ def print_button(
 
 
 def print_page(
-    page: AACPage, 
-    tree: AACTree, 
-    indent: int = 0, 
-    visited_pages: Optional[Set[str]] = None
+    page: AACPage,
+    tree: AACTree,
+    indent: int = 0,
+    visited_pages: Optional[Set[str]] = None,
 ) -> None:
     """Print page details with indentation.
-    
+
     Args:
         page: The page to print.
         tree: The complete AAC tree (needed for navigation).
@@ -132,7 +127,7 @@ def print_page(
 
 def print_tree(tree: AACTree) -> None:
     """Print entire tree structure with navigation analysis.
-    
+
     Args:
         tree: The AAC tree to print.
     """
@@ -190,4 +185,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main() 
+    main()

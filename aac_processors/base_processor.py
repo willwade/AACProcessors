@@ -1,13 +1,13 @@
-from abc import ABC, abstractmethod
-from typing import Optional, Dict, List, Union
-from .tree_structure import AACTree, AACPage
-import zipfile
-import json
-import tempfile
 import os
-import uuid
-from threading import Lock
 import shutil
+import tempfile
+import uuid
+import zipfile
+from abc import ABC, abstractmethod
+from threading import Lock
+from typing import Dict, List, Optional, Union
+
+from .tree_structure import AACTree
 
 
 class AACProcessor(ABC):
@@ -114,7 +114,7 @@ class AACProcessor(ABC):
             try:
                 shutil.rmtree(self._temp_dir)
                 self._temp_dir = None
-                self._debug_print(f"Cleaned up workspace directory")
+                self._debug_print("Cleaned up workspace directory")
             except Exception as e:
                 self._debug_print(f"Error cleaning workspace: {str(e)}")
 

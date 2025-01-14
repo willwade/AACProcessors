@@ -1,11 +1,12 @@
-import pytest
-import os
-import tempfile
-import sqlite3
 import json
-import zipfile
-from lxml import etree as ET
+import os
 import shutil
+import sqlite3
+import tempfile
+import zipfile
+
+import pytest
+from lxml import etree as ET
 
 
 @pytest.fixture

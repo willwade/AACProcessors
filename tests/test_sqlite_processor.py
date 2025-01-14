@@ -1,13 +1,16 @@
 import os
 import sqlite3
 import tempfile
+
 import pytest
+
 from aac_processors.sqlite_processor import SQLiteProcessor
-from aac_processors.tree_structure import AACPage, AACButton, ButtonType
+from aac_processors.tree_structure import AACButton, AACPage, ButtonType
 
 
 class TestSQLiteProcessor(SQLiteProcessor):
     """Test implementation of SQLiteProcessor"""
+
     def can_process(self, file_path: str) -> bool:
         return file_path.endswith(".db")
 
@@ -27,12 +30,14 @@ def test_db():
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         conn = sqlite3.connect(f.name)
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE test_table (
                 id INTEGER PRIMARY KEY,
                 text TEXT
             )
-        """)
+        """
+        )
         cursor.execute("INSERT INTO test_table (text) VALUES (?)", ("test text",))
         conn.commit()
         conn.close()
@@ -80,10 +85,7 @@ def test_execute_many(processor, test_db):
     """Test batch SQL execution"""
     processor.file_path = test_db
     data = [("text1",), ("text2",)]
-    processor._execute_many(
-        "INSERT INTO test_table (text) VALUES (?)",
-        data
-    )
+    processor._execute_many("INSERT INTO test_table (text) VALUES (?)", data)
     results = processor._execute_query("SELECT text FROM test_table")
     assert len(results) == 3  # Original + 2 new rows
     assert set(r[0] for r in results) == {"test text", "text1", "text2"}
@@ -106,11 +108,7 @@ def test_convert_page_to_obf(processor):
     """Test page conversion to OBF format"""
     page = AACPage("test_id", "Test Page", (2, 3))
     button = AACButton(
-        "btn1",
-        "Test Button",
-        ButtonType.NAVIGATE,
-        (0, 0),
-        target_page_id="target_page"
+        "btn1", "Test Button", ButtonType.NAVIGATE, (0, 0), target_page_id="target_page"
     )
     page.buttons.append(button)
 
@@ -129,11 +127,9 @@ def test_convert_obf_to_page(processor):
         "id": "test_id",
         "name": "Test Page",
         "grid": {"rows": 2, "columns": 3},
-        "buttons": [{
-            "id": "btn1",
-            "label": "Test Button",
-            "load_board": {"id": "target_page"}
-        }]
+        "buttons": [
+            {"id": "btn1", "label": "Test Button", "load_board": {"id": "target_page"}}
+        ],
     }
 
     page = processor._convert_obf_to_page(obf_data)
@@ -150,11 +146,11 @@ def test_debug_output(processor):
     """Test debug output functionality"""
     messages = []
     processor._debug_output = messages.append
-    
+
     processor.debug("test message")
     assert len(messages) == 1
     assert "test message" in messages[0]
-    
+
     processor._debug_print("debug message")
     assert len(messages) == 2
-    assert "debug message" in messages[1] 
+    assert "debug message" in messages[1]

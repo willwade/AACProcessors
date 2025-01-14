@@ -1,14 +1,17 @@
+import json
 import os
 import tempfile
-import pytest
-import json
 import zipfile
+
+import pytest
+
 from aac_processors.file_processor import FileProcessor
-from aac_processors.tree_structure import AACTree, AACPage, AACButton, ButtonType
+from aac_processors.tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 
 class TestFileProcessor(FileProcessor):
     """Test implementation of FileProcessor"""
+
     def can_process(self, file_path: str) -> bool:
         return file_path.endswith(".test")
 
@@ -23,12 +26,12 @@ class TestFileProcessor(FileProcessor):
                         try:
                             with open(input_path, "r") as f:
                                 content = json.load(f)
-                            
+
                             # Apply translations
                             if "text" in content and content["text"] in translations:
                                 content["text"] = translations[content["text"]]
                                 modified = True
-                            
+
                             # Write translated content
                             with open(input_path, "w") as f:
                                 json.dump(content, f)
@@ -40,7 +43,7 @@ class TestFileProcessor(FileProcessor):
                                 with open(input_path, "w") as f:
                                     f.write(translations[content])
                                 modified = True
-        
+
         if modified:
             # Return the directory path for archive processing
             return directory
@@ -49,9 +52,7 @@ class TestFileProcessor(FileProcessor):
     def load_into_tree(self, file_path: str) -> AACTree:
         tree = AACTree()
         page = AACPage("test", "Test Page", (2, 2))
-        page.buttons.append(
-            AACButton("btn1", "Test", ButtonType.SPEAK, (0, 0))
-        )
+        page.buttons.append(AACButton("btn1", "Test", ButtonType.SPEAK, (0, 0)))
         tree.add_page(page)
         return tree
 
@@ -170,7 +171,7 @@ def test_process_texts_translate(processor, temp_test_file):
     # Write JSON content to the test file
     with open(temp_test_file, "w") as f:
         json.dump({"text": "test"}, f)
-    
+
     output_path = os.path.join(os.path.dirname(temp_test_file), "output.test")
     result = processor.process_texts(temp_test_file, translations, output_path)
     assert result == output_path
@@ -185,7 +186,7 @@ def test_process_texts_archive(processor, temp_zip_file):
     with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as output:
         result = processor.process_texts(temp_zip_file, translations, output.name)
         assert result == output.name
-        
+
         # Verify the translated content
         with zipfile.ZipFile(result, "r") as zf:
             # Check test.test file

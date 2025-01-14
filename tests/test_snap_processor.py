@@ -1,9 +1,10 @@
+import logging
 import os
+import shutil
 import sqlite3
+
 from aac_processors.snap_processor import SnapProcessor
 from aac_processors.tree_structure import ButtonType
-import shutil
-import logging
 
 
 def test_can_process(temp_dir):

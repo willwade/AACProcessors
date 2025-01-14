@@ -1,10 +1,11 @@
 import pytest
+
 from aac_processors.tree_structure import (
-    AACTree,
-    AACPage,
     AACButton,
-    ButtonType,
+    AACPage,
+    AACTree,
     ButtonStyle,
+    ButtonType,
 )
 
 

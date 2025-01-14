@@ -1,10 +1,12 @@
+import json
 import os
 import tempfile
-import pytest
-from aac_processors.base_processor import AACProcessor
-from aac_processors.tree_structure import AACTree, AACPage, AACButton, ButtonType
 import zipfile
-import json
+
+import pytest
+
+from aac_processors.base_processor import AACProcessor
+from aac_processors.tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 
 class TestProcessor(AACProcessor):
@@ -21,7 +23,7 @@ class TestProcessor(AACProcessor):
         return ["test1", "test2"]
 
     def create_translated_file(self, file_path, translations, output_path):
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(translations, f)
 
     def load_into_tree(self, file_path: str) -> AACTree:
@@ -54,7 +56,7 @@ def temp_test_file():
 @pytest.fixture
 def temp_zip_file():
     with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as f:
-        with zipfile.ZipFile(f.name, 'w') as zf:
+        with zipfile.ZipFile(f.name, "w") as zf:
             zf.writestr("test.txt", "test content")
     yield f.name
     os.unlink(f.name)

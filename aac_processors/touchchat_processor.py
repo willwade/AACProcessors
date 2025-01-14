@@ -1,14 +1,13 @@
+import logging
 import os
 import os.path
-import sqlite3
 import shutil
-from typing import Optional, Dict, List, Union
-from .sqlite_processor import SQLiteProcessor
-from .tree_structure import AACTree, AACPage, AACButton, ButtonType
-import logging
+import sqlite3
 import zipfile
-import tempfile
-from pathlib import Path
+from typing import Dict, List, Optional, Union
+
+from .sqlite_processor import SQLiteProcessor
+from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 
 class TouchChatProcessor(SQLiteProcessor):
@@ -285,7 +284,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     # Update button labels
                     cursor.execute(
                         """
-                        UPDATE buttons 
+                        UPDATE buttons
                         SET label = ?
                         WHERE label = ?
                         """,
@@ -298,7 +297,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     # Update button messages
                     cursor.execute(
                         """
-                        UPDATE buttons 
+                        UPDATE buttons
                         SET message = ?
                         WHERE message = ?
                         """,
@@ -400,9 +399,9 @@ class TouchChatProcessor(SQLiteProcessor):
         # Check if tables exist
         cursor.execute(
             """
-            SELECT name FROM sqlite_master 
+            SELECT name FROM sqlite_master
             WHERE type='table' AND name IN (
-                'special_pages', 'pages', 'resources', 'buttons', 
+                'special_pages', 'pages', 'resources', 'buttons',
                 'button_boxes', 'button_box_instances', 'button_box_cells',
                 'actions', 'action_data'
             )
@@ -617,7 +616,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     rid = f"btn_{button.id}"
                     cursor.execute(
                         """
-                        INSERT INTO resources 
+                        INSERT INTO resources
                         (rid, name, type)
                         VALUES (?, ?, ?)
                         """,
@@ -628,7 +627,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     # Insert button
                     cursor.execute(
                         """
-                        INSERT INTO buttons 
+                        INSERT INTO buttons
                         (resource_id, label, message, page_id)
                         VALUES (?, ?, ?, ?)
                         """,
@@ -654,7 +653,7 @@ class TouchChatProcessor(SQLiteProcessor):
                     if button.type == ButtonType.NAVIGATE and button.target_page_id:
                         cursor.execute(
                             """
-                            INSERT INTO actions 
+                            INSERT INTO actions
                             (resource_id, code)
                             VALUES (?, ?)
                             """,
@@ -664,7 +663,7 @@ class TouchChatProcessor(SQLiteProcessor):
 
                         cursor.execute(
                             """
-                            INSERT INTO action_data 
+                            INSERT INTO action_data
                             (action_id, key, value)
                             VALUES (?, ?, ?)
                             """,

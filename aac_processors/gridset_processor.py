@@ -1,11 +1,12 @@
+import logging
 import os
 import zipfile
+from typing import Dict, List, Optional, Tuple
+
 from lxml import etree as ET
-from typing import Dict, List, Optional, Set, Tuple
+
 from .file_processor import FileProcessor
-from .tree_structure import AACTree, AACPage, AACButton, ButtonType
-import logging
-import glob
+from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 # Set up logging
 logger = logging.getLogger(__name__)

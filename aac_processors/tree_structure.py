@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
 from enum import Enum
+from typing import Dict, List, Optional
 
 
 class ButtonType(Enum):

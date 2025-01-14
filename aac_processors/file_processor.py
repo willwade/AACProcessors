@@ -1,13 +1,13 @@
 import os
-from os import walk
-import tempfile
+import re
 import shutil
+import tempfile
 import zipfile
 from abc import abstractmethod
-from typing import Optional, Dict, List, Union, Any, Callable
+from typing import Any, Callable, Dict, List, Optional, Union
+
 from .base_processor import AACProcessor
-from .tree_structure import AACTree, AACPage
-import re
+from .tree_structure import AACPage, AACTree
 
 
 class FileProcessor(AACProcessor):
@@ -260,7 +260,7 @@ class FileProcessor(AACProcessor):
             output_path (str): Path where to save archive.
         """
         with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zip_ref:
-            for root, dirs, files in os.walk(
+            for root, _dirs, files in os.walk(
                 directory
             ):  # type: Iterator[Tuple[str, List[str], List[str]]]
                 for file in files:

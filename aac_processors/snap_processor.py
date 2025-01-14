@@ -1,11 +1,12 @@
 import os
-import sqlite3
 import shutil
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union, Callable
-from .sqlite_processor import SQLiteProcessor
-from .tree_structure import AACTree, AACPage, AACButton, ButtonType
+import sqlite3
 import tempfile
+from pathlib import Path
+from typing import Callable, Dict, List, Optional, Tuple, Union
+
+from .sqlite_processor import SQLiteProcessor
+from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 
 class SnapProcessor(SQLiteProcessor):

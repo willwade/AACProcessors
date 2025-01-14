@@ -1,11 +1,12 @@
-from typing import Any, Dict, List, Optional, Union
-import os
 import json
-import zipfile
-from .file_processor import FileProcessor
-from .tree_structure import AACTree, AACPage, AACButton, ButtonType
+import os
 import shutil
 import tempfile
+import zipfile
+from typing import Any, Dict, List, Optional, Union
+
+from .file_processor import FileProcessor
+from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 
 class CoughDropProcessor(FileProcessor):
@@ -481,7 +482,7 @@ class CoughDropProcessor(FileProcessor):
                     boards = paths.get("boards", {})
 
                     # Process each board file
-                    for board_id, board_path in boards.items():
+                    for _board_id, board_path in boards.items():
                         full_path = os.path.join(temp_dir, board_path)
                         if os.path.exists(full_path):
                             self._load_board_into_tree(full_path, tree)
@@ -541,7 +542,7 @@ class CoughDropProcessor(FileProcessor):
 
                 # Create OBZ file
                 with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zip_ref:
-                    for root, dirs, files in os.walk(temp_dir):
+                    for root, _dirs, files in os.walk(temp_dir):
                         for file in files:
                             file_path = os.path.join(root, file)
                             arc_name = os.path.relpath(file_path, temp_dir)

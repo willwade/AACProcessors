@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import argparse
-import readline
 import glob
-import tempfile
-import shutil
+import os
+import readline
+import sys
 import traceback
-from typing import Optional, Dict, Type
+from typing import Optional
 
-from aac_processors.gridset_processor import GridsetProcessor
-from aac_processors.touchchat_processor import TouchChatProcessor
-from aac_processors.snap_processor import SnapProcessor
-from aac_processors.coughdrop_processor import CoughDropProcessor
-from aac_processors.tree_structure import AACTree, ButtonType
 from aac_processors.base_processor import AACProcessor
+from aac_processors.coughdrop_processor import CoughDropProcessor
+from aac_processors.gridset_processor import GridsetProcessor
+from aac_processors.snap_processor import SnapProcessor
+from aac_processors.touchchat_processor import TouchChatProcessor
+from aac_processors.tree_structure import AACTree, ButtonType
 
 
 def print_tree(tree: AACTree, indent: int = 0):
     """Print tree structure recursively"""
-    for page_id, page in tree.pages.items():
+    for _page_id, page in tree.pages.items():
         print("  " * indent + f"Page: {page.name} ({page.id})")
         print("  " * (indent + 1) + f"Grid: {page.grid_size[0]}x{page.grid_size[1]}")
         for button in page.buttons:

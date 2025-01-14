@@ -2,12 +2,12 @@ import os
 import shutil
 import sqlite3
 import tempfile
+from abc import abstractmethod
 from threading import Lock
 from typing import Dict, List, Optional, Tuple, Union
-from abc import abstractmethod
 
 from .base_processor import AACProcessor
-from .tree_structure import AACPage, AACButton, ButtonType
+from .tree_structure import AACButton, AACPage, ButtonType
 
 
 class SQLiteProcessor(AACProcessor):
