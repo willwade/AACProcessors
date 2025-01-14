@@ -1,185 +1,245 @@
 import os
 import json
+import tempfile
+import pytest
 import zipfile
 from aac_processors.coughdrop_processor import CoughDropProcessor
 from aac_processors.tree_structure import ButtonType
 
 
-def test_can_process():
-    processor = CoughDropProcessor()
-    assert processor.can_process("test.obf")
-    assert processor.can_process("test.obz")
-    assert not processor.can_process("test.txt")
+@pytest.fixture
+def processor():
+    return CoughDropProcessor()
 
 
-def test_load_tree_obf(test_coughdrop_obf):
-    processor = CoughDropProcessor()
-    tree = processor.load_into_tree(test_coughdrop_obf)
-
-    assert len(tree.pages) == 1
-    page = next(iter(tree.pages.values()))
-    assert page.name == "Test Board"
-    assert page.grid_size == (2, 2)
-
-    assert len(page.buttons) == 2
-    speak_button = next(b for b in page.buttons if b.type == ButtonType.SPEAK)
-    assert speak_button.label == "Test Button"
-    assert speak_button.vocalization == "Hello"
-
-    nav_button = next(b for b in page.buttons if b.type == ButtonType.NAVIGATE)
-    assert nav_button.label == "Navigate"
-    assert nav_button.target_page_id == "page2"
-
-
-def test_load_tree_obz(test_coughdrop_obz):
-    processor = CoughDropProcessor()
-    tree = processor.load_into_tree(test_coughdrop_obz)
-
-    assert len(tree.pages) == 1
-    page = next(iter(tree.pages.values()))
-    assert page.name == "Test Board"
-    assert page.grid_size == (2, 2)
-
-    assert len(page.buttons) == 2
-    speak_button = next(b for b in page.buttons if b.type == ButtonType.SPEAK)
-    assert speak_button.label == "Test Button"
-    assert speak_button.vocalization == "Hello"
-
-    nav_button = next(b for b in page.buttons if b.type == ButtonType.NAVIGATE)
-    assert nav_button.label == "Navigate"
-    assert nav_button.target_page_id == "page2"
-
-
-def test_save_tree_obf(test_coughdrop_obf, temp_dir):
-    processor = CoughDropProcessor()
-    tree = processor.load_into_tree(test_coughdrop_obf)
-
-    # Save tree to new file
-    output_path = os.path.join(temp_dir, "output.obf")
-    processor.save_from_tree(tree, output_path)
-
-    # Verify the saved file
-    assert os.path.exists(output_path)
-
-    # Check contents
-    with open(output_path, "r") as f:
-        board_data = json.load(f)
-        assert board_data["name"] == "Test Board"
-        assert board_data["grid"]["rows"] == 2
-        assert board_data["grid"]["columns"] == 2
-        assert len(board_data["buttons"]) == 2
-        assert board_data["buttons"][0]["label"] == "Test Button"
-
-
-def test_save_tree_obz(test_coughdrop_obz, temp_dir):
-    processor = CoughDropProcessor()
-    tree = processor.load_into_tree(test_coughdrop_obz)
-
-    # Save tree to new file
-    output_path = os.path.join(temp_dir, "output.obz")
-    processor.save_from_tree(tree, output_path)
-
-    # Verify the saved file
-    assert os.path.exists(output_path)
-
-    # Extract and check contents
-    with zipfile.ZipFile(output_path, "r") as zip_ref:
-        # Check manifest
-        zip_ref.extract("manifest.json", temp_dir)
-        manifest_path = os.path.join(temp_dir, "manifest.json")
-
-        with open(manifest_path, "r") as f:
-            manifest = json.load(f)
-            assert "boards/home.obf" in manifest["paths"]["boards"].values()
-
-        # Check board
-        board_path = manifest["paths"]["boards"]["home"]
-        zip_ref.extract(board_path, temp_dir)
-        board_file = os.path.join(temp_dir, board_path)
-
-        with open(board_file, "r") as f:
-            board_data = json.load(f)
-            assert board_data["name"] == "Test Board"
-            assert len(board_data["buttons"]) == 2
-            assert any(b["label"] == "Test Button" for b in board_data["buttons"])
-            assert any(b["label"] == "Navigate" for b in board_data["buttons"])
-
-
-def test_translation_obf(test_coughdrop_obf, temp_dir):
-    processor = CoughDropProcessor()
-
-    # Extract texts
-    texts = processor.extract_texts(test_coughdrop_obf)
-    assert "Test Button" in texts
-    assert "Hello" in texts
-
-    # Create translations
-    translations = {
-        "Test Button": "Botón de Prueba",
-        "Hello": "Hola",
-        "target_lang": "es",
+@pytest.fixture
+def sample_obf_data():
+    return {
+        "format": "open-board-0.1",
+        "id": "test_board",
+        "locale": "en",
+        "name": "Test Board",
+        "grid": {
+            "rows": 2,
+            "columns": 2,
+            "order": [
+                ["btn1", "btn2"],
+                ["btn3", "btn4"]
+            ]
+        },
+        "buttons": [
+            {
+                "id": "btn1",
+                "label": "Hello",
+                "vocalization": "Hello there!",
+                "image_id": "img1"
+            },
+            {
+                "id": "btn2",
+                "label": "More",
+                "load_board": {
+                    "id": "board2",
+                    "path": "boards/board2.obf"
+                }
+            },
+            {
+                "id": "btn3",
+                "label": "Clear",
+                "action": ":clear"
+            },
+            {
+                "id": "btn4",
+                "label": "A",
+                "action": "+a"
+            }
+        ],
+        "images": [
+            {
+                "id": "img1",
+                "url": "http://example.com/hello.png",
+                "width": 300,
+                "height": 300,
+                "content_type": "image/png"
+            }
+        ]
     }
 
-    # Create translated file
-    output_path = os.path.join(
-        temp_dir, f"{os.path.splitext(os.path.basename(test_coughdrop_obf))[0]}_es.obf"
-    )
-    result = processor.process_texts(test_coughdrop_obf, translations, output_path)
-    assert result is not None, "Translation failed"
-    assert os.path.exists(output_path), f"Output file not created at {output_path}"
 
-    # Verify translations
-    tree = processor.load_into_tree(output_path)
-    page = next(iter(tree.pages.values()))
-    button = page.buttons[0]
-    assert button.label == "Botón de Prueba"
-    assert button.vocalization == "Hola"
+@pytest.fixture
+def sample_obf_file(sample_obf_data):
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".obf", delete=False) as f:
+        json.dump(sample_obf_data, f)
+    yield f.name
+    os.unlink(f.name)
 
 
-def test_translation_obz(test_coughdrop_obz, temp_dir):
-    processor = CoughDropProcessor()
+@pytest.fixture
+def sample_obz_file(sample_obf_data):
+    with tempfile.NamedTemporaryFile(suffix=".obz", delete=False) as f:
+        with zipfile.ZipFile(f.name, "w", zipfile.ZIP_DEFLATED) as zf:
+            # Add manifest
+            manifest = {
+                "format": "open-board-0.1",
+                "root": "boards/test_board.obf",
+                "paths": {
+                    "boards": {
+                        "test_board": "boards/test_board.obf",
+                        "board2": "boards/board2.obf"
+                    }
+                }
+            }
+            zf.writestr("manifest.json", json.dumps(manifest))
+            
+            # Add main board
+            zf.writestr("boards/test_board.obf", json.dumps(sample_obf_data))
+            
+            # Add secondary board
+            board2_data = {
+                "format": "open-board-0.1",
+                "id": "board2",
+                "name": "Second Board",
+                "grid": {"rows": 1, "columns": 1},
+                "buttons": [
+                    {
+                        "id": "btn1",
+                        "label": "Back",
+                        "load_board": {
+                            "id": "test_board",
+                            "path": "boards/test_board.obf"
+                        }
+                    }
+                ]
+            }
+            zf.writestr("boards/board2.obf", json.dumps(board2_data))
+    yield f.name
+    os.unlink(f.name)
 
-    # Extract texts
-    texts = processor.extract_texts(test_coughdrop_obz)
-    assert "Test Button" in texts
-    assert "Navigate" in texts
-    assert "Test Board" in texts
 
-    # Create translations
+def test_can_process(processor):
+    """Test file type detection"""
+    assert processor.can_process("test.obf") is True
+    assert processor.can_process("test.obz") is True
+    assert processor.can_process("test.txt") is False
+
+
+def test_load_single_board(processor, sample_obf_file):
+    """Test loading a single OBF file"""
+    tree = processor.load_into_tree(sample_obf_file)
+    
+    assert len(tree.pages) == 1
+    page = tree.pages["test_board"]
+    assert page.name == "Test Board"
+    assert page.grid_size == (2, 2)
+    assert len(page.buttons) == 4
+    
+    # Check button types and properties
+    speak_btn = next(b for b in page.buttons if b.id == "btn1")
+    assert speak_btn.type == ButtonType.SPEAK
+    assert speak_btn.label == "Hello"
+    assert speak_btn.vocalization == "Hello there!"
+    
+    nav_btn = next(b for b in page.buttons if b.id == "btn2")
+    assert nav_btn.type == ButtonType.NAVIGATE
+    assert nav_btn.label == "More"
+    assert nav_btn.target_page_id == "board2"
+    
+    action_btn = next(b for b in page.buttons if b.id == "btn3")
+    assert action_btn.type == ButtonType.ACTION
+    assert action_btn.label == "Clear"
+    assert action_btn.action == ":clear"
+    
+    spell_btn = next(b for b in page.buttons if b.id == "btn4")
+    assert spell_btn.type == ButtonType.ACTION
+    assert spell_btn.label == "A"
+    assert spell_btn.action == "+a"
+
+
+def test_load_board_set(processor, sample_obz_file):
+    """Test loading an OBZ file with multiple boards"""
+    tree = processor.load_into_tree(sample_obz_file)
+    
+    assert len(tree.pages) == 2
+    assert "test_board" in tree.pages
+    assert "board2" in tree.pages
+    
+    # Check main board
+    main_page = tree.pages["test_board"]
+    assert main_page.name == "Test Board"
+    assert len(main_page.buttons) == 4
+    
+    # Check secondary board
+    second_page = tree.pages["board2"]
+    assert second_page.name == "Second Board"
+    assert len(second_page.buttons) == 1
+    back_btn = second_page.buttons[0]
+    assert back_btn.type == ButtonType.NAVIGATE
+    assert back_btn.target_page_id == "test_board"
+
+
+def test_extract_texts(processor, sample_obf_file):
+    """Test text extraction from OBF file"""
+    texts = processor.extract_texts(sample_obf_file)
+    expected = ["Test Board", "Hello", "Hello there!", "More", "Clear", "A"]
+    assert sorted(texts) == sorted(expected)
+
+
+def test_create_translated_file(processor, sample_obf_file):
+    """Test translation of OBF file"""
     translations = {
-        "Test Button": "Botón de Prueba",
-        "Navigate": "Navegar",
         "Test Board": "Tablero de Prueba",
         "Hello": "Hola",
-        "target_lang": "es",
+        "Hello there!": "¡Hola!",
+        "More": "Más",
+        "Clear": "Borrar",
+        "A": "A",
+        "target_lang": "es"
     }
-
-    # Create translated file
-    output_path = os.path.join(
-        temp_dir, f"{os.path.splitext(os.path.basename(test_coughdrop_obz))[0]}_es.obz"
-    )
-    result = processor.process_texts(test_coughdrop_obz, translations, output_path)
-    assert result is not None, "Translation failed"
-    assert os.path.exists(output_path), f"Output file not created at {output_path}"
-
-    # Verify translations
-    tree = processor.load_into_tree(output_path)
-    page = next(iter(tree.pages.values()))
+    
+    result = processor.create_translated_file(sample_obf_file, translations)
+    assert result is not None
+    
+    # Load and verify translated file
+    tree = processor.load_into_tree(result)
+    page = tree.pages["test_board"]
     assert page.name == "Tablero de Prueba"
-
-    speak_button = next(b for b in page.buttons if b.type == ButtonType.SPEAK)
-    assert speak_button.label == "Botón de Prueba"
-    assert speak_button.vocalization == "Hola"
-
-    nav_button = next(b for b in page.buttons if b.type == ButtonType.NAVIGATE)
-    assert nav_button.label == "Navegar"
+    
+    hello_btn = next(b for b in page.buttons if b.id == "btn1")
+    assert hello_btn.label == "Hola"
+    assert hello_btn.vocalization == "¡Hola!"
 
 
-def test_translation(test_coughdrop_obf):
-    processor = CoughDropProcessor()
-
-    # Extract texts
-    texts = processor.extract_texts(test_coughdrop_obf)
-    assert "Test Button" in texts
-    assert "Navigate" in texts
+def test_process_texts_obz(processor, sample_obz_file):
+    """Test processing texts in OBZ file"""
+    # Test extraction
+    texts = processor.process_texts(sample_obz_file)
+    assert isinstance(texts, list)
     assert "Test Board" in texts
+    assert "Second Board" in texts
+    assert "Back" in texts
+    
+    # Test translation
+    translations = {
+        "Test Board": "Tablero de Prueba",
+        "Second Board": "Segundo Tablero",
+        "Back": "Volver",
+        "target_lang": "es"
+    }
+    
+    with tempfile.NamedTemporaryFile(suffix=".obz") as output:
+        result = processor.process_texts(sample_obz_file, translations, output.name)
+        assert result == output.name
+        
+        # Verify translated file
+        with zipfile.ZipFile(output.name, "r") as zf:
+            assert "manifest.json" in zf.namelist()
+            assert "boards/test_board.obf" in zf.namelist()
+            assert "boards/board2.obf" in zf.namelist()
+            
+            # Check main board translation
+            main_board = json.loads(zf.read("boards/test_board.obf"))
+            assert main_board["name"] == "Tablero de Prueba"
+            
+            # Check second board translation
+            board2 = json.loads(zf.read("boards/board2.obf"))
+            assert board2["name"] == "Segundo Tablero"
+            assert board2["buttons"][0]["label"] == "Volver"

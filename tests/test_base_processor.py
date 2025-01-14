@@ -1,5 +1,6 @@
 import os
 import tempfile
+import pytest
 from aac_processors.base_processor import AACProcessor
 from aac_processors.tree_structure import AACTree, AACPage, AACButton, ButtonType
 import zipfile
@@ -10,45 +11,21 @@ class TestProcessor(AACProcessor):
     """Test implementation of AACProcessor"""
 
     def __init__(self):
-        self.temp_dirs = []
+        super().__init__()
         self.collected_texts = []
-        self.file_path = None
-        self.original_filename = None
 
     def can_process(self, file_path):
         return file_path.endswith(".test")
 
-    def process_texts(self, file_path, translations=None, target_lang=None):
-        return []
+    def extract_texts(self, file_path):
+        return ["test1", "test2"]
+
+    def create_translated_file(self, file_path, translations, output_path):
+        with open(output_path, 'w') as f:
+            json.dump(translations, f)
 
     def load_into_tree(self, file_path: str) -> AACTree:
         tree = AACTree()
-        # Create a simple test tree
-        home = AACPage("home", "Home", (2, 2))
-        page1 = AACPage("page1", "Page 1", (2, 2))
-        home.buttons.append(
-            AACButton(
-                "btn1", "Test", ButtonType.NAVIGATE, (0, 0), target_page_id="page1"
-            )
-        )
-        tree.add_page(home)
-        tree.add_page(page1)
-        return tree
-
-    def export_to_obz(self, output_path):
-        """Export to OBZ format"""
-        with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zip_ref:
-            # Add manifest
-            manifest = {"format": "open-board-0.1", "root": "boards/home.obf"}
-            zip_ref.writestr("manifest.json", json.dumps(manifest))
-            # Add a dummy board file
-            zip_ref.writestr("boards/home.obf", "{}")
-        return output_path
-
-    def import_from_obz(self, obz_path):
-        """Import from OBZ format"""
-        tree = AACTree()
-        # Create a simple test tree
         home = AACPage("home", "Home", (2, 2))
         page1 = AACPage("page1", "Page 1", (2, 2))
         home.buttons.append(
@@ -61,40 +38,103 @@ class TestProcessor(AACProcessor):
         return tree
 
 
-def test_obz_export():
-    """Test exporting to OBZ format"""
-    processor = TestProcessor()
-
-    with tempfile.NamedTemporaryFile(suffix=".test") as temp_input:
-        processor.file_path = temp_input.name
-
-        with tempfile.NamedTemporaryFile(suffix=".obz") as temp_output:
-            output_path = processor.export_to_obz(temp_output.name)
-
-            assert os.path.exists(output_path)
-            assert output_path.endswith(".obz")
-
-            # Verify OBZ structure
-            with zipfile.ZipFile(output_path, "r") as zip_ref:
-                files = zip_ref.namelist()
-                assert "manifest.json" in files
-                assert any(f.startswith("boards/") for f in files)
+@pytest.fixture
+def processor():
+    return TestProcessor()
 
 
-def test_obz_import():
-    """Test importing from OBZ format"""
-    processor = TestProcessor()
+@pytest.fixture
+def temp_test_file():
+    with tempfile.NamedTemporaryFile(suffix=".test", delete=False) as f:
+        f.write(b"test content")
+    yield f.name
+    os.unlink(f.name)
 
-    # First create a test OBZ file
-    with tempfile.NamedTemporaryFile(suffix=".obz", delete=False) as temp_obz:
-        processor.export_to_obz(temp_obz.name)
 
-        # Now import it
-        tree = processor.import_from_obz(temp_obz.name)
+@pytest.fixture
+def temp_zip_file():
+    with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as f:
+        with zipfile.ZipFile(f.name, 'w') as zf:
+            zf.writestr("test.txt", "test content")
+    yield f.name
+    os.unlink(f.name)
 
-        assert isinstance(tree, AACTree)
-        assert len(tree.pages) > 0
-        assert tree.root_id is not None
 
-        # Clean up
-        os.unlink(temp_obz.name)
+def test_session_workspace(processor):
+    """Test workspace creation and management"""
+    workspace = processor.get_session_workspace()
+    assert os.path.exists(workspace)
+    assert workspace == processor.get_session_workspace()  # Should return same path
+    processor.cleanup_temp_files()
+    assert not os.path.exists(workspace)
+
+
+def test_set_source_file(processor, temp_test_file):
+    """Test source file setting"""
+    processor.set_source_file("/path/to/example.test")
+    assert processor._original_filename == "example"
+
+
+def test_prepare_workspace_normal_file(processor, temp_test_file):
+    """Test workspace preparation with normal file"""
+    processor.is_archive = False
+    workspace = processor._prepare_workspace(temp_test_file)
+    assert os.path.exists(workspace)
+    assert len(os.listdir(workspace)) == 1
+
+
+def test_prepare_workspace_archive(processor, temp_zip_file):
+    """Test workspace preparation with archive file"""
+    processor.is_archive = True
+    workspace = processor._prepare_workspace(temp_zip_file)
+    assert os.path.exists(workspace)
+    assert "test.txt" in os.listdir(workspace)
+
+
+def test_get_output_path(processor, temp_test_file):
+    """Test output path generation"""
+    processor.set_source_file(temp_test_file)
+    output_path = processor.get_output_path("es")
+    assert output_path.endswith("_es")
+    assert os.path.dirname(output_path) == processor.get_session_workspace()
+
+
+def test_get_output_path_no_source(processor):
+    """Test output path generation without source file"""
+    with pytest.raises(ValueError):
+        processor.get_output_path()
+
+
+def test_process_texts_extract(processor, temp_test_file):
+    """Test text extraction mode"""
+    texts = processor.process_texts(temp_test_file)
+    assert texts == ["test1", "test2"]
+
+
+def test_process_texts_translate(processor, temp_test_file):
+    """Test translation mode"""
+    translations = {"test1": "prueba1", "test2": "prueba2"}
+    with tempfile.NamedTemporaryFile(suffix=".test") as output:
+        result = processor.process_texts(temp_test_file, translations, output.name)
+        assert result == output.name
+        with open(output.name) as f:
+            saved_translations = json.load(f)
+        assert saved_translations == translations
+
+
+def test_cleanup(processor):
+    """Test cleanup of temporary files"""
+    workspace = processor.get_session_workspace()
+    assert os.path.exists(workspace)
+    processor.cleanup_temp_files()
+    assert not os.path.exists(workspace)
+    assert processor._temp_dir is None
+
+
+def test_debug_print(processor):
+    """Test debug print functionality"""
+    messages = []
+    processor._debug_output = messages.append
+    processor._debug_print("test message")
+    assert len(messages) == 1
+    assert messages[0].endswith("test message")

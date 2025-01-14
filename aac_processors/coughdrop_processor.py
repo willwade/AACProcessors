@@ -62,10 +62,14 @@ class CoughDropProcessor(FileProcessor):
                 # Determine button type and target
                 button_type = ButtonType.SPEAK
                 target_page_id = None
+                action = None
                 load_board = button.get("load_board", {})
                 if load_board:
                     button_type = ButtonType.NAVIGATE
                     target_page_id = load_board.get("id")
+                elif "action" in button:
+                    button_type = ButtonType.ACTION
+                    action = button["action"]
 
                 # Get position from grid order or absolute positioning
                 pos_x = pos_y = 0
@@ -90,6 +94,7 @@ class CoughDropProcessor(FileProcessor):
                     position=(pos_y, pos_x),
                     target_page_id=target_page_id,
                     vocalization=button.get("vocalization", ""),
+                    action=action,
                 )
                 page.buttons.append(btn)
 
