@@ -3,8 +3,10 @@ import shutil
 import sqlite3
 import tempfile
 from abc import abstractmethod
+from pathlib import Path
+from sqlite3 import Connection, Cursor
 from threading import Lock
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from .base_processor import AACProcessor
 from .tree_structure import AACButton, AACPage, ButtonType
@@ -18,9 +20,10 @@ class SQLiteProcessor(AACProcessor):
         super().__init__()
         self.collected_texts = []
         self._db_lock = Lock()
-        self._query_cache = {}
-        self._temp_dirs = []  # Track temporary directories for cleanup
+        self._query_cache: dict[str, list[tuple[Any, ...]]] = {}
+        self._temp_dirs: list[str] = []  # Track temporary directories for cleanup
         self.file_path = None  # Store the current file path
+        self._conn: Optional[Connection] = None
 
     def create_temp_dir(self) -> str:
         """Create a temporary directory and track it for cleanup.
@@ -81,32 +84,34 @@ class SQLiteProcessor(AACProcessor):
         finally:
             self.cleanup_temp_files()
 
-    def _execute_query(self, query: str, params: tuple = ()) -> list[tuple]:
-        """Thread-safe query execution.
+    def _connect(self, db_path: Union[str, Path]) -> Connection:
+        """Connect to SQLite database"""
+        if not os.path.exists(db_path):
+            raise FileNotFoundError(f"Database file not found: {db_path}")
+        return sqlite3.connect(db_path)
 
-        Args:
-            query (str): SQL query to execute.
-            params (Tuple): Query parameters.
+    def _execute_query(
+        self, query: str, params: Optional[tuple] = None
+    ) -> list[tuple[Any, ...]]:
+        """Execute a query and return results"""
+        if not self._conn:
+            raise RuntimeError("No database connection")
 
-        Returns:
-            List[Tuple]: Query results.
-        """
-        with self._db_lock:
-            with sqlite3.connect(self.file_path) as conn:
-                cursor = conn.cursor()
-                return cursor.execute(query, params).fetchall()
+        cursor: Cursor = self._conn.cursor()
+        if params:
+            cursor.execute(query, params)
+        else:
+            cursor.execute(query)
+        return cursor.fetchall()
 
     def _execute_many(self, query: str, params: list[tuple]) -> None:
-        """Common batch execution logic.
+        """Execute multiple queries with different parameters"""
+        if not self._conn:
+            raise RuntimeError("No database connection")
 
-        Args:
-            query (str): SQL query to execute.
-            params (List[Tuple]): List of parameter tuples.
-        """
-        with sqlite3.connect(self.file_path) as conn:
-            cursor = conn.cursor()
-            cursor.executemany(query, params)
-            conn.commit()
+        cursor: Cursor = self._conn.cursor()
+        cursor.executemany(query, params)
+        self._conn.commit()
 
     @abstractmethod
     def process_files(

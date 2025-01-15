@@ -5,7 +5,7 @@ import uuid
 import zipfile
 from abc import ABC, abstractmethod
 from threading import Lock
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 from .tree_structure import AACTree
 
@@ -15,35 +15,46 @@ class AACProcessor(ABC):
 
     _temp_lock = Lock()  # Class-level lock for temp operations
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the processor."""
         self.tree = AACTree()
         self._session_id = str(uuid.uuid4())
-        self._temp_dir = None
-        self._original_filename = None
-        self._debug_output = print
+        self._temp_dir: Optional[str] = None
+        self._original_filename: Optional[str] = None
+        self._debug_output: Optional[Callable[[str], None]] = None
         self.is_archive = False  # Default to non-archive
+        self.collected_texts: list[str] = []
 
     def get_session_workspace(self) -> str:
         """Get a unique workspace directory for this processing session.
 
         Returns:
             str: Path to the session workspace directory.
+
+        Raises:
+            RuntimeError: If workspace creation fails.
         """
         if not self._temp_dir:
             with self._temp_lock:
-                self._temp_dir = tempfile.mkdtemp(prefix=f"aac_{self._session_id}_")
-                self._debug_print(f"Created session workspace: {self._temp_dir}")
+                temp_dir = tempfile.mkdtemp(prefix=f"aac_{self._session_id}_")
+                if not temp_dir:
+                    raise RuntimeError("Failed to create temporary directory")
+                self._temp_dir = temp_dir
+                self._debug_print(f"Created session workspace: {temp_dir}")
+
+        if not self._temp_dir:  # For type checker
+            raise RuntimeError("Temporary directory not available")
         return self._temp_dir
 
     def set_source_file(self, file_path: str) -> None:
         """Record the original filename.
 
         Args:
-            file_path (str): Path to the source file.
+            file_path: Path to the source file.
         """
-        self._original_filename = os.path.splitext(os.path.basename(file_path))[0]
-        self._debug_print(f"Set source file: {self._original_filename}")
+        filename = os.path.splitext(os.path.basename(file_path))[0]
+        self._original_filename = filename
+        self._debug_print(f"Set source file: {filename}")
 
     def _prepare_workspace(self, file_path: str) -> str:
         """Prepare workspace based on file type.
@@ -93,7 +104,7 @@ class AACProcessor(ABC):
         """Generate output path using original filename.
 
         Args:
-            target_lang (Optional[str]): Target language code.
+            target_lang: Target language code.
 
         Returns:
             str: Path where output file should be saved.
@@ -106,9 +117,12 @@ class AACProcessor(ABC):
 
         # Use original filename but in session workspace
         output_name = f"{self._original_filename}_{target_lang or 'translated'}"
-        return os.path.join(self.get_session_workspace(), output_name)
+        workspace = (
+            self.get_session_workspace()
+        )  # This ensures we have a valid workspace
+        return os.path.join(workspace, output_name)
 
-    def cleanup_temp_files(self):
+    def cleanup_temp_files(self) -> None:
         """Clean up temporary files and directories."""
         if self._temp_dir and os.path.exists(self._temp_dir):
             try:
@@ -118,7 +132,7 @@ class AACProcessor(ABC):
             except Exception as e:
                 self._debug_print(f"Error cleaning workspace: {str(e)}")
 
-    def _debug_print(self, message: str):
+    def _debug_print(self, message: str) -> None:
         """Print debug message using configured output function.
 
         Args:
@@ -127,15 +141,81 @@ class AACProcessor(ABC):
         if self._debug_output:
             self._debug_output(f"DEBUG:{self.__class__.__name__}: {message}")
 
-    @abstractmethod
-    def can_process(self, file_path: str) -> bool:
-        """Check if this processor can handle the given file.
+    def set_debug_output(self, debug_output: Optional[Callable[[str], None]]) -> None:
+        """Set debug output callback.
 
         Args:
-            file_path (str): Path to the file to check.
+            debug_output: Callback function for debug output.
+        """
+        self._debug_output = debug_output
+
+    def debug(self, message: str) -> None:
+        """Output debug message.
+
+        Args:
+            message: Message to output.
+        """
+        if self._debug_output:
+            self._debug_output(f"{self.__class__.__name__}: {message}")
+
+    @abstractmethod
+    def can_process(self, file_path: str) -> bool:
+        """Check if processor can handle this file type.
+
+        Args:
+            file_path: Path to file to check.
 
         Returns:
-            bool: True if this processor can handle the file.
+            True if processor can handle this file type.
+        """
+        pass
+
+    @abstractmethod
+    def load_into_tree(self, file_path: str) -> AACTree:
+        """Load file into tree structure.
+
+        Args:
+            file_path: Path to file to load.
+
+        Returns:
+            Tree structure representing the AAC system.
+        """
+        pass
+
+    @abstractmethod
+    def save_from_tree(self, tree: AACTree, output_path: str) -> None:
+        """Save tree structure to file.
+
+        Args:
+            tree: Tree structure to save.
+            output_path: Path where to save the file.
+        """
+        pass
+
+    @abstractmethod
+    def extract_texts(self, file_path: str) -> list[str]:
+        """Extract translatable texts from file.
+
+        Args:
+            file_path: Path to file to extract texts from.
+
+        Returns:
+            List of translatable texts.
+        """
+        pass
+
+    @abstractmethod
+    def create_translated_file(
+        self, file_path: str, translations: dict[str, str]
+    ) -> Optional[str]:
+        """Create translated version of file.
+
+        Args:
+            file_path: Path to original file.
+            translations: Dictionary of translations.
+
+        Returns:
+            Path to translated file if successful, None otherwise.
         """
         pass
 
@@ -144,34 +224,33 @@ class AACProcessor(ABC):
         file_path: str,
         translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[list[str], str, None]:
-        """Process texts in a file.
+    ) -> Optional[Union[list[str], str]]:
+        """Process texts in file.
 
         Args:
-            file_path: Path to the file to process.
-            translations: Optional dictionary of translations.
-            output_path: Optional path where to save the translated file.
+            file_path: Path to file to process.
+            translations: Dictionary of translations.
+            output_path: Path where to save translated file.
 
         Returns:
-            List[str]: List of texts if no translations provided.
-            str: Path to translated file if translations provided.
-            None: If an error occurs.
+            List of texts if extracting, path to translated file if translating,
+            None if error.
         """
         try:
             # Reset state for new translation
             self.collected_texts = []
-            self.set_source_file(file_path)
 
-            # Extract texts if no translations provided
             if translations is None:
-                return self.extract_texts(file_path)
+                # Extract texts
+                texts = self.extract_texts(file_path)
+                return texts
 
-            # Process translations and save to output path
-            if output_path:
-                self.create_translated_file(file_path, translations, output_path)
+            # Create translated file
+            result = self.create_translated_file(file_path, translations)
+            if result and output_path:
                 return output_path
 
-            return None
+            return result
 
         except Exception as e:
             self.debug(f"Error processing texts: {str(e)}")

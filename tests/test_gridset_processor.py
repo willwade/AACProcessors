@@ -7,13 +7,13 @@ from lxml import etree as et
 from aac_processors.gridset_processor import GridsetProcessor
 
 
-def test_can_process():
+def test_can_process() -> None:
     processor = GridsetProcessor()
     assert processor.can_process("test.gridset")
     assert not processor.can_process("test.txt")
 
 
-def test_load_tree(test_gridset):
+def test_load_tree(test_gridset: str) -> None:
     processor = GridsetProcessor()
     tree = processor.load_into_tree(test_gridset)
 
@@ -36,7 +36,7 @@ def test_load_tree(test_gridset):
     assert wordlist_page.buttons[0].label == "Test Word"
 
 
-def test_save_tree(test_gridset, temp_dir):
+def test_save_tree(test_gridset: str, temp_dir: str) -> None:
     processor = GridsetProcessor()
     tree = processor.load_into_tree(test_gridset)
 

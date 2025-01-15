@@ -1,9 +1,10 @@
 import logging
 import os
 import zipfile
-from typing import Optional
+from typing import Optional, cast
 
 from lxml import etree
+from lxml.etree import _Element, _ElementTree
 
 from .file_processor import FileProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
@@ -590,5 +591,63 @@ class GridsetProcessor(FileProcessor):
                         zip_ref.write(file_path, arcname)
 
             return translated_path
+
+        return None
+
+    def _parse_grid_xml(self, grid_path: str) -> _Element:
+        """Parse a grid XML file and return its root element"""
+        tree: _ElementTree = etree.parse(grid_path)
+        return tree.getroot()
+
+    def _process_grid(self, grid_root: _Element) -> AACPage:
+        """Process a grid XML element into an AACPage"""
+        # Get grid name and ID
+        name = cast(str, grid_root.get("Name", ""))
+        grid_id = cast(str, grid_root.get("GridGuid", ""))
+
+        # Get grid dimensions
+        rows = len(grid_root.findall(".//RowDefinition"))
+        cols = len(grid_root.findall(".//ColumnDefinition"))
+
+        # Create page
+        page = AACPage(id=grid_id, name=name, grid_size=(rows, cols))
+
+        # Process cells
+        for cell in grid_root.findall(".//Cell"):
+            button = self._process_cell(cell)
+            if button:
+                page.buttons.append(button)
+
+        return page
+
+    def _process_cell(self, cell: _Element) -> Optional[AACButton]:
+        """Process a cell XML element into an AACButton"""
+        # Get content
+        content = cell.find(".//Content")
+        if content is None:
+            return None
+
+        # Get caption
+        caption = content.find(".//CaptionAndImage/Caption")
+        if caption is not None and caption.text:
+            # Create button
+            button = AACButton(
+                id=f"{grid_dir}_button_{x}_{y}",
+                label=caption.text.strip(),
+                type=ButtonType.SPEAK,
+                position=(x, y),
+                vocalization=caption.text.strip(),
+            )
+
+            # Check for navigation
+            commands = content.findall(".//Commands/Command")
+            for command in commands:
+                if command.get("ID") == "Jump.To":
+                    target = command.find(".//Parameter[@Key='grid']")
+                    if target is not None and target.text:
+                        button.type = ButtonType.NAVIGATE
+                        button.target_page_id = target.text
+
+            return button
 
         return None

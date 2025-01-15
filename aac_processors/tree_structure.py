@@ -1,12 +1,14 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 
 
 class ButtonType(Enum):
     SPEAK = "speak"
     NAVIGATE = "navigate"
     ACTION = "action"
+    WORDLIST = "wordlist"
+    COMMAND = "command"
 
 
 @dataclass
@@ -37,7 +39,7 @@ class AACButton:
     target_page_id: Optional[str] = None
     action: Optional[str] = None
     style: ButtonStyle = field(default_factory=ButtonStyle)
-    metadata: dict = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Initialize any additional attributes after dataclass initialization"""
@@ -59,7 +61,7 @@ class AACPage:
     buttons: list[AACButton] = field(default_factory=list)
     parent_id: Optional[str] = None
     is_wordlist: bool = False
-    metadata: dict = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class AACTree:
@@ -68,7 +70,7 @@ class AACTree:
     def __init__(self) -> None:
         self.pages: dict[str, AACPage] = {}
         self.root_id: Optional[str] = None
-        self.metadata: dict = {}
+        self.metadata: dict[str, Any] = {}
 
     def add_page(self, page: AACPage) -> None:
         """Add a page to the tree"""
@@ -85,8 +87,8 @@ class AACTree:
         if target_id not in self.pages:
             return []
 
-        path = []
-        current = target_id
+        path: list[str] = []
+        current: Optional[str] = target_id
         while current:
             path.append(current)
             current = self.pages[current].parent_id
@@ -94,9 +96,9 @@ class AACTree:
                 break
         return list(reversed(path))
 
-    def analyze_navigation(self) -> dict:
+    def analyze_navigation(self) -> dict[str, Any]:
         """Analyze navigation structure"""
-        analysis = {
+        analysis: dict[str, Any] = {
             "total_pages": len(self.pages),
             "max_depth": 0,
             "dead_ends": [],

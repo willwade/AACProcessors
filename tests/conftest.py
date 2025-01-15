@@ -4,25 +4,25 @@ import shutil
 import sqlite3
 import tempfile
 import zipfile
+from collections.abc import Generator
+from typing import Any
 
 import pytest
 from lxml import etree as et
 
 
 @pytest.fixture
-def temp_dir():
+def temp_dir() -> Generator[str, None, None]:
     """Create a temporary directory for test files"""
     temp_dir = tempfile.mkdtemp()
     yield temp_dir
     # Cleanup
     if os.path.exists(temp_dir):
-        import shutil
-
         shutil.rmtree(temp_dir)
 
 
 @pytest.fixture
-def test_snap_db(temp_dir):
+def test_snap_db(temp_dir: str) -> str:
     """Create a test Snap database"""
     db_path = os.path.join(temp_dir, "test.sps")
     conn = sqlite3.connect(db_path)
@@ -88,7 +88,7 @@ def test_snap_db(temp_dir):
 
 
 @pytest.fixture
-def test_gridset(temp_dir):
+def test_gridset(temp_dir: str) -> str:
     """Create a test Grid3 gridset with realistic content"""
     gridset_dir = os.path.join(temp_dir, "test_gridset_dir")
 
@@ -192,7 +192,7 @@ def test_gridset(temp_dir):
 
 
 @pytest.fixture
-def test_touchchat_ce(temp_dir):
+def test_touchchat_ce(temp_dir: str) -> str:
     """Create a test TouchChat CE file"""
     db_path = os.path.join(temp_dir, "test.c4v")
     conn = sqlite3.connect(db_path)
@@ -336,7 +336,7 @@ def test_touchchat_ce(temp_dir):
 
 
 @pytest.fixture
-def test_coughdrop_obf(temp_dir):
+def test_coughdrop_obf(temp_dir: str) -> str:
     """Create a test CoughDrop OBF file"""
     obf_path = os.path.join(temp_dir, "test.obf")
 
@@ -358,7 +358,7 @@ def test_coughdrop_obf(temp_dir):
 
 
 @pytest.fixture
-def test_coughdrop_obz(temp_dir, test_coughdrop_obf):
+def test_coughdrop_obz(temp_dir: str, test_coughdrop_obf: str) -> str:
     """Create a test CoughDrop OBZ file"""
     obz_path = os.path.join(temp_dir, "test.obz")
 
@@ -391,6 +391,6 @@ def test_coughdrop_obz(temp_dir, test_coughdrop_obf):
     return obz_path
 
 
-def pytest_configure(config):
+def pytest_configure(config: Any) -> None:
     """Register custom marks"""
     config.addinivalue_line("markers", "integration: mark test as an integration test")

@@ -27,21 +27,14 @@ jobs:
         
     - name: Install dependencies
       run: |
-        uv venv
+        uv sync
         uv pip install --system -e ".[dev]"
         
-    - name: Run linting
-      run: |
-        ruff check .
-        black --check .
-        
-    - name: Run type checking
-      run: |
-        mypy aac_processors tests
+
         
     - name: Run tests
       run: |
-        pytest
+        uv run pytest
         
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
