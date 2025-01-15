@@ -23,7 +23,7 @@ jobs:
         
     - name: Install dependencies
       run: |
-        uv pip install ruff black
+        uv pip install ".[dev]"
         
     - name: Run ruff
       run: |
