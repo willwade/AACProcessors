@@ -57,7 +57,7 @@ translated_file = processor.process_texts("path/to/your.gridset", translations, 
 
 Want to try AACProcessors without installing? Click below to run our interactive demo:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/willwade/AACProcessors/blob/main/examples/demo.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/willwade/AACProcessors/blob/main/examples/demo_aacprocessors.ipynb)
 
 This interactive notebook will:
 - Install AACProcessors
