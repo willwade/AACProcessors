@@ -77,12 +77,17 @@ imported_tree = cough_processor.load_into_tree("path/to/board.obz")
 The library includes two ways to view AAC board structures:
 
 1. Using the command-line viewer:
+
 ```bash
 # Using the standalone viewer script
 python demo_viewer.py path/to/your/board.gridset
 
-# Or using the package module
+# Or using the package module directly
 python -m aac_processors.viewer path/to/your/board.gridset
+
+# Programmatically:
+from aac_processors import viewer
+viewer.print_file("path/to/your.gridset")  # Not view_file
 ```
 
 2. Programmatically:
