@@ -86,8 +86,15 @@ python demo_viewer.py path/to/your/board.gridset
 python -m aac_processors.viewer path/to/your/board.gridset
 
 # Programmatically:
-from aac_processors import viewer
-viewer.print_file("path/to/your.gridset")  # Not view_file
+from aac_processors import viewer, GridsetProcessor
+
+# Load and print a board structure
+processor = GridsetProcessor()
+tree = processor.load_into_tree("path/to/your.gridset")
+viewer.print_tree(tree)
+
+# Or use the auto-detection feature
+viewer.main()  # Will prompt for file path
 ```
 
 2. Programmatically:
@@ -223,8 +230,25 @@ class FileProcessor:
     def load_into_tree(self, file_path: str) -> AACTree:
         """Load the file into a common tree structure"""
         
-    def process_texts(self, file_path: str, translations: Dict[str, str], output_path: str) -> str:
-        """Process and translate texts in the file"""
+    def process_texts(
+        self,
+        file_path: str,
+        translations: Optional[Dict[str, str]] = None,
+        output_path: Optional[str] = None
+    ) -> Union[List[str], str, None]:
+        """Process and translate texts in the file.
+        
+        Returns:
+            - List[str] if extracting texts (translations=None)
+            - str if translating (path to translated file)
+            - None if error occurs
+        """
+        
+    def set_source_file(self, file_path: str) -> None:
+        """Set the source file path for processing"""
+        
+    def cleanup_temp_files(self) -> None:
+        """Clean up any temporary files created during processing"""
 ```
 
 ### Common Data Structures
@@ -235,7 +259,13 @@ Represents the common structure for all AAC formats.
 ```python
 class AACTree:
     pages: Dict[str, AACPage]  # Dictionary of pages by ID
-    root_page: str  # ID of the root page
+    root_id: Optional[str]  # ID of the root page
+    
+    def add_page(self, page: AACPage) -> None:
+        """Add a page to the tree"""
+        
+    def get_page(self, page_id: str) -> Optional[AACPage]:
+        """Get a page by ID"""
 ```
 
 #### AACPage
@@ -243,10 +273,10 @@ Represents a single page in an AAC system.
 
 ```python
 class AACPage:
-    id: str
-    title: str
-    grid_size: Tuple[int, int]
-    buttons: Dict[str, AACButton]
+    id: str  # Unique identifier for the page
+    name: str  # Display name of the page
+    grid_size: Tuple[int, int]  # (rows, columns)
+    buttons: List[AACButton]  # List of buttons on the page
 ```
 
 #### AACButton
@@ -254,11 +284,12 @@ Represents a button in an AAC system.
 
 ```python
 class AACButton:
-    id: str
-    label: str
-    message: str
-    position: Tuple[int, int]
-    type: ButtonType
+    id: str  # Unique identifier for the button
+    label: str  # Display text
+    type: ButtonType  # SPEAK, NAVIGATE, ACTION, etc.
+    position: Tuple[int, int]  # Grid position (row, col)
+    vocalization: Optional[str]  # Text to speak
+    target_page_id: Optional[str]  # For navigation buttons
 ```
 
 ## Contributing
