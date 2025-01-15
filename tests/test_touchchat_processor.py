@@ -68,15 +68,15 @@ def test_save_tree(test_touchchat_ce, temp_dir):
 
 def test_translation(test_touchchat_ce, temp_dir):
     processor = TouchChatProcessor()
-    
+
     print(f"Initial file: {test_touchchat_ce}")
     texts = processor.extract_texts(test_touchchat_ce)
     print(f"Extracted texts: {texts}")
-    
+
     translations = {"Test Button": "Botón de prueba", "Hello": "Hola"}
     translated_file = processor.process_texts(test_touchchat_ce, translations)
     print(f"Translated file: {translated_file}")
-    
+
     tree = processor.load_into_tree(translated_file)
     page = next(iter(tree.pages.values()))
     button = page.buttons[0]

@@ -334,11 +334,16 @@ def test_touchchat_translate_real(demo_touchchat_file: str) -> None:
 
         # Verify translations were applied
         translated_texts = processor.extract_texts(result)
-        print(f"Translated texts: {translated_texts}")  # See what texts are in the translated file
+        print(
+            f"Translated texts: {translated_texts}"
+        )  # See what texts are in the translated file
 
         # Check specific translations
         for original in translations:
             if original != "target_lang":
                 expected = f"TEST_{original}"
                 found = any(expected == t for t in translated_texts)
-                print(f"Looking for translation of '{original}' -> '{expected}': {'Found' if found else 'Not found'}")
+                print(
+                    f"Looking for translation of '{original}' -> '{expected}': "
+                    f"{'Found' if found else 'Not found'}"
+                )
