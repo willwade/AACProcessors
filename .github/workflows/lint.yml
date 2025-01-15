@@ -27,8 +27,8 @@ jobs:
         
     - name: Run ruff
       run: |
-        ruff check .
+        uv run ruff check .
         
     - name: Run black
       run: |
-        black --check . 
+        uv run black --check . 
