@@ -156,6 +156,228 @@ def analyze_vocabulary(file_path):
 vocabulary = analyze_vocabulary("path/to/your.gridset")
 ```
 
+## Demo
+
+See `demo.py` for a complete example of how to use the library.
+
+```bash
+python demo.py
+```
+
+Output:
+
+```bash
+=== Viewing File Structure ===
+
+Viewing structure of SimpleTest.gridset:
+
+=== AAC Board Structure ===
+
+Root Page:
+  📄 Start (4x4 grid)
+    Row 0:
+      [Empty] (0, 0)
+      🔀 quick chat (0, 1)
+        └─ Says: quick chat
+        └─ Goes to: quick chat
+      🔀 don't like (0, 2)
+        └─ Says: don't like
+        └─ Goes to: Don't like
+      🔀 something different (0, 3)
+        └─ Says: something different
+        └─ Goes to: something different
+    Row 1:
+      [Empty] (1, 0)
+      🔀 something's wrong (1, 1)
+        └─ Says: something's wrong
+        └─ Goes to: something's wrong
+      🔀 I want (1, 2)
+        └─ Says: I want
+        └─ Goes to: I want
+      🔀 Comment (1, 3)
+        └─ Says: Comment
+        └─ Goes to: Comment
+    Row 2:
+      [Empty] (2, 0)
+      🔀 About me (2, 1)
+        └─ Says: About me
+        └─ Goes to: About me
+      └─ Target Page:
+          📄 About me (5x4 grid)
+            Row 0:
+              🗣️ [No Label] (0, 0)
+              🗣️ Back (0, 1)
+                └─ Says: Back
+              🔀 Family (0, 2)
+                └─ Says: Family
+                └─ Goes to: Family
+              └─ Target Page:
+                  📄 Family (5x7 grid)
+                    Row 0:
+                      [Empty] (0, 0)
+                      🗣️ Back (0, 1)
+                        └─ Says: Back
+                      [Empty] (0, 2)
+                      🗣️ Younger Sister (0, 3)
+                        └─ Says: Younger Sister
+                      [Empty] (0, 4)
+                      [Empty] (0, 5)
+                      [Empty] (0, 6)
+                    Row 1:
+                      [Empty] (1, 0)
+                      🗣️ Dad (1, 1)
+                        └─ Says: Dad
+                      [Empty] (1, 2)
+                      [Empty] (1, 3)
+                      [Empty] (1, 4)
+                      [Empty] (1, 5)
+                      [Empty] (1, 6)
+                    Row 2:
+                      [Empty] (2, 0)
+                      [Empty] (2, 1)
+                      [Empty] (2, 2)
+                      🔀 Cousins (2, 3)
+                        └─ Says: Cousins
+                        └─ Goes to: Cousins
+                      [Empty] (2, 4)
+                      [Empty] (2, 5)
+                      [Empty] (2, 6)
+                    Row 3:
+                      [Empty] (3, 0)
+                      🗣️ Mum (3, 1)
+                        └─ Says: Mum
+                      [Empty] (3, 2)
+                      [Empty] (3, 3)
+                      [Empty] (3, 4)
+                      [Empty] (3, 5)
+                      [Empty] (3, 6)
+                    Row 4:
+                      [Empty] (4, 0)
+                      [Empty] (4, 1)
+                      [Empty] (4, 2)
+                      🔀 Aunts and Uncles (4, 3)
+                        └─ Says: Aunts and Uncles
+                        └─ Goes to: Aunts and Uncles
+                      [Empty] (4, 4)
+                      [Empty] (4, 5)
+                      [Empty] (4, 6)
+              🗣️ Vegetarian (0, 3)
+                └─ Says: Vegetarian
+            Row 1:
+              [Empty] (1, 0)
+              🗣️ Name (1, 1)
+                └─ Says: Name
+              🔀 Pets (1, 2)
+                └─ Says: Pets
+                └─ Goes to: Pets
+              [Empty] (1, 3)
+            Row 2:
+              [Empty] (2, 0)
+              🗣️ Age (2, 1)
+                └─ Says: Age
+              🔀 Places I have been (2, 2)
+                └─ Says: Places I have been
+                └─ Goes to: Places I have been
+              [Empty] (2, 3)
+            Row 3:
+              [Empty] (3, 0)
+              🗣️ My birthday (3, 1)
+                └─ Says: My birthday
+              🗣️ like to look (3, 2)
+                └─ Says: like to look
+              [Empty] (3, 3)
+            Row 4:
+              [Empty] (4, 0)
+              [Empty] (4, 1)
+              [Empty] (4, 2)
+              [Empty] (4, 3)
+      🔀 I'm asking a question (2, 2)
+        └─ Says: I'm asking a question
+        └─ Goes to: questions
+      🔀 I feel (2, 3)
+        └─ Says: I feel
+        └─ Goes to: Feelings
+      └─ Target Page:
+          📄 Feelings (6x4 grid)
+            Row 0:
+              🗣️ [No Label] (0, 0)
+              🗣️ Back (0, 1)
+                └─ Says: Back
+              🗣️ angry. (0, 2)
+                └─ Says: angry.
+              [Empty] (0, 3)
+            Row 1:
+              [Empty] (1, 0)
+              🗣️ happy. (1, 1)
+                └─ Says: happy.
+              🗣️ excited. (1, 2)
+                └─ Says: excited.
+              [Empty] (1, 3)
+            Row 2:
+              [Empty] (2, 0)
+              🗣️ sad. (2, 1)
+                └─ Says: sad.
+              🗣️ fantastic. (2, 2)
+                └─ Says: fantastic.
+              [Empty] (2, 3)
+            Row 3:
+              [Empty] (3, 0)
+              🗣️ tired. (3, 1)
+                └─ Says: tired.
+              [Empty] (3, 2)
+              [Empty] (3, 3)
+            Row 4:
+              [Empty] (4, 0)
+              [Empty] (4, 1)
+              [Empty] (4, 2)
+              [Empty] (4, 3)
+            Row 5:
+              [Empty] (5, 0)
+              [Empty] (5, 1)
+              [Empty] (5, 2)
+              [Empty] (5, 3)
+    Row 3:
+      [Empty] (3, 0)
+      🔀 like (3, 1)
+        └─ Says: like
+        └─ Goes to: Like
+      🔀 Places to go (3, 2)
+        └─ Says: Places to go
+        └─ Goes to: let's go
+      🔀 Alphabet (3, 3)
+        └─ Says: Alphabet
+        └─ Goes to: Alphabet
+
+=== Navigation Analysis ===
+
+Total Pages: 6
+
+Dead End Pages (no way back):
+  - Family
+  - Feelings
+
+Orphaned Pages (no way to reach):
+  - Drinks
+  - About me 2
+
+=== Extracting Texts ===
+
+Extracted 43 texts from SimpleTest.gridset
+Sample texts: ["something's wrong", 'Age', 'Back to home page', 'I feel', 'Pets']
+
+=== Loading Tree Structure ===
+
+Loaded 6 pages from SimpleTest.gridset
+
+Page Drinks: Drinks
+Grid size: (5, 4)
+Buttons: 7
+
+Page Family: Family
+Grid size: (5, 7)
+Buttons: 8
+```
+
 ## Supported Formats
 
 ### Grid 3 (`.gridset`)
