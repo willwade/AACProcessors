@@ -23,6 +23,8 @@ A Python library to read, import, export and modify pagesets from different AAC 
 - Convert between different AAC formats
 - Analyze vocabulary usage and structure
 
+
+
 ## Installation
 
 ```bash
@@ -50,6 +52,21 @@ translations = {
 }
 translated_file = processor.process_texts("path/to/your.gridset", translations, "path/to/output.gridset")
 ```
+
+## Try it now!
+
+Want to try AACProcessors without installing? Click below to run our interactive demo:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/willwade/AACProcessors/blob/main/examples/demo.ipynb)
+
+This interactive notebook will:
+- Install AACProcessors
+- Download example AAC files
+- Demonstrate key features:
+  - Viewing file structures
+  - Extracting texts
+  - Analyzing vocabulary
+  - Converting between formats
 
 ## Usage Examples
 

@@ -12,7 +12,7 @@ from aac_processors.touchchat_processor import TouchChatProcessor
 from aac_processors.tree_structure import ButtonType
 
 # Get the absolute path to the demofiles directory
-DEMOFILES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "demofiles")
+DEMOFILES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "examples", "demofiles")
 
 
 @pytest.fixture
