@@ -31,6 +31,15 @@ class CoughDropProcessor(FileProcessor):
         """
         return file_path.endswith(".obz") or file_path.endswith(".obf")
 
+    def export_tree(self, tree: AACTree, output_path: str) -> None:
+        """Export tree to OBF/OBZ format.
+
+        Args:
+            tree (AACTree): Tree to export.
+            output_path (str): Path where to save the file.
+        """
+        self.save_from_tree(tree, output_path)
+
     def _load_board_into_tree(self, file_path: str, tree: AACTree) -> None:
         """Load a board file into the tree.
 
