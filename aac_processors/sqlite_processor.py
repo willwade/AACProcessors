@@ -22,7 +22,7 @@ class SQLiteProcessor(AACProcessor):
         self._db_lock = Lock()
         self._query_cache: dict[str, list[tuple[Any, ...]]] = {}
         self._temp_dirs: list[str] = []  # Track temporary directories for cleanup
-        self.file_path = None  # Store the current file path
+        self.file_path: Optional[str] = None  # Store the current file path
         self._conn: Optional[Connection] = None
 
     def create_temp_dir(self) -> str:
@@ -249,3 +249,12 @@ class SQLiteProcessor(AACProcessor):
         """
         if self._debug_output:
             self._debug_output(message)
+
+    def set_source_file(self, file_path: str) -> None:
+        """Set source file path.
+
+        Args:
+            file_path: Path to source file.
+        """
+        super().set_source_file(file_path)  # Call parent implementation
+        self.file_path = file_path  # Set file_path for SQLite operations

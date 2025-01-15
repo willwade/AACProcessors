@@ -247,10 +247,14 @@ class AACProcessor(ABC):
 
             # Create translated file
             result = self.create_translated_file(file_path, translations)
-            if result and output_path:
-                return output_path
+            if result:
+                if output_path:
+                    # Copy result to output path if specified
+                    shutil.copy2(result, output_path)
+                    return output_path
+                return result
 
-            return result
+            return None
 
         except Exception as e:
             self.debug(f"Error processing texts: {str(e)}")

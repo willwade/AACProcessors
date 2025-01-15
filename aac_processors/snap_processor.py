@@ -12,7 +12,7 @@ from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 class SnapProcessor(SQLiteProcessor):
     """Processor for Snap files (.sps, .spb)."""
 
-    def __init__(self, debug_output: Optional[Callable[[str], None]] = None):
+    def __init__(self, debug_output: Optional[Callable[[str], None]] = None) -> None:
         """Initialize Snap processor.
 
         Args:
@@ -21,25 +21,20 @@ class SnapProcessor(SQLiteProcessor):
         super().__init__()  # Call SQLiteProcessor's __init__
         self._debug_output = debug_output or print
         self.collected_texts: list[str] = []
-        self.file_path: Optional[str] = None
-        self.original_filename: Optional[str] = None
-        self.original_file_path: Optional[str] = None
+        self.file_path: Optional[str] = None  # Match SQLiteProcessor's type
+        self.original_filename: str = ""  # Initialize as empty string
+        self.original_file_path: str = ""  # Initialize as empty string
 
     def can_process(self, file_path: str) -> bool:
         """Check if file is a Snap export.
 
         Args:
-            file_path (str): Path to the file to check.
+            file_path: Path to the file to check.
 
         Returns:
             bool: True if file is a Snap export.
         """
-        return file_path.lower().endswith(
-            (
-                ".sps",
-                ".spb",
-            )
-        )
+        return file_path.lower().endswith((".sps", ".spb"))
 
     def process_files(
         self, directory: str, translations: Optional[dict[str, str]] = None
@@ -47,15 +42,14 @@ class SnapProcessor(SQLiteProcessor):
         """Process files in the extracted directory.
 
         Args:
-            directory (str): Directory containing the files to process.
-            translations (Optional[Dict[str, str]]): Dictionary of translations.
+            directory: Directory containing the files to process.
+            translations: Dictionary of translations.
 
         Returns:
             Optional[str]: Path to translated file if successful, None otherwise.
         """
         try:
-            # Find the database file - could be .sps, .spb, or copied with
-            # original extension
+            # Find database files (.sps, .spb, or copied with original extension)
             db_files = [
                 f
                 for f in os.listdir(directory)
@@ -77,19 +71,20 @@ class SnapProcessor(SQLiteProcessor):
                     for table, columns in self.get_translatable_columns():
                         for column in columns:
                             self._debug_print(f"Querying {table}.{column}")
-                            cursor.execute(
-                                f"""
+                            query = f"""
                                 SELECT DISTINCT {column}
                                 FROM {table}
                                 WHERE {column} IS NOT NULL AND {column} != ''
                                 """
-                            )
+                            cursor.execute(query)
                             texts = [row[0] for row in cursor.fetchall()]
                             self._debug_print(
                                 f"Found {len(texts)} texts in {table}.{column}"
                             )
                             self.collected_texts.extend(texts)
-                return self.collected_texts
+                # Return None in extract mode, texts are in self.collected_texts
+                return None
+
             else:
                 # Translation mode
                 modified = False
@@ -97,13 +92,12 @@ class SnapProcessor(SQLiteProcessor):
                     cursor = conn.cursor()
                     for table, columns in self.get_translatable_columns():
                         for column in columns:
-                            cursor.execute(
-                                f"""
+                            query = f"""
                                 SELECT DISTINCT {column}
                                 FROM {table}
                                 WHERE {column} IS NOT NULL AND {column} != ''
                                 """
-                            )
+                            cursor.execute(query)
                             for (text,) in cursor.fetchall():
                                 if text in translations:
                                     self._debug_print(
@@ -125,36 +119,17 @@ class SnapProcessor(SQLiteProcessor):
                         conn.commit()
                         # Create new file with translations
                         target_lang = translations.get("target_lang", "translated")
-                        original_ext = os.path.splitext(self.original_file_path)[1]
+                        if not self.original_file_path:
+                            return None
+                        base_path = Path(self.original_file_path)
                         output_name = (
-                            f"{self.original_filename}_{target_lang}{original_ext}"
+                            f"{base_path.stem}_{target_lang}{base_path.suffix}"
                         )
                         output_path = os.path.join(directory, output_name)
                         shutil.copy2(db_path, output_path)
-
-                        # Verify translations were applied
-                        with sqlite3.connect(output_path) as verify_conn:
-                            verify_cursor = verify_conn.cursor()
-                            for table, columns in self.get_translatable_columns():
-                                for column in columns:
-                                    for original, translated in translations.items():
-                                        if original == "target_lang":
-                                            continue
-                                        verify_cursor.execute(
-                                            f"""
-                                            SELECT COUNT(*)
-                                            FROM {table}
-                                            WHERE {column} = ?
-                                            """,
-                                            (translated,),
-                                        )
-                                        count = verify_cursor.fetchone()[0]
-                                        self._debug_print(
-                                            f"Found {count} instances of {translated} "
-                                            f"in {table}.{column}"
-                                        )
-
                         return output_path
+
+                return None
 
         except Exception as e:
             self._debug_print(f"Error processing files: {e}")
@@ -362,7 +337,8 @@ class SnapProcessor(SQLiteProcessor):
         try:
             # Reset state for new translation
             self.collected_texts = []
-            self.file_path = file_path
+            # Set file paths
+            self.file_path = file_path  # Set the file_path for SQLiteProcessor
             self.original_file_path = file_path
             self.original_filename = Path(file_path).stem
 
@@ -377,15 +353,13 @@ class SnapProcessor(SQLiteProcessor):
             result = self.process_files(temp_dir, translations)
 
             if translations is None:
-                return result  # Will be List[str]
+                return self.collected_texts  # Return collected texts in extract mode
 
             if result:
                 target_lang = translations.get("target_lang", "translated")
-                original_ext = Path(file_path).suffix
-                final_output = output_path or str(
-                    Path(file_path).parent
-                    / f"{Path(file_path).stem}_{target_lang}{original_ext}"
-                )
+                base_path = Path(file_path)
+                output_name = f"{base_path.stem}_{target_lang}{base_path.suffix}"
+                final_output = output_path or str(base_path.parent / output_name)
                 shutil.copy2(result, final_output)
                 return final_output
 
@@ -402,11 +376,78 @@ class SnapProcessor(SQLiteProcessor):
         """Extract translatable texts from Snap file.
 
         Args:
-            file_path (str): Path to the file to process.
+            file_path: Path to the file to process.
 
         Returns:
             List[str]: List of extracted texts.
         """
         self.collected_texts = []
-        self.process_texts(file_path)
+        _ = self.process_texts(file_path)  # Ignore the return value
         return self.collected_texts
+
+    def create_translated_file(
+        self, file_path: str, translations: dict[str, str]
+    ) -> Optional[str]:
+        """Create a translated version of the Snap file.
+
+        Args:
+            file_path: Path to the Snap file.
+            translations: Dictionary of translations.
+
+        Returns:
+            Optional[str]: Path to translated file if successful, None otherwise.
+        """
+        try:
+            # Create temp directory for processing
+            temp_dir = tempfile.mkdtemp()
+
+            # Copy file to temp directory
+            temp_file = os.path.join(temp_dir, os.path.basename(file_path))
+            shutil.copy2(file_path, temp_file)
+
+            # Process translations
+            with sqlite3.connect(temp_file) as conn:
+                cursor = conn.cursor()
+                modified = False
+
+                # Update translations in each table/column
+                for table, columns in self.get_translatable_columns():
+                    for column in columns:
+                        cursor.execute(
+                            f"""
+                            SELECT DISTINCT {column}
+                            FROM {table}
+                            WHERE {column} IS NOT NULL AND {column} != ''
+                            """
+                        )
+                        for (text,) in cursor.fetchall():
+                            if text in translations:
+                                cursor.execute(
+                                    f"""
+                                    UPDATE {table}
+                                    SET {column} = ?
+                                    WHERE {column} = ?
+                                    """,
+                                    (translations[text], text),
+                                )
+                                modified = True if cursor.rowcount > 0 else modified
+
+                if modified:
+                    conn.commit()
+                    # Create output path with target language code
+                    target_lang = translations.get("target_lang", "translated")
+                    base_name = os.path.splitext(os.path.basename(file_path))[0]
+                    ext = os.path.splitext(file_path)[1]
+                    output_name = f"{base_name}_{target_lang}{ext}"
+                    output_path = os.path.join(os.path.dirname(file_path), output_name)
+                    shutil.copy2(temp_file, output_path)
+                    return output_path
+
+            return None
+
+        except Exception as e:
+            self.debug(f"Error creating translated file: {str(e)}")
+            return None
+        finally:
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)

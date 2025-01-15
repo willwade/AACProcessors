@@ -16,36 +16,36 @@ DEMOFILES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "demofi
 
 
 @pytest.fixture
-def demo_obf_file():
+def demo_obf_file() -> str:
     """Path to demo OBF file"""
     return os.path.join(DEMOFILES_DIR, "project-core_es.obf")
 
 
 @pytest.fixture
-def demo_obz_file():
+def demo_obz_file() -> str:
     """Path to demo OBZ file"""
     return os.path.join(DEMOFILES_DIR, "communikate-20.obz")
 
 
 @pytest.fixture
-def demo_gridset_file():
+def demo_gridset_file() -> str:
     """Path to demo Gridset file"""
     return os.path.join(DEMOFILES_DIR, "SimpleTest.gridset")
 
 
 @pytest.fixture
-def demo_snap_file():
+def demo_snap_file() -> str:
     """Path to demo Snap file"""
     return os.path.join(DEMOFILES_DIR, "Medical Advocacy.spb")
 
 
 @pytest.fixture
-def demo_touchchat_file():
+def demo_touchchat_file() -> str:
     """Path to demo TouchChat file"""
     return os.path.join(DEMOFILES_DIR, "WordPower42 Basic SS_UK.ce")
 
 
-def test_coughdrop_extract_real_obz(demo_obz_file):
+def test_coughdrop_extract_real_obz(demo_obz_file: str) -> None:
     """Test extracting texts from a real CoughDrop OBZ file"""
     processor = CoughDropProcessor()
     texts = processor.extract_texts(demo_obz_file)
@@ -88,7 +88,7 @@ def test_coughdrop_extract_real_obz(demo_obz_file):
     assert ButtonType.NAVIGATE in button_types
 
 
-def test_coughdrop_extract_real_obf(demo_obf_file):
+def test_coughdrop_extract_real_obf(demo_obf_file: str) -> None:
     """Test extracting texts from a real CoughDrop OBF file"""
     processor = CoughDropProcessor()
     texts = processor.extract_texts(demo_obf_file)
@@ -116,7 +116,7 @@ def test_coughdrop_extract_real_obf(demo_obf_file):
                 assert not button.target_page_id  # Speak buttons shouldn't have targets
 
 
-def test_gridset_extract_real(demo_gridset_file):
+def test_gridset_extract_real(demo_gridset_file: str) -> None:
     """Test extracting texts from a real Grid3 Gridset file"""
     processor = GridsetProcessor()
     texts = processor.extract_texts(demo_gridset_file)
@@ -149,7 +149,7 @@ def test_gridset_extract_real(demo_gridset_file):
             # This is a known issue with Grid3 files
 
 
-def test_snap_extract_real(demo_snap_file):
+def test_snap_extract_real(demo_snap_file: str) -> None:
     """Test extracting texts from a real Snap file"""
     processor = SnapProcessor()
     texts = processor.extract_texts(demo_snap_file)
@@ -169,7 +169,7 @@ def test_snap_extract_real(demo_snap_file):
     # doesn't exist in this version of the file format
 
 
-def test_touchchat_extract_real(demo_touchchat_file):
+def test_touchchat_extract_real(demo_touchchat_file: str) -> None:
     """Test extracting texts from a real TouchChat file"""
     processor = TouchChatProcessor()
     texts = processor.extract_texts(demo_touchchat_file)
@@ -201,7 +201,7 @@ def test_touchchat_extract_real(demo_touchchat_file):
     print("Button type counts:", type_counts)
 
 
-def test_coughdrop_translate_real_obz(demo_obz_file):
+def test_coughdrop_translate_real_obz(demo_obz_file: str) -> None:
     """Test translating a real CoughDrop OBZ file"""
     processor = CoughDropProcessor()
 
@@ -219,6 +219,7 @@ def test_coughdrop_translate_real_obz(demo_obz_file):
     # Create translated file
     with tempfile.NamedTemporaryFile(suffix=".obz") as output:
         result = processor.process_texts(demo_obz_file, translations, output.name)
+        assert isinstance(result, str)  # Ensure result is a string path
         assert result == output.name
 
         # Verify translations were applied
@@ -241,7 +242,7 @@ def test_coughdrop_translate_real_obz(demo_obz_file):
             assert "boards" in manifest["paths"]
 
 
-def test_gridset_translate_real(demo_gridset_file):
+def test_gridset_translate_real(demo_gridset_file: str, temp_dir: str) -> None:
     """Test translating a real Grid3 Gridset file"""
     processor = GridsetProcessor()
 
@@ -255,6 +256,7 @@ def test_gridset_translate_real(demo_gridset_file):
     # Create translated file
     with tempfile.NamedTemporaryFile(suffix=".gridset") as output:
         result = processor.process_texts(demo_gridset_file, translations, output.name)
+        assert isinstance(result, str)  # Ensure result is a string path
         assert result == output.name
 
         # Verify translations were applied
@@ -274,7 +276,7 @@ def test_gridset_translate_real(demo_gridset_file):
             assert any(f.endswith("grid.xml") for f in files)
 
 
-def test_snap_translate_real(demo_snap_file):
+def test_snap_translate_real(demo_snap_file: str) -> None:
     """Test translating a real Snap file"""
     processor = SnapProcessor()
 
@@ -292,6 +294,7 @@ def test_snap_translate_real(demo_snap_file):
     # Create translated file
     with tempfile.NamedTemporaryFile(suffix=".spb") as output:
         result = processor.process_texts(demo_snap_file, translations, output.name)
+        assert isinstance(result, str)  # Ensure result is a string path
         assert result == output.name
 
         # Verify translations were applied
@@ -306,7 +309,7 @@ def test_snap_translate_real(demo_snap_file):
                 ), f"Translation for '{original}' not found"
 
 
-def test_touchchat_translate_real(demo_touchchat_file):
+def test_touchchat_translate_real(demo_touchchat_file: str) -> None:
     """Test translating a real TouchChat file"""
     processor = TouchChatProcessor()
 
@@ -324,6 +327,7 @@ def test_touchchat_translate_real(demo_touchchat_file):
     # Create translated file
     with tempfile.NamedTemporaryFile(suffix=".ce") as output:
         result = processor.process_texts(demo_touchchat_file, translations, output.name)
+        assert isinstance(result, str)  # Ensure result is a string path
         assert result == output.name
 
         # Verify translations were applied
