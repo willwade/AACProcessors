@@ -113,11 +113,12 @@ class CoughDropProcessor(FileProcessor):
         except Exception as e:
             self.debug(f"Error loading board file {file_path}: {str(e)}")
 
-    def _convert_page_to_board(self, page: AACPage) -> dict[str, Any]:
+    def _convert_page_to_board(self, page: AACPage, tree: AACTree) -> dict[str, Any]:
         """Convert a page to a board format.
 
         Args:
             page (AACPage): Page to convert.
+            tree (AACTree): Full tree containing all pages.
 
         Returns:
             Dict[str, Any]: Board data.
@@ -133,11 +134,18 @@ class CoughDropProcessor(FileProcessor):
             if button.vocalization and button.vocalization != button.label:
                 button_data["vocalization"] = button.vocalization
 
+            # Only add navigation if target page exists in the tree
             if button.type == ButtonType.NAVIGATE and button.target_page_id:
-                button_data["load_board"] = {
-                    "id": button.target_page_id,
-                    "path": f"boards/{button.target_page_id}.obf",
-                }
+                if button.target_page_id in tree.pages:
+                    button_data["load_board"] = {
+                        "id": button.target_page_id,
+                        "path": f"boards/{button.target_page_id}.obf",
+                    }
+                else:
+                    self.debug(
+                        f"Warning: Navigation target {button.target_page_id} not found, converting to speak button"
+                    )
+                    # Skip adding load_board data, making it a speak button by default
 
             # Add to grid order
             y, x = button.position
@@ -532,7 +540,7 @@ class CoughDropProcessor(FileProcessor):
                     board_path = os.path.join("boards", board_file)
                     full_path = os.path.join(temp_dir, board_path)
 
-                    board_data = self._convert_page_to_board(page)
+                    board_data = self._convert_page_to_board(page, tree)
                     with open(full_path, "w", encoding="utf-8") as f:
                         json.dump(board_data, f, indent=2)
 
@@ -567,7 +575,7 @@ class CoughDropProcessor(FileProcessor):
                     self.debug("Warning: Multiple pages found, only saving first page")
 
                 page = next(iter(tree.pages.values()))
-                board_data = self._convert_page_to_board(page)
+                board_data = self._convert_page_to_board(page, tree)
                 with open(output_path, "w", encoding="utf-8") as f:
                     json.dump(board_data, f, indent=2)
 
