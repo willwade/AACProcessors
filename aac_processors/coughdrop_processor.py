@@ -150,8 +150,11 @@ class CoughDropProcessor(FileProcessor):
             "format": "open-board-0.1",
             "id": page.id,
             "name": page.name,
+            "locale": "en_US",
             "grid": {"rows": rows, "columns": cols, "order": grid_order},
             "buttons": buttons_data,
+            "images": [],
+            "sounds": [],
         }
 
     def process_texts(

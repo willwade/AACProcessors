@@ -38,6 +38,21 @@ def main() -> NoReturn:
             print(f"Grid size: {page.grid_size}")
             print(f"Buttons: {len(page.buttons)}")
 
+    # 4. Convert format
+
+    from aac_processors.cli import convert_format
+
+    output_obz = convert_format(
+        input_file=gridset_file,
+        output_format="coughdrop",
+        output_path="translated_grid.obz",
+    )
+
+    if output_obz:
+        print(f"Successfully converted to OBZ: {output_obz}")
+    else:
+        print("Conversion failed")
+
     raise SystemExit(0)  # Exit cleanly
 
 
