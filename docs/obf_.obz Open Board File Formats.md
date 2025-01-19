@@ -398,7 +398,7 @@ It’s worth repeating that board, image and sound ids do not need to be globall
 
 ### **Images and Sounds with Multiple References** {#images-and-sounds-with-multiple-references}
 
-There is nothing preventing an image or sound record in an .obf file from including multiple file references (i.e. a data-URI as well as a remove URL or zipped file attribute). If multiple references are included, the app should use the first reference found in the following order:
+There is nothing preventing an image or sound record in an .obf file from including multiple file references (i.e. a data-URI as well as a remote URL or zipped file attribute). If multiple references are included, the app should use the first reference found in the following order:
 
 * data  
 * path  

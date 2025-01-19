@@ -417,7 +417,36 @@ Buttons: 8
 - Text extraction from buttons and pages
 - Basic translation support
 
+### Screenshot Processor (optional)
 
+The screenshot processor is an optional dependency that requires additional dependencies. Install it with:
+
+```bash
+pip install aac-processors[screenshot]
+```
+
+#### screenshot Usage
+
+```python
+from aac_processors import ScreenshotProcessor
+
+# Create processor
+processor = ScreenshotProcessor()
+
+# Load and print a board structure from screenshot
+tree = processor.load_into_tree("path/to/screenshot.png")
+viewer.print_tree(tree)
+
+# Extract text from screenshot
+texts = processor.extract_texts("path/to/screenshot.png")
+print(texts)
+
+# Get detailed page info including colors and grid layout
+page = processor.create_page_from_screenshot("path/to/screenshot.png")
+print(f"Grid size: {page.grid_size}")
+for btn in page.buttons:
+    print(f"Button at {btn.position}: {btn.label} (color: {btn.style.body_color})")
+```
 
 ## Command Line Interface
 
@@ -551,6 +580,12 @@ python -m pytest
 
 Current test coverage: 52%
 
+## Dev
+
+```bash
+uv pip install -e ".[dev,screenshot]"
+```
+
 ## License
 
 This project is licensed under the AGPLv3 License - see the [LICENSE](LICENSE) file for details.
@@ -564,3 +599,5 @@ This project is licensed under the AGPLv3 License - see the [LICENSE](LICENSE) f
 
 - [Will Wade](https://github.com/willwade)
 - [OpenAAC](https://github.com/OpenAAC)
+
+
