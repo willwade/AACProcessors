@@ -131,6 +131,10 @@ class CoughDropProcessor(FileProcessor):
             # Create button data
             button_data: dict[str, Any] = {"id": button.id, "label": button.label}
 
+            # Add background color if present
+            if button.style and button.style.body_color:
+                button_data["background_color"] = button.style.body_color
+
             if button.vocalization and button.vocalization != button.label:
                 button_data["vocalization"] = button.vocalization
 
