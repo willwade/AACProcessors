@@ -37,4 +37,4 @@ for btn in page.buttons:
 # Then save tree as OBF format
 coughdrop_processor.save_from_tree(tree, str(output_file))
 
-print(f"\nConverted {input_file} to {output_file}") 
+print(f"\nConverted {input_file} to {output_file}")
