@@ -16,6 +16,9 @@ class ApplePanelsProcessor(FileProcessor):
         """Initialize the processor."""
         super().__init__()
         self.collected_texts = []
+        self.file_path: Optional[str] = None
+        self.original_filename: Optional[str] = None
+        self.original_file_path: Optional[str] = None
 
     def can_process(self, file_path: str) -> bool:
         """Check if file is an Apple Panels config.
@@ -69,7 +72,7 @@ class ApplePanelsProcessor(FileProcessor):
             y = int(float(rect_parts[1]))
             # Calculate grid position based on coordinates
             # Assuming standard button size of 100x25
-            row = y // 25
+            row = y // 100
             col = x // 100
         except (ValueError, IndexError):
             row, col = 0, 0
@@ -209,12 +212,11 @@ class ApplePanelsProcessor(FileProcessor):
         with open(contents_dir / "Info.plist", "wb") as f:
             plistlib.dump(info, f)
 
-        # Create empty AssetIndex.plist
-        with open(resources_dir / "AssetIndex.plist", "wb") as f:
-            plistlib.dump({}, f)
+        # Create AssetIndex.plist for images
+        assets = {}
 
-        # Create PanelDefinitions.plist
-        panels: dict[str, Any] = {
+        # Convert pages to panels
+        panels = {
             "Panels": {},
             "ToolbarOrdering": {
                 "ToolbarIdentifiersAfterBasePanel": [],
@@ -244,11 +246,28 @@ class ApplePanelsProcessor(FileProcessor):
                 "UsesPinnedResizing": False,
             }
 
+            # Get page dimensions
+            rows, cols = page.grid_size
+            page_width = 1100  # Default width
+            page_height = page_width * (
+                rows / cols
+            )  # Make height proportional to maintain square buttons
+            button_size = min(page_width / cols, page_height / rows)  # Square buttons
+
             # Convert buttons
             for btn in page.buttons:
-                row, col = btn.position
-                x = col * 100  # Standard width 100
-                y = row * 25  # Standard height 25
+                # Use absolute position if available, otherwise calculate from grid
+                if btn.left is not None and btn.top is not None:
+                    x = int(btn.left * page_width)
+                    y = int(btn.top * page_height)
+                else:
+                    row, col = btn.position
+                    x = int(col * button_size)
+                    y = int(row * button_size)
+
+                # Use square button dimensions
+                width = int(button_size)
+                height = int(button_size)
 
                 button = {
                     "ButtonType": 0,
@@ -261,8 +280,37 @@ class ApplePanelsProcessor(FileProcessor):
                     "FontSize": 12,
                     "ID": btn.id,
                     "PanelObjectType": "Button",
-                    "Rect": f"{{{{{x}, {y}}}, {{100, 25}}}}",
+                    "Rect": f"{{{{{x}, {y}}}, {{{width}, {height}}}}}",
                 }
+
+                # Handle image if present
+                if btn.image and btn.image.get("url"):
+                    import uuid
+
+                    # Generate unique image ID in Apple format
+                    image_id = f"Image.{str(uuid.uuid4()).upper()}"
+
+                    # Add to assets index with proper format
+                    assets[image_id] = {
+                        "Type": "Image",
+                        "Name": btn.label
+                        or "Button Image",  # Use button label as image name
+                    }
+
+                    # Add image reference to button
+                    button["DisplayImageResource"] = image_id
+
+                    # Download and save image directly in Resources
+                    try:
+                        import requests
+
+                        response = requests.get(btn.image["url"])
+                        if response.status_code == 200:
+                            # Save image with the same ID as referenced
+                            with open(resources_dir / image_id, "wb") as f:
+                                f.write(response.content)
+                    except Exception as e:
+                        self.debug(f"Failed to download image {btn.image['url']}: {e}")
 
                 # Add actions
                 if btn.type == ButtonType.NAVIGATE and btn.target_page_id:
@@ -287,9 +335,13 @@ class ApplePanelsProcessor(FileProcessor):
                         }
                     ]
 
-                panel["PanelObjects"].append(button)  # type: ignore
+                panel["PanelObjects"].append(button)
 
             panels["Panels"][page.id] = panel
+
+        # Save AssetIndex.plist
+        with open(resources_dir / "AssetIndex.plist", "wb") as f:
+            plistlib.dump(assets, f)
 
         # Save panel definitions
         with open(resources_dir / "PanelDefinitions.plist", "wb") as f:

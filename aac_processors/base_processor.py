@@ -4,10 +4,11 @@ import tempfile
 import uuid
 import zipfile
 from abc import ABC, abstractmethod
+from pathlib import Path
 from threading import Lock
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Optional, Union
 
-from .tree_structure import AACTree
+from .tree_structure import AACTree, ButtonStyle, ButtonType
 
 
 class AACProcessor(ABC):
@@ -19,7 +20,8 @@ class AACProcessor(ABC):
         """Initialize the processor."""
         self.tree = AACTree()
         self._session_id = str(uuid.uuid4())
-        self._temp_dir: Optional[str] = None
+        self.source_file: Optional[Path] = None
+        self.temp_dir: Optional[Path] = None
         self._original_filename: Optional[str] = None
         self._debug_output: Optional[Callable[[str], None]] = None
         self.is_archive = False  # Default to non-archive
@@ -34,17 +36,17 @@ class AACProcessor(ABC):
         Raises:
             RuntimeError: If workspace creation fails.
         """
-        if not self._temp_dir:
+        if not self.temp_dir:
             with self._temp_lock:
                 temp_dir = tempfile.mkdtemp(prefix=f"aac_{self._session_id}_")
                 if not temp_dir:
                     raise RuntimeError("Failed to create temporary directory")
-                self._temp_dir = temp_dir
+                self.temp_dir = Path(temp_dir)
                 self._debug_print(f"Created session workspace: {temp_dir}")
 
-        if not self._temp_dir:  # For type checker
+        if not self.temp_dir:  # For type checker
             raise RuntimeError("Temporary directory not available")
-        return self._temp_dir
+        return str(self.temp_dir)
 
     def set_source_file(self, file_path: str) -> None:
         """Record the original filename.
@@ -54,6 +56,7 @@ class AACProcessor(ABC):
         """
         filename = os.path.splitext(os.path.basename(file_path))[0]
         self._original_filename = filename
+        self.source_file = Path(file_path)
         self._debug_print(f"Set source file: {filename}")
 
     def _prepare_workspace(self, file_path: str) -> str:
@@ -124,10 +127,10 @@ class AACProcessor(ABC):
 
     def cleanup_temp_files(self) -> None:
         """Clean up temporary files and directories."""
-        if self._temp_dir and os.path.exists(self._temp_dir):
+        if self.temp_dir and os.path.exists(self.temp_dir):
             try:
-                shutil.rmtree(self._temp_dir)
-                self._temp_dir = None
+                shutil.rmtree(self.temp_dir)
+                self.temp_dir = None
                 self._debug_print("Cleaned up workspace directory")
             except Exception as e:
                 self._debug_print(f"Error cleaning workspace: {str(e)}")
@@ -259,3 +262,46 @@ class AACProcessor(ABC):
         except Exception as e:
             self.debug(f"Error processing texts: {str(e)}")
             return None
+
+
+class AACButton:
+    """Button in an AAC system."""
+
+    def __init__(
+        self,
+        id: str,
+        label: str,
+        type: ButtonType = ButtonType.SPEAK,
+        position: tuple[int, int] = (0, 0),
+        target_page_id: Optional[str] = None,
+        vocalization: Optional[str] = None,
+        action: Optional[str] = None,
+        image: Optional[dict[str, Any]] = None,
+        width: Optional[float] = None,
+        height: Optional[float] = None,
+    ) -> None:
+        """Initialize button.
+
+        Args:
+            id: Unique identifier
+            label: Button text
+            type: Button type (speak, navigate, action)
+            position: Grid position (row, col)
+            target_page_id: ID of target page for navigation
+            vocalization: Text to speak (if different from label)
+            action: Action to perform
+            image: Image data dictionary
+            width: Button width as percentage of page width (0.0-1.0)
+            height: Button height as percentage of page height (0.0-1.0)
+        """
+        self.id = id
+        self.label = label
+        self.type = type
+        self.position = position
+        self.target_page_id = target_page_id
+        self.vocalization = vocalization or label
+        self.action = action
+        self.image = image or {}
+        self.style = ButtonStyle()
+        self.width = width
+        self.height = height

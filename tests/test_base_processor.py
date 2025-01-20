@@ -144,7 +144,7 @@ def test_cleanup(test_processor: AACProcessor) -> None:
     assert os.path.exists(workspace)
     test_processor.cleanup_temp_files()
     assert not os.path.exists(workspace)
-    assert test_processor._temp_dir is None
+    assert test_processor.temp_dir is None
 
 
 def test_debug_print(test_processor: AACProcessor) -> None:

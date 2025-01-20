@@ -10,7 +10,7 @@ from aac_processors.tree_structure import (
 
 
 @pytest.fixture
-def sample_button():
+def sample_button() -> AACButton:
     """Create a sample button for testing"""
     return AACButton(
         id="btn1",
@@ -28,7 +28,7 @@ def sample_button():
 
 
 @pytest.fixture
-def sample_page(sample_button):
+def sample_page(sample_button: AACButton) -> AACPage:
     """Create a sample page with buttons"""
     page = AACPage(id="page1", name="Test Page", grid_size=(3, 3))
     page.buttons.extend(
@@ -37,12 +37,19 @@ def sample_page(sample_button):
             AACButton(
                 "btn2", "Navigate", ButtonType.NAVIGATE, (0, 1), target_page_id="page2"
             ),
+            AACButton(
+                "page1_word_hello",
+                "Hello",
+                ButtonType.SPEAK,
+                (0, 2),
+                vocalization="Hello",
+            ),
         ]
     )
     return page
 
 
-def test_button_creation(sample_button):
+def test_button_creation(sample_button: AACButton) -> None:
     """Test basic button creation and properties"""
     assert sample_button.id == "btn1"
     assert sample_button.label == "Test Button"
@@ -52,23 +59,27 @@ def test_button_creation(sample_button):
     assert sample_button.style.font_color == "#000000"
 
 
-def test_page_creation():
+def test_page_creation() -> None:
     """Test page creation and button management"""
     page = AACPage(id="page1", name="Test Page", grid_size=(3, 3))
 
     button1 = AACButton("btn1", "Button 1", ButtonType.SPEAK, (0, 0))
     button2 = AACButton("btn2", "Button 2", ButtonType.NAVIGATE, (0, 1))
+    wordlist_button = AACButton("page1_word_test", "Test", ButtonType.SPEAK, (0, 2))
 
-    page.buttons.extend([button1, button2])
+    page.buttons.extend([button1, button2, wordlist_button])
 
     assert page.id == "page1"
     assert page.name == "Test Page"
     assert page.grid_size == (3, 3)
-    assert len(page.buttons) == 2
-    assert not page.is_wordlist
+    assert len(page.buttons) == 3
+    assert page.buttons[0].type == ButtonType.SPEAK
+    assert page.buttons[1].type == ButtonType.NAVIGATE
+    # Verify wordlist button
+    assert page.buttons[2].id.startswith("page1_word_")
 
 
-def test_tree_navigation():
+def test_tree_navigation() -> None:
     """Test tree navigation and relationships"""
     tree = AACTree()
 
@@ -99,7 +110,7 @@ def test_tree_navigation():
     assert tree.get_path_to_page("page1") == ["home", "page1"]
 
 
-def test_navigation_analysis():
+def test_navigation_analysis() -> None:
     """Test navigation analysis functionality"""
     tree = AACTree()
 

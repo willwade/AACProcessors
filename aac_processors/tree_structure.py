@@ -28,46 +28,50 @@ class ButtonStyle:
 
 @dataclass
 class AACButton:
-    """Represents a button in an AAC system"""
+    """Button in an AAC system."""
 
     id: str
     label: str
-    type: ButtonType
-    position: tuple[int, int]  # (row, col)
-    vocalization: Optional[str] = None
-    image_path: Optional[str] = None
+    type: ButtonType = ButtonType.SPEAK
+    position: tuple[int, int] = (0, 0)
     target_page_id: Optional[str] = None
+    vocalization: Optional[str] = None
     action: Optional[str] = None
+    image: Optional[dict[str, Any]] = None
     style: ButtonStyle = field(default_factory=ButtonStyle)
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-    def __post_init__(self) -> None:
-        """Initialize any additional attributes after dataclass initialization"""
-        # Ensure style exists
-        if not hasattr(self, "style"):
-            self.style = ButtonStyle()
-        # Ensure metadata exists
-        if not hasattr(self, "metadata"):
-            self.metadata = {}
+    # Dimensions as percentage of page (0.0-1.0)
+    width: float = 0.1  # Default 10% of page width
+    height: float = 0.1  # Default 10% of page height
+    left: Optional[float] = None  # Absolute position from left
+    top: Optional[float] = None  # Absolute position from top
 
 
 @dataclass
 class AACPage:
-    """Represents a page/grid in an AAC system"""
+    """Represents a page in an AAC system"""
 
     id: str
     name: str
     grid_size: tuple[int, int]  # (rows, cols)
     buttons: list[AACButton] = field(default_factory=list)
-    parent_id: Optional[str] = None
-    is_wordlist: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
+    parent_id: Optional[str] = None  # ID of parent page for navigation
+
+    def __post_init__(self) -> None:
+        """Initialize any additional attributes after dataclass initialization"""
+        # Ensure buttons exists
+        if not hasattr(self, "buttons"):
+            self.buttons = []
+        # Ensure metadata exists
+        if not hasattr(self, "metadata"):
+            self.metadata = {}
 
 
 class AACTree:
-    """Tree structure representing an entire AAC system"""
+    """Tree structure for AAC pages."""
 
     def __init__(self) -> None:
+        """Initialize empty tree."""
         self.pages: dict[str, AACPage] = {}
         self.root_id: Optional[str] = None
         self.metadata: dict[str, Any] = {}

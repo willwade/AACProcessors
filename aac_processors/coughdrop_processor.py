@@ -41,17 +41,18 @@ class CoughDropProcessor(FileProcessor):
         self.save_from_tree(tree, output_path)
 
     def _load_board_into_tree(self, file_path: str, tree: AACTree) -> None:
-        """Load a board file into the tree.
+        """Load board data into tree structure.
 
         Args:
-            file_path (str): Path to the board file.
-            tree (AACTree): Tree to load into.
+            file_path: Path to the OBF file to load
+            tree: Tree to add the board to
         """
         try:
+            # Load and parse the JSON file first
             with open(file_path, encoding="utf-8") as f:
                 board_data = json.load(f)
 
-            # Get grid size
+            # Get grid dimensions
             grid = board_data.get("grid", {})
             rows = grid.get("rows", 1)
             cols = grid.get("columns", 1)
@@ -61,40 +62,50 @@ class CoughDropProcessor(FileProcessor):
                 id=board_data.get("id", ""),
                 name=board_data.get("name", ""),
                 grid_size=(rows, cols),
+                parent_id=None,  # Will be set when processing navigation buttons
             )
 
             # Process buttons
             buttons = board_data.get("buttons", [])
             for button in buttons:
-                if not isinstance(button, dict):
-                    continue
-
-                # Determine button type and target
+                # Get button type and target
                 button_type = ButtonType.SPEAK
                 target_page_id = None
                 action = None
-                load_board = button.get("load_board", {})
-                if load_board:
+
+                if "load_board" in button:
                     button_type = ButtonType.NAVIGATE
-                    target_page_id = load_board.get("id")
+                    target_page_id = button["load_board"].get("id", "")
+                    # Set parent_id for the target page if it exists
+                    if target_page_id and target_page_id in tree.pages:
+                        tree.pages[target_page_id].parent_id = page.id
                 elif "action" in button:
                     button_type = ButtonType.ACTION
                     action = button["action"]
 
-                # Get position from grid order or absolute positioning
-                pos_x = pos_y = 0
-                if "left" in button and "top" in button:
-                    # Convert absolute positioning to grid coordinates
-                    pos_x = int(float(button["left"]) * cols)
-                    pos_y = int(float(button["top"]) * rows)
-                elif grid.get("order"):
-                    # Find position in grid order
-                    button_id = button.get("id")
-                    for row_idx, row in enumerate(grid["order"]):
-                        if button_id in row:
-                            pos_y = row_idx
-                            pos_x = row.index(button_id)
-                            break
+                # Get position from grid order
+                pos_x = 0
+                pos_y = 0
+                if "grid" in board_data:
+                    order = grid.get("order", [])
+                    for i, row in enumerate(order):
+                        if button["id"] in row:
+                            pos_y = i
+                            pos_x = row.index(button["id"])
+
+                # Get image data if present
+                image = None
+                if "image_id" in button:
+                    image_id = button["image_id"]
+                    for img in board_data.get("images", []):
+                        if img.get("id") == image_id:
+                            image = img
+
+                # Get dimensions - these are percentages in OBF format
+                width = button.get("width", 1.0 / cols)  # Default to evenly divided
+                height = button.get("height", 1.0 / rows)
+                left = button.get("left")  # Optional absolute position
+                top = button.get("top")
 
                 # Create button
                 btn = AACButton(
@@ -105,13 +116,25 @@ class CoughDropProcessor(FileProcessor):
                     target_page_id=target_page_id,
                     vocalization=button.get("vocalization", ""),
                     action=action,
+                    image=image,
+                    width=width,
+                    height=height,
+                    left=left,
+                    top=top,
                 )
+
+                # Set button style
+                if "background_color" in button:
+                    btn.style.body_color = button["background_color"]
+                if "border_color" in button:
+                    btn.style.border_color = button["border_color"]
+
                 page.buttons.append(btn)
 
-            tree.pages[page.id] = page
-
+            tree.add_page(page)
         except Exception as e:
             self.debug(f"Error loading board file {file_path}: {str(e)}")
+            raise
 
     def _convert_page_to_board(self, page: AACPage, tree: AACTree) -> dict[str, Any]:
         """Convert a page to a board format.
@@ -126,6 +149,8 @@ class CoughDropProcessor(FileProcessor):
         rows, cols = page.grid_size
         grid_order: list[list[Optional[str]]] = [[None] * cols for _ in range(rows)]
         buttons_data: list[dict[str, Any]] = []
+        images_data: list[dict[str, Any]] = []
+        image_ids: set[str] = set()
 
         for button in page.buttons:
             # Create button data
@@ -138,6 +163,14 @@ class CoughDropProcessor(FileProcessor):
             if button.vocalization and button.vocalization != button.label:
                 button_data["vocalization"] = button.vocalization
 
+            # Add image if present
+            if button.image:
+                image_id = button.image.get("id")
+                if image_id and image_id not in image_ids:
+                    images_data.append(button.image)
+                    image_ids.add(image_id)
+                button_data["image_id"] = image_id
+
             # Only add navigation if target page exists in the tree
             if button.type == ButtonType.NAVIGATE and button.target_page_id:
                 if button.target_page_id in tree.pages:
@@ -149,7 +182,6 @@ class CoughDropProcessor(FileProcessor):
                     self.debug(
                         f"Warning: Navigation target {button.target_page_id} not found, converting to speak button"
                     )
-                    # Skip adding load_board data, making it a speak button by default
 
             # Add to grid order
             y, x = button.position
@@ -165,7 +197,7 @@ class CoughDropProcessor(FileProcessor):
             "locale": "en_US",
             "grid": {"rows": rows, "columns": cols, "order": grid_order},
             "buttons": buttons_data,
-            "images": [],
+            "images": images_data,
             "sounds": [],
         }
 
