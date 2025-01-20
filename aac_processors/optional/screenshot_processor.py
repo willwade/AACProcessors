@@ -343,7 +343,7 @@ class ScreenshotProcessor(AACProcessor):
         import easyocr
         import numpy as np
 
-        # Initialize EasyOCR with better parameters
+        # Initialize EasyOCR
         reader = easyocr.Reader(["en"], gpu=False)
 
         # Read image
@@ -354,19 +354,20 @@ class ScreenshotProcessor(AACProcessor):
         # Get image dimensions
         img_height, img_width = img.shape[:2]
 
-        # Detect text regions with lower confidence
+        # Detect text regions with better parameters
         results = reader.readtext(
             img,
-            text_threshold=0.2,  # Lower confidence threshold
-            low_text=0.2,  # Better detection of small text
-            link_threshold=0.2,  # More aggressive text grouping
+            text_threshold=0.2,  # Lower threshold for detection
+            low_text=0.1,        # Better for small text
+            link_threshold=0.3,  # Less aggressive grouping
+            add_margin=0.1,      # Add margin around text
         )
 
         # Process results
         text_regions = []
 
         for box_points, text, conf in results:
-            if conf < 0.3:  # Lower minimum confidence
+            if conf < 0.3:  # Minimum confidence
                 continue
 
             # Convert box points to x,y,w,h format
@@ -376,12 +377,12 @@ class ScreenshotProcessor(AACProcessor):
             w = int(max(box[:, 0]) - x)
             h = int(max(box[:, 1]) - y)
 
-            # More permissive size threshold
-            if (w * h) < (img_width * img_height * 0.0005):  # Reduced from 0.001
+            # More permissive size threshold for small text
+            if (w * h) < (img_width * img_height * 0.0002):  # Even smaller threshold
                 continue
 
             # Get color from region
-            region_img = img[y : y + h, x : x + w]
+            region_img = img[y:y+h, x:x+w]
             avg_color = cv2.mean(region_img)[:3]
 
             # Clean up text but preserve special characters
@@ -393,95 +394,99 @@ class ScreenshotProcessor(AACProcessor):
             if text.lower() in ["vocab", "menu"]:
                 continue
 
-            text_regions.append(
-                {
-                    "box": (x, y, w, h),
-                    "text": text,
-                    "confidence": conf,
-                    "color": {
-                        "b": int(avg_color[0]),
-                        "g": int(avg_color[1]),
-                        "r": int(avg_color[2]),
-                    },
+            text_regions.append({
+                "box": (x, y, w, h),
+                "text": text,
+                "confidence": conf,
+                "color": {
+                    "b": int(avg_color[0]),
+                    "g": int(avg_color[1]),
+                    "r": int(avg_color[2]),
                 }
-            )
+            })
 
-        # More aggressive merging of nearby regions
-        text_regions = self.merge_nearby_regions(
-            text_regions, distance_threshold=25
-        )  # Increased from 15
+        # More precise merging of nearby regions
+        text_regions = self.merge_nearby_regions(text_regions, distance_threshold=10)  # Reduced threshold
 
-        # Sort by position for alignment analysis
+        # Sort by position
         text_regions.sort(key=lambda r: (r["box"][1], r["box"][0]))
 
         return text_regions
 
     def merge_nearby_regions(
-        self, regions: list[dict[str, Any]], distance_threshold: int = 25
+        self, regions: list[dict[str, Any]], distance_threshold: int = 15
     ) -> list[dict[str, Any]]:
-        """Merge text regions that are close to each other."""
+        """Merge text regions that are close to each other and likely part of the same button."""
         if not regions:
             return []
-
+        
         merged = []
         used = set()
-
+        
         for i, region in enumerate(regions):
             if i in used:
                 continue
-
+            
             merged_region = region.copy()
             x1, y1, w1, h1 = region["box"]
-
+            
             # Find nearby regions
-            for j, other in enumerate(regions[i + 1 :], i + 1):
+            for j, other in enumerate(regions[i+1:], i+1):
                 if j in used:
                     continue
-
+                
                 x2, y2, w2, h2 = other["box"]
-
-                # More permissive overlap/proximity check
-                x_overlap = (x1 <= x2 + w2 + distance_threshold) and (
-                    x2 <= x1 + w1 + distance_threshold
+                
+                # Only merge if boxes are very close and similar height
+                height_ratio = min(h1, h2) / max(h1, h2)
+                if height_ratio < 0.7:  # Height must be similar
+                    continue
+                
+                # Check for vertical stacking (multi-line text)
+                vertical_stack = (
+                    abs(x1 - x2) < w1/3 and  # Horizontally aligned
+                    abs((x1 + w1) - (x2 + w2)) < w1/3 and  # Similar width
+                    abs(y1 + h1 - y2) < distance_threshold  # Vertically adjacent
                 )
-                y_overlap = (y1 <= y2 + h2 + distance_threshold) and (
-                    y2 <= y1 + h1 + distance_threshold
+                
+                # Check for horizontal merging (same line text)
+                horizontal_merge = (
+                    abs(y1 - y2) < h1/3 and  # Vertically aligned
+                    abs((y1 + h1) - (y2 + h2)) < h1/3 and  # Similar height
+                    abs(x1 + w1 - x2) < distance_threshold  # Horizontally adjacent
                 )
-                x_close = abs((x1 + w1 / 2) - (x2 + w2 / 2)) <= distance_threshold * 1.5
-                y_close = abs((y1 + h1 / 2) - (y2 + h2 / 2)) <= distance_threshold
-
-                # Check if regions should be merged vertically (for multi-line text)
-                vertical_stack = (abs(x1 - x2) < w1 / 2) and (
-                    abs((x1 + w1) - (x2 + w2)) < w1 / 2
-                )
-
-                if (x_overlap and y_close) or (y_overlap and x_close) or vertical_stack:
+                
+                if vertical_stack or horizontal_merge:
                     # Merge boxes
                     min_x = min(x1, x2)
                     min_y = min(y1, y2)
                     max_x = max(x1 + w1, x2 + w2)
                     max_y = max(y1 + h1, y2 + h2)
-
+                    
                     merged_region["box"] = (min_x, min_y, max_x - min_x, max_y - min_y)
+                    
                     # Preserve line breaks for vertical stacks
                     if vertical_stack:
-                        merged_region["text"] = (
-                            f"{merged_region['text']}\n{other['text']}"
-                        )
+                        merged_region["text"] = f"{merged_region['text']}\n{other['text']}"
                     else:
-                        merged_region["text"] = (
-                            f"{merged_region['text']} {other['text']}"
-                        )
+                        # For horizontal merges, check if special characters need spacing
+                        text1 = merged_region["text"]
+                        text2 = other["text"]
+                        if text1[-1].isalnum() and text2[0].isalnum():
+                            merged_region["text"] = f"{text1} {text2}"
+                        else:
+                            merged_region["text"] = f"{text1}{text2}"
+                        
                     merged_region["confidence"] = min(
                         merged_region["confidence"], other["confidence"]
                     )
-
+                    
                     used.add(j)
                     x1, y1, w1, h1 = merged_region["box"]
-
+            
             merged.append(merged_region)
             used.add(i)
-
+        
         return merged
 
     def create_page_from_screenshot(
