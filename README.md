@@ -434,7 +434,11 @@ from aac_processors import ScreenshotProcessor
 processor = ScreenshotProcessor()
 
 # Load and print a board structure from screenshot
-tree = processor.load_into_tree("path/to/screenshot.png")
+tree = processor.load_into_tree(
+    "path/to/screenshot.png",
+    grid_rows=6,     # Optional: specify grid dimensions if known
+    grid_cols=4      # e.g. 6x4 for TouchChat24, 6x10 for TouchChat60
+)
 viewer.print_tree(tree)
 
 # Extract text from screenshot
@@ -442,11 +446,20 @@ texts = processor.extract_texts("path/to/screenshot.png")
 print(texts)
 
 # Get detailed page info including colors and grid layout
-page = processor.create_page_from_screenshot("path/to/screenshot.png")
+page = processor.create_page_from_screenshot(
+    "path/to/screenshot.png",
+    grid_rows=6,        # Number of rows if known
+    grid_cols=4,        # Number of columns if known
+    ignore_rows=1,      # Skip top N rows (e.g. for menu bars)
+)
 print(f"Grid size: {page.grid_size}")
 for btn in page.buttons:
     print(f"Button at {btn.position}: {btn.label} (color: {btn.style.body_color})")
 ```
+
+Debug Images: The processor automatically creates two visualization files alongside the input image:
+- `input.png.debug.png`: Shows the detected grid cells in green
+- `input.png.text_debug.png`: Shows detected text regions in blue with text overlay
 
 ## Command Line Interface
 
