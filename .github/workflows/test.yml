@@ -28,7 +28,7 @@ jobs:
     - name: Install dependencies
       run: |
         uv sync
-        uv pip install ".[dev]"
+        uv pip install ".[dev,screenshot]"
         
     - name: Run tests
       run: |
