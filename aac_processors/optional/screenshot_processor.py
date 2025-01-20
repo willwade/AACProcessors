@@ -358,9 +358,9 @@ class ScreenshotProcessor(AACProcessor):
         results = reader.readtext(
             img,
             text_threshold=0.2,  # Lower threshold for detection
-            low_text=0.1,        # Better for small text
+            low_text=0.1,  # Better for small text
             link_threshold=0.3,  # Less aggressive grouping
-            add_margin=0.1,      # Add margin around text
+            add_margin=0.1,  # Add margin around text
         )
 
         # Process results
@@ -382,7 +382,7 @@ class ScreenshotProcessor(AACProcessor):
                 continue
 
             # Get color from region
-            region_img = img[y:y+h, x:x+w]
+            region_img = img[y : y + h, x : x + w]
             avg_color = cv2.mean(region_img)[:3]
 
             # Clean up text but preserve special characters
@@ -394,19 +394,23 @@ class ScreenshotProcessor(AACProcessor):
             if text.lower() in ["vocab", "menu"]:
                 continue
 
-            text_regions.append({
-                "box": (x, y, w, h),
-                "text": text,
-                "confidence": conf,
-                "color": {
-                    "b": int(avg_color[0]),
-                    "g": int(avg_color[1]),
-                    "r": int(avg_color[2]),
+            text_regions.append(
+                {
+                    "box": (x, y, w, h),
+                    "text": text,
+                    "confidence": conf,
+                    "color": {
+                        "b": int(avg_color[0]),
+                        "g": int(avg_color[1]),
+                        "r": int(avg_color[2]),
+                    },
                 }
-            })
+            )
 
         # More precise merging of nearby regions
-        text_regions = self.merge_nearby_regions(text_regions, distance_threshold=10)  # Reduced threshold
+        text_regions = self.merge_nearby_regions(
+            text_regions, distance_threshold=10
+        )  # Reduced threshold
 
         # Sort by position
         text_regions.sort(key=lambda r: (r["box"][1], r["box"][0]))
@@ -419,74 +423,67 @@ class ScreenshotProcessor(AACProcessor):
         """Merge text regions that are close to each other and likely part of the same button."""
         if not regions:
             return []
-        
+
         merged = []
         used = set()
-        
+
+        # Sort regions by position for better merging
+        regions.sort(key=lambda r: (r["box"][1], r["box"][0]))  # Sort by y then x
+
         for i, region in enumerate(regions):
             if i in used:
                 continue
-            
+
             merged_region = region.copy()
             x1, y1, w1, h1 = region["box"]
-            
+
             # Find nearby regions
-            for j, other in enumerate(regions[i+1:], i+1):
+            for j, other in enumerate(regions[i + 1 :], i + 1):
                 if j in used:
                     continue
-                
+
                 x2, y2, w2, h2 = other["box"]
-                
+
                 # Only merge if boxes are very close and similar height
                 height_ratio = min(h1, h2) / max(h1, h2)
                 if height_ratio < 0.7:  # Height must be similar
                     continue
-                
-                # Check for vertical stacking (multi-line text)
-                vertical_stack = (
-                    abs(x1 - x2) < w1/3 and  # Horizontally aligned
-                    abs((x1 + w1) - (x2 + w2)) < w1/3 and  # Similar width
-                    abs(y1 + h1 - y2) < distance_threshold  # Vertically adjacent
-                )
-                
+
                 # Check for horizontal merging (same line text)
                 horizontal_merge = (
-                    abs(y1 - y2) < h1/3 and  # Vertically aligned
-                    abs((y1 + h1) - (y2 + h2)) < h1/3 and  # Similar height
-                    abs(x1 + w1 - x2) < distance_threshold  # Horizontally adjacent
+                    abs(y1 - y2) < h1 / 3  # Vertically aligned
+                    and abs((y1 + h1) - (y2 + h2)) < h1 / 3  # Similar height
+                    and abs(x1 + w1 - x2) < distance_threshold  # Horizontally adjacent
                 )
-                
-                if vertical_stack or horizontal_merge:
+
+                # We no longer do vertical stacking - let grid handle that
+                if horizontal_merge:
                     # Merge boxes
                     min_x = min(x1, x2)
                     min_y = min(y1, y2)
                     max_x = max(x1 + w1, x2 + w2)
                     max_y = max(y1 + h1, y2 + h2)
-                    
+
                     merged_region["box"] = (min_x, min_y, max_x - min_x, max_y - min_y)
-                    
-                    # Preserve line breaks for vertical stacks
-                    if vertical_stack:
-                        merged_region["text"] = f"{merged_region['text']}\n{other['text']}"
+
+                    # For horizontal merges, check if special characters need spacing
+                    text1 = merged_region["text"]
+                    text2 = other["text"]
+                    if text1[-1].isalnum() and text2[0].isalnum():
+                        merged_region["text"] = f"{text1} {text2}"
                     else:
-                        # For horizontal merges, check if special characters need spacing
-                        text1 = merged_region["text"]
-                        text2 = other["text"]
-                        if text1[-1].isalnum() and text2[0].isalnum():
-                            merged_region["text"] = f"{text1} {text2}"
-                        else:
-                            merged_region["text"] = f"{text1}{text2}"
-                        
+                        merged_region["text"] = f"{text1}{text2}"
+
                     merged_region["confidence"] = min(
                         merged_region["confidence"], other["confidence"]
                     )
-                    
+
                     used.add(j)
                     x1, y1, w1, h1 = merged_region["box"]
-            
+
             merged.append(merged_region)
             used.add(i)
-        
+
         return merged
 
     def create_page_from_screenshot(
@@ -494,6 +491,7 @@ class ScreenshotProcessor(AACProcessor):
         image_path: str,
         grid_rows: Optional[int] = None,
         grid_cols: Optional[int] = None,
+        ignore_rows: int = 0,
     ) -> AACPage:
         """Create an AACPage object from a screenshot using grid-first detection."""
         import cv2
@@ -515,6 +513,14 @@ class ScreenshotProcessor(AACProcessor):
 
         if actual_rows < 1 or actual_cols < 1:
             raise ValueError(f"Invalid grid dimensions: {actual_rows}x{actual_cols}")
+
+        # Calculate grid origin and cell size from boxes
+        x_coords = [x for x, _, _, _ in grid_boxes]
+        y_coords = [y for _, y, _, _ in grid_boxes]
+        grid_origin_x = min(x_coords)
+        grid_origin_y = (
+            min(y_coords) if not ignore_rows else sorted(y_coords)[ignore_rows]
+        )
 
         # Calculate mode cell size (excluding outliers)
         widths = [w for _, _, w, _ in grid_boxes]
@@ -550,8 +556,8 @@ class ScreenshotProcessor(AACProcessor):
         for row in range(actual_rows):
             for col in range(actual_cols):
                 # Calculate expected cell position
-                x = int(col * mode_width)
-                y = int(row * mode_height)
+                x = grid_origin_x + int(col * mode_width)
+                y = grid_origin_y + int(row * mode_height)
 
                 # Define search area (slightly larger than cell)
                 margin = 5
@@ -581,10 +587,7 @@ class ScreenshotProcessor(AACProcessor):
 
                     # Clean up text but preserve special characters
                     text = text.strip()
-                    if text and text.lower() not in [
-                        "vocab",
-                        "menu",
-                    ]:  # Fixed logic error
+                    if text and text.lower() not in ["vocab", "menu"]:
                         cell_texts.append(text)
 
                 # If text found, create button
