@@ -6,7 +6,7 @@ from aac_processors import viewer
 from aac_processors.optional.screenshot_processor import ScreenshotProcessor
 
 # Initialize processor
-processor = ScreenshotProcessor()
+processor = ScreenshotProcessor(save_debug_images=True)  # Enable debug images
 
 # Process example files
 example_files = [

@@ -445,6 +445,9 @@ viewer.print_tree(tree)
 texts = processor.extract_texts("path/to/screenshot.png")
 print(texts)
 
+# Initialize processor with debug images enabled (optional)
+processor = ScreenshotProcessor(save_debug_images=True)
+
 # Get detailed page info including colors and grid layout
 page = processor.create_page_from_screenshot(
     "path/to/screenshot.png",
@@ -457,7 +460,7 @@ for btn in page.buttons:
     print(f"Button at {btn.position}: {btn.label} (color: {btn.style.body_color})")
 ```
 
-Debug Images: The processor automatically creates two visualization files alongside the input image:
+Debug Images: When `save_debug_images=True` is set, the processor creates two visualization files alongside the input image:
 - `input.png.debug.png`: Shows the detected grid cells in green
 - `input.png.text_debug.png`: Shows detected text regions in blue with text overlay
 

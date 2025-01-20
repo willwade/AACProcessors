@@ -10,10 +10,15 @@ from ..tree_structure import AACButton, AACPage, AACTree, ButtonStyle, ButtonTyp
 class ScreenshotProcessor(AACProcessor):
     """Process screenshots to detect AAC grid layouts and content."""
 
-    def __init__(self) -> None:
-        """Initialize the processor."""
+    def __init__(self, save_debug_images: bool = False) -> None:
+        """Initialize the processor.
+
+        Args:
+            save_debug_images: Whether to save debug visualization images. Defaults to False.
+        """
         super().__init__()
         self._check_dependencies()
+        self.save_debug_images = save_debug_images
 
     @staticmethod
     def _check_dependencies() -> None:
@@ -185,10 +190,11 @@ class ScreenshotProcessor(AACProcessor):
         if not best_boxes:
             raise ValueError("No cells detected in image")
 
-        # Save debug image
-        debug_path = image_path + ".debug.png"
-        self._save_debug_image(img, best_boxes, debug_path)
-        self.debug(f"Saved debug visualization to: {debug_path}")
+        # Save debug image only if enabled
+        if self.save_debug_images:
+            debug_path = image_path + ".debug.png"
+            self._save_debug_image(img, best_boxes, debug_path)
+            self.debug(f"Saved debug visualization to: {debug_path}")
 
         # Sort contours by position
         best_boxes.sort(key=lambda b: (b[1], b[0]))  # Sort by y then x
@@ -628,9 +634,10 @@ class ScreenshotProcessor(AACProcessor):
                         1,
                     )
 
-        # Save debug image
-        debug_path = image_path + ".text_debug.png"
-        cv2.imwrite(debug_path, debug_img)
+        # Save debug image only if enabled
+        if self.save_debug_images:
+            debug_path = image_path + ".text_debug.png"
+            cv2.imwrite(debug_path, debug_img)
 
         return page
 

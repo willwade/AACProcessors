@@ -10,7 +10,9 @@ from aac_processors.optional.screenshot_processor import ScreenshotProcessor
 # uv pip install -e ".[dev,screenshot]"
 
 # Initialize processors
-screenshot_processor = ScreenshotProcessor()
+screenshot_processor = ScreenshotProcessor(
+    save_debug_images=True
+)  # Set to True to save debug images
 coughdrop_processor = CoughDropProcessor()
 
 # Input screenshot
