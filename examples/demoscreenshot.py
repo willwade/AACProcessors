@@ -16,6 +16,7 @@ example_files = [
         6,  # rows
         10,  # columns
     ),
+    ("proloquo2go.png", 7, 11),
 ]
 
 for filename, rows, cols in example_files:
