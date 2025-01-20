@@ -53,23 +53,69 @@ class ScreenshotProcessor(AACProcessor):
         # Save debug image
         cv2.imwrite(output_path, debug_img)
 
+    def _try_detection(
+        self,
+        img: Any,
+        area_min_pct: float,
+        area_max_pct: float,
+        aspect_min: float,
+        aspect_max: float,
+    ) -> list[tuple[int, int, int, int]]:
+        """Try detection with given parameters."""
+        import cv2
+        import numpy as np
+
+        # Convert to grayscale
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Apply edge detection
+        edges = cv2.Canny(gray, 50, 150)
+
+        # Dilate edges to connect gaps
+        kernel = np.ones((3, 3), np.uint8)
+        edges = cv2.dilate(edges, kernel, iterations=2)  # Increased iterations
+
+        # Find contours
+        contours, _ = cv2.findContours(
+            edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE  # Always use LIST mode
+        )
+
+        # Filter contours
+        min_area = img.shape[0] * img.shape[1] * area_min_pct
+        max_area = img.shape[0] * img.shape[1] * area_max_pct
+        cell_contours = []
+
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            if min_area < area < max_area:
+                peri = cv2.arcLength(cnt, True)
+                approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
+                if len(approx) == 4:  # Looking for rectangles
+                    x, y, w, h = cv2.boundingRect(cnt)
+                    aspect_ratio = float(w) / h
+                    if aspect_min < aspect_ratio < aspect_max:
+                        # Check if this contour is unique (not overlapping with existing)
+                        is_unique = True
+                        for existing in cell_contours:
+                            ex, ey, ew, eh = cv2.boundingRect(existing)
+                            # Calculate overlap
+                            overlap_x = max(0, min(x + w, ex + ew) - max(x, ex))
+                            overlap_y = max(0, min(y + h, ey + eh) - max(y, ey))
+                            if (overlap_x * overlap_y) / (w * h) > 0.5:
+                                is_unique = False
+                                break
+                        if is_unique:
+                            cell_contours.append(cnt)
+
+        return [cv2.boundingRect(cnt) for cnt in cell_contours]
+
     def detect_grid(
         self,
         image_path: str,
         grid_rows: Optional[int] = None,
         grid_cols: Optional[int] = None,
     ) -> tuple[int, int, list[tuple[int, int, int, int]]]:
-        """Detect grid dimensions and cell positions from image.
-
-        Args:
-            image_path: Path to screenshot image
-            grid_rows: Optional number of rows in grid
-            grid_cols: Optional number of columns in grid
-
-        Returns:
-            Tuple of (grid_width, grid_height, list of cell boxes)
-        """
-        # Import here to avoid loading unless needed
+        """Detect grid dimensions and cell positions from image."""
         import cv2
         import numpy as np
 
@@ -77,90 +123,64 @@ class ScreenshotProcessor(AACProcessor):
         if img is None:
             raise ValueError(f"Failed to load image: {image_path}")
 
-        def try_detection(
-            area_min_pct: float,
-            area_max_pct: float,
-            aspect_min: float,
-            aspect_max: float,
-        ) -> list[tuple[int, int, int, int]]:
-            """Try detection with given parameters."""
-            # Convert to grayscale
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-            # Apply edge detection instead of thresholding for clean grids
-            edges = cv2.Canny(gray, 50, 150)
-
-            # Dilate edges to connect any gaps
-            kernel = np.ones((3, 3), np.uint8)
-            edges = cv2.dilate(edges, kernel, iterations=1)
-
-            # Find contours on edge image
-            contours, _ = cv2.findContours(
-                edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-            )
-
-            # Filter contours
-            min_area = img.shape[0] * img.shape[1] * area_min_pct
-            max_area = img.shape[0] * img.shape[1] * area_max_pct
-            cell_contours = []
-
-            for cnt in contours:
-                area = cv2.contourArea(cnt)
-                if min_area < area < max_area:
-                    peri = cv2.arcLength(cnt, True)
-                    approx = cv2.approxPolyDP(
-                        cnt, 0.02 * peri, True
-                    )  # More precise approximation
-                    if len(approx) == 4:  # Looking for rectangles
-                        x, y, w, h = cv2.boundingRect(cnt)
-                        aspect_ratio = float(w) / h
-                        if aspect_min < aspect_ratio < aspect_max:
-                            cell_contours.append(cnt)
-
-            # If we found very few cells with EXTERNAL, try with ALL contours
-            if len(cell_contours) < 12:
-                contours, _ = cv2.findContours(
-                    edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
-                )
-                cell_contours = []
-                for cnt in contours:
-                    area = cv2.contourArea(cnt)
-                    if min_area < area < max_area:
-                        peri = cv2.arcLength(cnt, True)
-                        approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
-                        if len(approx) == 4:
-                            x, y, w, h = cv2.boundingRect(cnt)
-                            aspect_ratio = float(w) / h
-                            if aspect_min < aspect_ratio < aspect_max:
-                                cell_contours.append(cnt)
-
-            return [cv2.boundingRect(cnt) for cnt in cell_contours]
-
-        # Define parameter ranges to try
-        area_ranges = [
-            (0.005, 0.05),  # Default
-            (0.008, 0.03),  # TouchChat specific
-            (0.003, 0.07),  # More permissive
-            (0.001, 0.1),  # Very permissive
-        ]
+        # If dimensions provided, use more permissive detection
+        if grid_rows is not None and grid_cols is not None:
+            expected_cells = grid_rows * grid_cols
+            area_ranges = [
+                (0.0005, 0.2),  # Extremely permissive
+                (0.001, 0.1),  # Very permissive
+                (0.003, 0.07),  # More permissive
+                (0.005, 0.05),  # Default
+            ]
+        else:
+            area_ranges = [
+                (0.005, 0.05),  # Default
+                (0.003, 0.07),  # More permissive
+                (0.001, 0.1),  # Very permissive
+            ]
 
         aspect_ranges = [
-            (0.8, 1.2),  # Nearly square (TouchChat)
-            (0.7, 1.5),  # Default
-            (0.5, 2.0),  # More permissive
-            (0.3, 3.0),  # Very permissive
+            (0.2, 5.0),  # Extremely permissive
+            (0.5, 2.0),  # Very permissive
+            (0.7, 1.5),  # More permissive
+            (0.8, 1.2),  # Nearly square
         ]
 
         best_boxes = []
-        float("inf")
 
         # Try different parameter combinations
         for area_range in area_ranges:
             for aspect_range in aspect_ranges:
-                boxes = try_detection(*area_range, *aspect_range)
-                if boxes and len(boxes) >= 12:  # Accept first reasonable result
-                    best_boxes = boxes
-                    break
+                boxes = self._try_detection(img, *area_range, *aspect_range)
+                if boxes:
+                    if grid_rows and grid_cols:
+                        # With known dimensions, accept if we found enough cells
+                        if (
+                            len(boxes) >= expected_cells * 0.5
+                        ):  # More permissive - allow 50% missing
+                            best_boxes = boxes
+                            break
+                    else:
+                        # Without dimensions, accept first reasonable result
+                        if len(boxes) >= 12:
+                            best_boxes = boxes
+                            break
+            if best_boxes:
+                break
+
+        # If no cells detected, create artificial grid
+        if not best_boxes and grid_rows is not None and grid_cols is not None:
+            # Create evenly spaced grid
+            cell_height = img.shape[0] / grid_rows
+            cell_width = img.shape[1] / grid_cols
+            best_boxes = []
+            for row in range(grid_rows):
+                for col in range(grid_cols):
+                    x = int(col * cell_width)
+                    y = int(row * cell_height)
+                    w = int(cell_width)
+                    h = int(cell_height)
+                    best_boxes.append((x, y, w, h))
 
         if not best_boxes:
             raise ValueError("No cells detected in image")
@@ -319,13 +339,12 @@ class ScreenshotProcessor(AACProcessor):
 
     def detect_text_regions(self, image_path: str) -> list[dict[str, Any]]:
         """Detect text regions in the image using EasyOCR."""
-
         import cv2
         import easyocr
         import numpy as np
 
-        # Initialize EasyOCR
-        reader = easyocr.Reader(["en"])
+        # Initialize EasyOCR with better parameters
+        reader = easyocr.Reader(["en"], gpu=False)
 
         # Read image
         img = cv2.imread(image_path)
@@ -335,14 +354,19 @@ class ScreenshotProcessor(AACProcessor):
         # Get image dimensions
         img_height, img_width = img.shape[:2]
 
-        # Detect text regions
-        results = reader.readtext(img)
+        # Detect text regions with lower confidence
+        results = reader.readtext(
+            img,
+            text_threshold=0.2,  # Lower confidence threshold
+            low_text=0.2,  # Better detection of small text
+            link_threshold=0.2,  # More aggressive text grouping
+        )
 
         # Process results
-        text_regions: list[dict[str, Any]] = []
+        text_regions = []
 
         for box_points, text, conf in results:
-            if conf < 0.5:  # Skip low confidence detections
+            if conf < 0.3:  # Lower minimum confidence
                 continue
 
             # Convert box points to x,y,w,h format
@@ -352,20 +376,20 @@ class ScreenshotProcessor(AACProcessor):
             w = int(max(box[:, 0]) - x)
             h = int(max(box[:, 1]) - y)
 
-            # Skip if box is too small relative to image
-            if (w * h) < (img_width * img_height * 0.001):
+            # More permissive size threshold
+            if (w * h) < (img_width * img_height * 0.0005):  # Reduced from 0.001
                 continue
 
             # Get color from region
             region_img = img[y : y + h, x : x + w]
             avg_color = cv2.mean(region_img)[:3]
 
-            # Clean up text
+            # Clean up text but preserve special characters
             text = text.strip()
             if not text:
                 continue
 
-            # Skip operational buttons
+            # Skip only specific operational buttons
             if text.lower() in ["vocab", "menu"]:
                 continue
 
@@ -382,7 +406,83 @@ class ScreenshotProcessor(AACProcessor):
                 }
             )
 
+        # More aggressive merging of nearby regions
+        text_regions = self.merge_nearby_regions(
+            text_regions, distance_threshold=25
+        )  # Increased from 15
+
+        # Sort by position for alignment analysis
+        text_regions.sort(key=lambda r: (r["box"][1], r["box"][0]))
+
         return text_regions
+
+    def merge_nearby_regions(
+        self, regions: list[dict[str, Any]], distance_threshold: int = 25
+    ) -> list[dict[str, Any]]:
+        """Merge text regions that are close to each other."""
+        if not regions:
+            return []
+
+        merged = []
+        used = set()
+
+        for i, region in enumerate(regions):
+            if i in used:
+                continue
+
+            merged_region = region.copy()
+            x1, y1, w1, h1 = region["box"]
+
+            # Find nearby regions
+            for j, other in enumerate(regions[i + 1 :], i + 1):
+                if j in used:
+                    continue
+
+                x2, y2, w2, h2 = other["box"]
+
+                # More permissive overlap/proximity check
+                x_overlap = (x1 <= x2 + w2 + distance_threshold) and (
+                    x2 <= x1 + w1 + distance_threshold
+                )
+                y_overlap = (y1 <= y2 + h2 + distance_threshold) and (
+                    y2 <= y1 + h1 + distance_threshold
+                )
+                x_close = abs((x1 + w1 / 2) - (x2 + w2 / 2)) <= distance_threshold * 1.5
+                y_close = abs((y1 + h1 / 2) - (y2 + h2 / 2)) <= distance_threshold
+
+                # Check if regions should be merged vertically (for multi-line text)
+                vertical_stack = (abs(x1 - x2) < w1 / 2) and (
+                    abs((x1 + w1) - (x2 + w2)) < w1 / 2
+                )
+
+                if (x_overlap and y_close) or (y_overlap and x_close) or vertical_stack:
+                    # Merge boxes
+                    min_x = min(x1, x2)
+                    min_y = min(y1, y2)
+                    max_x = max(x1 + w1, x2 + w2)
+                    max_y = max(y1 + h1, y2 + h2)
+
+                    merged_region["box"] = (min_x, min_y, max_x - min_x, max_y - min_y)
+                    # Preserve line breaks for vertical stacks
+                    if vertical_stack:
+                        merged_region["text"] = (
+                            f"{merged_region['text']}\n{other['text']}"
+                        )
+                    else:
+                        merged_region["text"] = (
+                            f"{merged_region['text']} {other['text']}"
+                        )
+                    merged_region["confidence"] = min(
+                        merged_region["confidence"], other["confidence"]
+                    )
+
+                    used.add(j)
+                    x1, y1, w1, h1 = merged_region["box"]
+
+            merged.append(merged_region)
+            used.add(i)
+
+        return merged
 
     def create_page_from_screenshot(
         self,
@@ -390,83 +490,139 @@ class ScreenshotProcessor(AACProcessor):
         grid_rows: Optional[int] = None,
         grid_cols: Optional[int] = None,
     ) -> AACPage:
-        """Create an AACPage object from a screenshot using text-first detection."""
+        """Create an AACPage object from a screenshot using grid-first detection."""
         import cv2
+        import numpy as np
 
-        # Read image for dimensions
+        # Read image
         img = cv2.imread(image_path)
         if img is None:
             raise ValueError(f"Failed to load image: {image_path}")
-        img_height, img_width = img.shape[:2]
 
-        # Detect text regions
-        text_regions = self.detect_text_regions(image_path)
+        # First detect grid to get cell boundaries
+        detected_cols, detected_rows, grid_boxes = self.detect_grid(
+            image_path, grid_rows, grid_cols
+        )
 
-        # Create page with provided dimensions
+        # Use provided dimensions or detected ones
+        actual_rows = grid_rows if grid_rows is not None else detected_rows
+        actual_cols = grid_cols if grid_cols is not None else detected_cols
+
+        if actual_rows < 1 or actual_cols < 1:
+            raise ValueError(f"Invalid grid dimensions: {actual_rows}x{actual_cols}")
+
+        # Calculate mode cell size (excluding outliers)
+        widths = [w for _, _, w, _ in grid_boxes]
+        heights = [h for _, _, _, h in grid_boxes]
+        widths.sort()
+        heights.sort()
+
+        # Remove outliers (top/bottom 10%)
+        trim = len(widths) // 10
+        if trim > 0:
+            widths = widths[trim:-trim]
+            heights = heights[trim:-trim]
+
+        mode_width = int(np.median(widths))
+        mode_height = int(np.median(heights))
+
+        # Create page
         page = AACPage(
             id=f"screenshot_{Path(image_path).stem}",
             name=f"Detected Page - {Path(image_path).stem}",
-            grid_size=(grid_rows or 1, grid_cols or 1),
+            grid_size=(actual_rows, actual_cols),
         )
 
-        if grid_rows is not None and grid_cols is not None:
-            # Calculate cell dimensions
-            cell_height = img_height / grid_rows
-            cell_width = img_width / grid_cols
+        # Create debug image
+        debug_img = img.copy()
 
-            # Create grid cells
-            grid_cells = [[[] for _ in range(grid_cols)] for _ in range(grid_rows)]
+        # Initialize EasyOCR
+        import easyocr
 
-            # Map regions to cells based on center point
-            for region in text_regions:
-                x, y, w, h = region["box"]
-                center_x = x + w / 2
-                center_y = y + h / 2
+        reader = easyocr.Reader(["en"], gpu=False)
 
-                # Calculate grid position
-                col = int(center_x / cell_width)
-                row = int(center_y / cell_height)
+        # For each expected cell position
+        for row in range(actual_rows):
+            for col in range(actual_cols):
+                # Calculate expected cell position
+                x = int(col * mode_width)
+                y = int(row * mode_height)
 
-                # Clamp to valid range
-                col = max(0, min(col, grid_cols - 1))
-                row = max(0, min(row, grid_rows - 1))
+                # Define search area (slightly larger than cell)
+                margin = 5
+                search_x = max(0, x - margin)
+                search_y = max(0, y - margin)
+                search_w = min(mode_width + 2 * margin, img.shape[1] - search_x)
+                search_h = min(mode_height + 2 * margin, img.shape[0] - search_y)
 
-                grid_cells[row][col].append(region)
+                # Extract cell region
+                cell_img = img[
+                    search_y : search_y + search_h, search_x : search_x + search_w
+                ]
 
-            # Create buttons from grid cells
-            for row in range(grid_rows):
-                for col in range(grid_cols):
-                    regions = grid_cells[row][col]
-                    if regions:
-                        # Use region with highest confidence
-                        region = max(regions, key=lambda r: r["confidence"])
+                # Detect text in cell
+                results = reader.readtext(
+                    cell_img,
+                    text_threshold=0.2,
+                    low_text=0.2,
+                    link_threshold=0.2,
+                )
 
-                        # Create button
-                        color = region["color"]
-                        style = ButtonStyle(
-                            body_color=f"#{color['r']:02x}{color['g']:02x}{color['b']:02x}"
-                        )
+                # Process results
+                cell_texts = []
+                for _box_points, text, conf in results:
+                    if conf < 0.3:
+                        continue
 
-                        # Clean up text
-                        text = region["text"].strip()
+                    # Clean up text but preserve special characters
+                    text = text.strip()
+                    if text and text.lower() not in [
+                        "vocab",
+                        "menu",
+                    ]:  # Fixed logic error
+                        cell_texts.append(text)
 
-                        # Handle special cases
-                        if text.lower() in ["abc 123", "abc123"]:
-                            text = "ABC\n123"
-                        elif " " in text and not any(
-                            x in text.lower() for x in ["abc", "123"]
-                        ):
-                            # Split multi-word texts that should be separate buttons
-                            text = text.split()[0]
+                # If text found, create button
+                if cell_texts:
+                    # Get color from cell
+                    avg_color = cv2.mean(cell_img)[:3]
 
-                        btn = AACButton(
-                            id=f"btn_{len(page.buttons)}",
-                            label=text,
-                            type=ButtonType.SPEAK,
-                            position=(row, col),
-                            style=style,
-                        )
-                        page.buttons.append(btn)
+                    # Create button
+                    style = ButtonStyle(
+                        body_color=f"#{int(avg_color[2]):02x}{int(avg_color[1]):02x}{int(avg_color[0]):02x}"
+                    )
+
+                    btn = AACButton(
+                        id=f"btn_{len(page.buttons)}",
+                        label=" ".join(cell_texts),
+                        type=ButtonType.SPEAK,
+                        position=(row, col),
+                        style=style,
+                    )
+                    page.buttons.append(btn)
+
+                # Draw cell and text regions in debug image
+                cv2.rectangle(
+                    debug_img,
+                    (search_x, search_y),
+                    (search_x + search_w, search_y + search_h),
+                    (0, 255, 0),
+                    1,
+                )
+                if cell_texts:
+                    cv2.putText(
+                        debug_img,
+                        " ".join(cell_texts),
+                        (search_x + 5, search_y + search_h - 5),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        (0, 0, 255),
+                        1,
+                    )
+
+        # Save debug image
+        debug_path = image_path + ".text_debug.png"
+        cv2.imwrite(debug_path, debug_img)
 
         return page
 
