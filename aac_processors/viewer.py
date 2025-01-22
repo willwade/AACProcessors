@@ -6,12 +6,17 @@ from typing import Optional, Union
 
 from .coughdrop_processor import CoughDropProcessor
 from .gridset_processor import GridsetProcessor
+from .pptx_processor import PowerPointProcessor
 from .snap_processor import SnapProcessor
 from .touchchat_processor import TouchChatProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 ProcessorType = Union[
-    GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor
+    GridsetProcessor,
+    TouchChatProcessor,
+    SnapProcessor,
+    CoughDropProcessor,
+    PowerPointProcessor,
 ]
 
 
@@ -30,6 +35,7 @@ def get_processor_for_file(file_path: str) -> Optional[ProcessorType]:
         TouchChatProcessor(),
         SnapProcessor(),
         CoughDropProcessor(),
+        PowerPointProcessor(),
     ]
 
     for processor in processors:

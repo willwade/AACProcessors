@@ -417,9 +417,16 @@ Buttons: 8
 - Text extraction from buttons and pages
 - Basic translation support
 
+## And non-AAC formats
+### Apple Panels (`.ascconfig`)
+- Support for Apple Panels board sets (used in MacOS for On-screen keyboards)
+- Text extraction from buttons and pages
+- Basic translation support
+- Images supported on buttons
+
 ### Screenshot Processor (optional)
 
-The screenshot processor is an optional dependency that requires additional dependencies. Install it with:
+The screenshot processor is an optional dependency that requires additional dependencies (warning: quite a few!). Install it with:
 
 ```bash
 pip install aac-processors[screenshot]

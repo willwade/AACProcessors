@@ -5,6 +5,7 @@ from pathlib import Path
 from aac_processors import viewer
 from aac_processors.coughdrop_processor import CoughDropProcessor  # For OBF format
 from aac_processors.optional.screenshot_processor import ScreenshotProcessor
+from aac_processors.tree_structure import AACTree  # Import AACTree
 
 # First install the package with dependencies:
 # uv pip install -e ".[dev,screenshot]"
@@ -16,11 +17,19 @@ screenshot_processor = ScreenshotProcessor(
 coughdrop_processor = CoughDropProcessor()
 
 # Input screenshot
-input_file = Path("examples/demofiles/proloquo2go.png")
+input_file = Path("examples/demofiles/IMG_2427.JPG")
 output_file = input_file.with_suffix(".obf")  # OBF extension
 
 # Create tree from screenshot
-tree = screenshot_processor.load_into_tree(str(input_file))
+page = screenshot_processor.create_page_from_screenshot(
+    str(input_file),
+    grid_rows=6,  # Specify number of rows
+    grid_cols=4,  # Specify number of columns
+)
+
+# Create tree with the page
+tree = AACTree()
+tree.add_page(page)
 
 # Show what we detected
 print("\nDetected board structure:")
@@ -30,7 +39,7 @@ viewer.print_tree(tree)
 page = list(tree.pages.values())[0]  # First page
 print("\nDetailed page information:")
 print(f"Grid size: {page.grid_size}")
-print(f"Expected buttons: {7 * 11}, Found: {len(page.buttons)}\n")
+print(f"Expected buttons: {2 *3}, Found: {len(page.buttons)}\n")
 
 print("Buttons with text:")
 for btn in page.buttons:

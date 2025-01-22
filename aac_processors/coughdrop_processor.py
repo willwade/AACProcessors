@@ -54,8 +54,9 @@ class CoughDropProcessor(FileProcessor):
 
             # Get grid dimensions
             grid = board_data.get("grid", {})
-            rows = grid.get("rows", 1)
-            cols = grid.get("columns", 1)
+            rows = int(grid.get("rows", 1))
+            cols = int(grid.get("columns", 1))
+            self.debug(f"Loading board with grid size: {rows}x{cols}")
 
             # Create page
             page = AACPage(
@@ -68,6 +69,7 @@ class CoughDropProcessor(FileProcessor):
             # Process buttons
             buttons = board_data.get("buttons", [])
             for button in buttons:
+                self.debug(f"Processing button: {button.get('id', '')}")
                 # Get button type and target
                 button_type = ButtonType.SPEAK
                 target_page_id = None
@@ -76,6 +78,7 @@ class CoughDropProcessor(FileProcessor):
                 if "load_board" in button:
                     button_type = ButtonType.NAVIGATE
                     target_page_id = button["load_board"].get("id", "")
+                    self.debug(f"Found navigation button to {target_page_id}")
                     # Set parent_id for the target page if it exists
                     if target_page_id and target_page_id in tree.pages:
                         tree.pages[target_page_id].parent_id = page.id
@@ -90,8 +93,9 @@ class CoughDropProcessor(FileProcessor):
                     order = grid.get("order", [])
                     for i, row in enumerate(order):
                         if button["id"] in row:
-                            pos_y = i
-                            pos_x = row.index(button["id"])
+                            pos_y = int(i)
+                            pos_x = int(row.index(button["id"]))
+                            self.debug(f"Found button position: ({pos_x}, {pos_y})")
 
                 # Get image data if present
                 image = None
@@ -101,11 +105,20 @@ class CoughDropProcessor(FileProcessor):
                         if img.get("id") == image_id:
                             image = img
 
-                # Get dimensions - these are percentages in OBF format
-                width = button.get("width", 1.0 / cols)  # Default to evenly divided
-                height = button.get("height", 1.0 / rows)
-                left = button.get("left")  # Optional absolute position
-                top = button.get("top")
+                # Get dimensions - convert percentages to integers
+                width = int(
+                    button.get("width", 1.0 / cols) * cols
+                )  # Convert to grid units
+                height = int(button.get("height", 1.0 / rows) * rows)
+                self.debug(f"Button dimensions: {width}x{height}")
+                left = (
+                    int(button.get("left", 0))
+                    if button.get("left") is not None
+                    else None
+                )
+                top = (
+                    int(button.get("top", 0)) if button.get("top") is not None else None
+                )
 
                 # Create button
                 btn = AACButton(
@@ -130,8 +143,10 @@ class CoughDropProcessor(FileProcessor):
                     btn.style.border_color = button["border_color"]
 
                 page.buttons.append(btn)
+                self.debug(f"Added button {btn.id} at position {btn.position}")
 
             tree.add_page(page)
+            self.debug(f"Added page {page.id} to tree")
         except Exception as e:
             self.debug(f"Error loading board file {file_path}: {str(e)}")
             raise
@@ -147,7 +162,7 @@ class CoughDropProcessor(FileProcessor):
             Dict[str, Any]: Board data.
         """
         rows, cols = page.grid_size
-        grid_order: list[list[Optional[str]]] = [[None] * cols for _ in range(rows)]
+        grid_order: list[list[int]] = [[0] * cols for _ in range(rows)]
         buttons_data: list[dict[str, Any]] = []
         images_data: list[dict[str, Any]] = []
         image_ids: set[str] = set()
