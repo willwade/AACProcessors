@@ -12,6 +12,28 @@ app = FastAPI()
 @app.post("/upload/")
 async def create_upload_file(file: UploadFile):
     processor = GridsetProcessor()
-    
 
-    return {"filename": file.filename}
+    demo_dir = "../examples/demofiles"
+    gridset_file = os.path.join(demo_dir, "SimpleTest.gridset")
+
+    texts = processor.extract_texts(gridset_file)
+
+    translations = {}
+    for i, text in enumerate(texts):
+        translations[text] = f"Translated_{i}"
+    translations["target_lang"] = "es"
+    print(f"Created translations: {translations}")
+
+    outputPath = os.path.join(demo_dir, "output.gridset")
+
+    translated_file = processor.process_texts(
+        gridset_file,
+        translations,
+        outputPath
+    )
+
+    return {
+        "filename": file.filename,
+        "textCount": len(texts),
+        "outputPath": outputPath
+    }
