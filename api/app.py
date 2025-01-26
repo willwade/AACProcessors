@@ -13,7 +13,7 @@ app = FastAPI()
 async def create_upload_file(file: UploadFile):
     processor = GridsetProcessor()
 
-    demo_dir = "../examples/demofiles"
+    demo_dir = "./examples/demofiles"
     gridset_file = os.path.join(demo_dir, "SimpleTest.gridset")
 
     texts = processor.extract_texts(gridset_file)
