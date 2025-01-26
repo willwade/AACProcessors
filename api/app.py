@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from fastapi import FastAPI, File, UploadFile
-from aac_processors.gridset_processor import GridsetProcessor 
+from aac_processors import GridsetProcessor
 
 app = FastAPI()
 
