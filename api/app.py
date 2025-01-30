@@ -4,6 +4,7 @@ import shutil
 from tempfile import NamedTemporaryFile
 from pathlib import Path
 from fastapi.responses import FileResponse
+from deep_translator import GoogleTranslator
 
 # Add the parent directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -30,11 +31,29 @@ async def create_upload_file(file: UploadFile):
     gridset_file = save_upload_file_tmp(file)
     texts = processor.extract_texts(gridset_file)
 
+    print("Got texts")
+
+    translated = GoogleTranslator('en', 'es').translate_batch(texts)
+
+    print("Translated")
+
+
     translations = {}
     for i, text in enumerate(texts):
-        translations[text] = f"Translated_{i}"
+        translations[text] = translated[i]
+        print(f"{text} -> {translations[text]}")
+    
     translations["target_lang"] = "es"
 
+    print("Got translations")
+
     translated = processor.create_translated_file(gridset_file, translations)
+
+    print("Got new file")
+
+    # return {
+    #     "status": "success",
+    #     "translations": translations
+    # }
 
     return FileResponse(translated, media_type="application/octet-stream")
