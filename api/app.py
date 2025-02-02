@@ -4,7 +4,7 @@ import shutil
 from tempfile import NamedTemporaryFile
 from pathlib import Path
 from fastapi.responses import FileResponse
-from deep_translator import GoogleTranslator
+from googletrans import Translator
 
 # Add the parent directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -24,36 +24,70 @@ def save_upload_file_tmp(upload_file: UploadFile) -> Path:
         upload_file.file.close()
     return tmp_path
 
+@app.post("/detect/")
+async def detect_uploaded_file(file: UploadFile):
+    filename = file.filename
+
+    processor = None
+    fileType = ""
+
+    if filename.lower().endswith(".gridset"):
+        processor = GridsetProcessor()
+        fileType = "Grid3"
+
+    if processor is not None:
+        gridset_file = save_upload_file_tmp(file)
+        texts = processor.extract_texts(gridset_file)
+        translator = Translator()
+        response = await translator.detect(texts)
+
+        langMap = {}
+
+        for detected in response:
+            # print(detected.lang, detected.confidence)
+            if detected.lang in langMap:
+                langMap[detected.lang] += detected.confidence
+            else:
+                langMap[detected.lang] = detected.confidence
+
+        sourceLang = max(langMap, key=langMap.get)
+
+        return {
+            "sourceFiletype": fileType,
+            "sourceLanguage": sourceLang
+        }
+
+    return {
+        "sourceLanguage": "unknown",
+        "sourceFiletype": "unknown"
+    }
+
 @app.post("/upload/")
-async def create_upload_file(file: UploadFile):
+async def create_upload_file(file: UploadFile, sourceLang: str, targetLang: str, fileType: str):
     processor = GridsetProcessor()
+
+    processor = None
+
+    if fileType.lower() == "grid3":
+        processor = GridsetProcessor()
+
+    if processor is None:
+        return {
+            "error": "Unsupported file type"
+        }
 
     gridset_file = save_upload_file_tmp(file)
     texts = processor.extract_texts(gridset_file)
 
-    print("Got texts")
-
-    translated = GoogleTranslator('en', 'es').translate_batch(texts)
-
-    print("Translated")
-
+    translator = Translator()
+    translated = await translator.translate(texts, src=sourceLang, dest=targetLang)
 
     translations = {}
     for i, text in enumerate(texts):
-        translations[text] = translated[i]
-        print(f"{text} -> {translations[text]}")
+        translations[text] = translated[i].text
     
-    translations["target_lang"] = "es"
+    translations["target_lang"] = targetLang
 
-    print("Got translations")
+    translated_file = processor.create_translated_file(gridset_file, translations)
 
-    translated = processor.create_translated_file(gridset_file, translations)
-
-    print("Got new file")
-
-    # return {
-    #     "status": "success",
-    #     "translations": translations
-    # }
-
-    return FileResponse(translated, media_type="application/octet-stream")
+    return FileResponse(translated_file, media_type="application/octet-stream")
