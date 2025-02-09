@@ -10,7 +10,7 @@ from googletrans import Translator
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from fastapi import FastAPI, File, UploadFile
-from aac_processors import GridsetProcessor
+from aac_processors import GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor
 
 app = FastAPI()
 
@@ -33,7 +33,19 @@ async def detect_uploaded_file(file: UploadFile):
 
     if filename.lower().endswith(".gridset"):
         processor = GridsetProcessor()
-        fileType = "Grid3"
+        fileType = "GridsetProcessor"
+
+    if filename.lower().endswith(".obz"):
+        processor = CoughDropProcessor()
+        fileType = "CoughDropProcessor"
+
+    if filename.lower().endswith(".sps"):
+        processor = SnapProcessor()
+        fileType = "SnapProcessor"
+
+    if filename.lower().endswith(".ce"):
+        processor = TouchChatProcessor()
+        fileType = "TouchChatProcessor"
 
     if processor is not None:
         gridset_file = save_upload_file_tmp(file)
@@ -68,8 +80,17 @@ async def create_upload_file(file: UploadFile, sourceLang: str, targetLang: str,
 
     processor = None
 
-    if fileType.lower() == "grid3":
+    if fileType.lower() == "GridsetProcessor":
         processor = GridsetProcessor()
+        
+    if fileType.lower() == "TouchChatProcessor":
+        processor = TouchChatProcessor()
+
+    if fileType.lower() == "SnapProcessor":
+        processor = SnapProcessor()
+
+    if fileType.lower() == "CoughDropProcessor":
+        processor = CoughDropProcessor()
 
     if processor is None:
         return {
