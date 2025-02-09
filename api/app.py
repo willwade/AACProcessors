@@ -1,10 +1,12 @@
 import sys
 import os
 import shutil
+import json
 from tempfile import NamedTemporaryFile
 from pathlib import Path
 from fastapi.responses import FileResponse
-from googletrans import Translator
+from google.cloud import translate_v2 as translate
+from google.oauth2 import service_account
 
 # Add the parent directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -13,6 +15,14 @@ from fastapi import FastAPI, File, UploadFile
 from aac_processors import GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor
 
 app = FastAPI()
+
+gcloud_creds = os.getenv('GCLOUD_CREDS')
+if gcloud_creds:
+    creds_dict = json.loads(gcloud_creds)
+    credentials = service_account.Credentials.from_service_account_info(creds_dict)
+    translate_client = translate.Client(credentials=credentials)
+else:
+    raise EnvironmentError("GCLOUD_CREDS environment variable not set or invalid")
 
 def save_upload_file_tmp(upload_file: UploadFile) -> Path:
     try:
@@ -50,17 +60,17 @@ async def detect_uploaded_file(file: UploadFile):
     if processor is not None:
         gridset_file = save_upload_file_tmp(file)
         texts = processor.extract_texts(gridset_file)
-        translator = Translator()
-        response = await translator.detect(texts)
+        response = [translate_client.detect_language(text) for text in texts]
 
         langMap = {}
 
         for detected in response:
-            # print(detected.lang, detected.confidence)
-            if detected.lang in langMap:
-                langMap[detected.lang] += detected.confidence
+            lang = detected['language']
+            confidence = detected['confidence']
+            if lang in langMap:
+                langMap[lang] += confidence
             else:
-                langMap[detected.lang] = detected.confidence
+                langMap[lang] = confidence
 
         sourceLang = max(langMap, key=langMap.get)
 
@@ -100,12 +110,10 @@ async def create_upload_file(file: UploadFile, sourceLang: str, targetLang: str,
     gridset_file = save_upload_file_tmp(file)
     texts = processor.extract_texts(gridset_file)
 
-    translator = Translator()
-    translated = await translator.translate(texts, src=sourceLang, dest=targetLang)
-
     translations = {}
-    for i, text in enumerate(texts):
-        translations[text] = translated[i].text
+    for text in texts:
+        result = translate_client.translate(text, source_language=sourceLang, target_language=targetLang)
+        translations[text] = result['translatedText']
     
     translations["target_lang"] = targetLang
 
