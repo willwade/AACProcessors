@@ -59,25 +59,34 @@ async def detect_uploaded_file(file: UploadFile):
 
     if processor is not None:
         gridset_file = save_upload_file_tmp(file)
-        texts = processor.extract_texts(gridset_file)
-        response = [translate_client.detect_language(text) for text in texts]
 
-        langMap = {}
+        try:
+            texts = processor.extract_texts(gridset_file)
+            response = [translate_client.detect_language(text) for text in texts]
 
-        for detected in response:
-            lang = detected['language']
-            confidence = detected['confidence']
-            if lang in langMap:
-                langMap[lang] += confidence
-            else:
-                langMap[lang] = confidence
+            langMap = {}
 
-        sourceLang = max(langMap, key=langMap.get)
+            for detected in response:
+                lang = detected['language']
+                confidence = detected['confidence']
+                if lang in langMap:
+                    langMap[lang] += confidence
+                else:
+                    langMap[lang] = confidence
 
-        return {
-            "sourceFiletype": fileType,
-            "sourceLanguage": sourceLang
-        }
+            sourceLang = max(langMap, key=langMap.get)
+
+            return {
+                "sourceFiletype": fileType,
+                "sourceLanguage": sourceLang
+            }
+        except:
+            print("Error detecting language")
+            return {
+                "sourceLanguage": "unknown",
+                "sourceFiletype": "unknown"
+            }
+        
 
     return {
         "sourceLanguage": "unknown",
