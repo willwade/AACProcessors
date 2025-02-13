@@ -106,7 +106,7 @@ def translateBatch(texts, sourceLang, targetLang):
     return translations
 
 @app.post("/upload/")
-async def create_upload_file(file: UploadFile, sourceLang: str, targetLang: str, fileType: str):
+async def create_upload_file(file: UploadFile, sourceLanguage: str, targetLanguage: str, fileType: str):
     processor = GridsetProcessor()
 
     processor = None
