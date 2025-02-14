@@ -77,11 +77,11 @@ async def detect_uploaded_file(file: UploadFile):
 
         try:
             texts = processor.extract_texts(gridset_file)
-            sourceLang = batchDetectLanguage(texts)
+            sourceLanguage = batchDetectLanguage(texts)
 
             return {
                 "sourceFiletype": fileType,
-                "sourceLanguage": sourceLang
+                "sourceLanguage": sourceLanguage
             }
         except:
             print("Error detecting language")
@@ -95,12 +95,12 @@ async def detect_uploaded_file(file: UploadFile):
         "sourceFiletype": "unknown"
     }
 
-def translateBatch(texts, sourceLang, targetLang):
+def translateBatch(texts, sourceLanguage, targetLanguage):
     translations = {}
     batch_size = 128
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
-        results = translate_client.translate(batch, source_language=sourceLang, target_language=targetLang)
+        results = translate_client.translate(batch, source_language=sourceLanguage, target_language=targetLanguage)
         for j, result in enumerate(results):
             translations[batch[j]] = result['translatedText']
     return translations
@@ -128,7 +128,7 @@ async def create_upload_file(file: UploadFile, sourceLanguage: str, targetLangua
             "error": "Unsupported file type"
         }
 
-    if sourceLang == targetLang:
+    if sourceLanguage == targetLanguage:
         return {
             "error": "Source and target languages are the same"
         }
@@ -136,7 +136,7 @@ async def create_upload_file(file: UploadFile, sourceLanguage: str, targetLangua
     gridset_file = save_upload_file_tmp(file)
     texts = processor.extract_texts(gridset_file)
 
-    translations = translateBatch(texts, sourceLang, targetLang)
+    translations = translateBatch(texts, sourceLanguage, targetLanguage)
 
     # testResult = translate_client.translate(texts[:128], source_language=sourceLang, target_language=targetLang)
 
@@ -148,7 +148,7 @@ async def create_upload_file(file: UploadFile, sourceLanguage: str, targetLangua
     #     # result = translate_client.translate(text, source_language=sourceLang, target_language=targetLang)
     #     translations[text] = result['translatedText']
     
-    translations["target_lang"] = targetLang
+    translations["target_lang"] = targetLanguage
 
     translated_file = processor.create_translated_file(gridset_file, translations)
 
