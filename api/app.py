@@ -4,7 +4,7 @@ import shutil
 import json
 from tempfile import NamedTemporaryFile
 from pathlib import Path
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 
