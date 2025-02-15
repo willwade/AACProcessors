@@ -7,11 +7,12 @@ from pathlib import Path
 from fastapi.responses import FileResponse, JSONResponse
 from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
+from typing import Annotated
 
 # Add the parent directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from aac_processors import GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor
 
 app = FastAPI()
@@ -105,7 +106,7 @@ def translateBatch(texts, sourceLanguage, targetLanguage):
     return translations
 
 @app.post("/upload/")
-async def create_upload_file(file: UploadFile, sourceLanguage: str, targetLanguage: str, fileType: str):
+async def create_upload_file(file: UploadFile, sourceLanguage: Annotated[str, Form()], targetLanguage: Annotated[str, Form()], fileType: Annotated[str, Form()]):
     processor = GridsetProcessor()
 
     processor = None
