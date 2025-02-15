@@ -52,6 +52,10 @@ def batchDetectLanguage(texts):
 @app.post("/detect/")
 async def detect_uploaded_file(file: UploadFile):
     filename = file.filename
+    content = {
+        "sourceLanguage": "unknown",
+        "sourceFiletype": "unknown"
+    }
 
     processor = None
     fileType = ""
@@ -75,21 +79,20 @@ async def detect_uploaded_file(file: UploadFile):
             texts = processor.extract_texts(gridset_file)
             sourceLanguage = batchDetectLanguage(texts)
 
-            return {
+            content = {
                 "sourceFiletype": fileType,
                 "sourceLanguage": sourceLanguage
             }
         except:
             print("Error detecting language")
-            return {
+            content = {
                 "sourceLanguage": "unknown",
                 "sourceFiletype": "unknown"
             }
 
-    return {
-        "sourceLanguage": "unknown",
-        "sourceFiletype": "unknown"
-    }
+
+    headers = {"Cache-Control": "no-cache"}
+    return JSONResponse(content=content, headers=headers)
 
 def translateBatch(texts, sourceLanguage, targetLanguage):
     translations = {}
@@ -145,4 +148,6 @@ async def create_upload_file(file: UploadFile, sourceLanguage: str, targetLangua
 
     translated_file = processor.create_translated_file(gridset_file, translations)
 
-    return FileResponse(translated_file, media_type="application/octet-stream")
+    headers = {"Cache-Control": "no-cache"}
+
+    return FileResponse(translated_file, media_type="application/octet-stream", headers=headers)
