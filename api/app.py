@@ -60,10 +60,6 @@ async def detect_uploaded_file(file: UploadFile):
         processor = GridsetProcessor()
         fileType = "GridsetProcessor"
 
-    if filename.lower().endswith(".obz") or filename.lower().endswith(".obf"):
-        processor = CoughDropProcessor()
-        fileType = "CoughDropProcessor"
-
     if filename.lower().endswith(".sps") or filename.lower().endswith(".spb"):
         processor = SnapProcessor()
         fileType = "SnapProcessor"
@@ -119,9 +115,6 @@ async def create_upload_file(file: UploadFile, sourceLanguage: str, targetLangua
 
     if fileType.lower() == "SnapProcessor".lower():
         processor = SnapProcessor()
-
-    if fileType.lower() == "CoughDropProcessor".lower():
-        processor = CoughDropProcessor()
 
     if processor is None:
         return {
