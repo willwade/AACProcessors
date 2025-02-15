@@ -64,7 +64,7 @@ async def detect_uploaded_file(file: UploadFile):
         processor = CoughDropProcessor()
         fileType = "CoughDropProcessor"
 
-    if filename.lower().endswith(".sps"):
+    if filename.lower().endswith(".sps") or filename.lower().endswith(".spb"):
         processor = SnapProcessor()
         fileType = "SnapProcessor"
 
