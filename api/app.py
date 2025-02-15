@@ -60,7 +60,7 @@ async def detect_uploaded_file(file: UploadFile):
         processor = GridsetProcessor()
         fileType = "GridsetProcessor"
 
-    if filename.lower().endswith(".obz"):
+    if filename.lower().endswith(".obz") or filename.lower().endswith(".obf"):
         processor = CoughDropProcessor()
         fileType = "CoughDropProcessor"
 
