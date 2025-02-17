@@ -658,6 +658,7 @@ class GridsetProcessor(FileProcessor):
         target_caption: str,
         new_content_xml: str,
         output_path: str,
+        preserve_style: bool = False,
     ) -> None:
         """Replace a cell's content with a new XML fragment across the gridset.
 
@@ -666,6 +667,7 @@ class GridsetProcessor(FileProcessor):
             target_caption (str): Caption of the button to replace.
             new_content_xml (str): New XML content for the cell.
             output_path (str): Path to save the modified gridset.
+            preserve_style (bool): Whether to preserve the original style.
         """
         temp_dir = self.create_temp_dir()
         with zipfile.ZipFile(gridset_path, "r") as zf:
@@ -696,8 +698,15 @@ class GridsetProcessor(FileProcessor):
                         else None
                     )
                     if caption is not None and caption.text == target_caption:
-                        content.clear()
-                        content.extend(new_content_element)
+                        if preserve_style:
+                            original_style = content.find(".//Style")
+                            content.clear()
+                            content.extend(new_content_element)
+                            if original_style is not None:
+                                content.append(original_style)
+                        else:
+                            content.clear()
+                            content.extend(new_content_element)
                         grid_modified = True
 
                 if grid_modified:
