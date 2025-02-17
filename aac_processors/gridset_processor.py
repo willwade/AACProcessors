@@ -655,19 +655,19 @@ class GridsetProcessor(FileProcessor):
     def replace_cell_with_xml(
         self,
         gridset_path: str,
-        target_caption: str,
+        target_caption: Optional[str],
+        target_action: Optional[str],
         new_content_xml: str,
         output_path: str,
-        preserve_style: bool = False,
     ) -> None:
         """Replace a cell's content with a new XML fragment across the gridset.
 
         Args:
             gridset_path (str): Path to the original gridset file.
-            target_caption (str): Caption of the button to replace.
+            target_caption (Optional[str]): Caption of the button to replace.
+            target_action (Optional[str]): Action command of the button to replace.
             new_content_xml (str): New XML content for the cell.
             output_path (str): Path to save the modified gridset.
-            preserve_style (bool): Whether to preserve the original style.
         """
         temp_dir = self.create_temp_dir()
         with zipfile.ZipFile(gridset_path, "r") as zf:
@@ -697,16 +697,21 @@ class GridsetProcessor(FileProcessor):
                         if content is not None
                         else None
                     )
-                    if caption is not None and caption.text == target_caption:
-                        if preserve_style:
-                            original_style = content.find(".//Style")
-                            content.clear()
-                            content.extend(new_content_element)
-                            if original_style is not None:
-                                content.append(original_style)
-                        else:
-                            content.clear()
-                            content.extend(new_content_element)
+                    commands = (
+                        content.find(".//Commands") if content is not None else None
+                    )
+                    action_command = (
+                        commands.find(".//Command[@ID='Action.Speak']")
+                        if commands is not None
+                        else None
+                    )
+
+                    if (caption is not None and caption.text == target_caption) or (
+                        action_command is not None and target_action == "Action.Speak"
+                    ):
+                        # Replace the cell content with new_content_element
+                        cell.remove(content)
+                        cell.append(new_content_element)
                         grid_modified = True
 
                 if grid_modified:
