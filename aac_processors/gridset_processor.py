@@ -651,3 +651,71 @@ class GridsetProcessor(FileProcessor):
             return button
 
         return None
+
+    def replace_cell_with_xml(
+        self,
+        gridset_path: str,
+        target_caption: str,
+        new_content_xml: str,
+        output_path: str,
+    ) -> None:
+        """Replace a cell's content with a new XML fragment across the gridset.
+
+        Args:
+            gridset_path (str): Path to the original gridset file.
+            target_caption (str): Caption of the button to replace.
+            new_content_xml (str): New XML content for the cell.
+            output_path (str): Path to save the modified gridset.
+        """
+        temp_dir = self.create_temp_dir()
+        with zipfile.ZipFile(gridset_path, "r") as zf:
+            zf.extractall(temp_dir)
+
+        grids_dir = os.path.join(temp_dir, "Grids")
+        if not os.path.exists(grids_dir):
+            self.debug("No Grids directory found")
+            return
+
+        new_content_element = etree.fromstring(new_content_xml)
+
+        for grid_dir in os.listdir(grids_dir):
+            grid_path = os.path.join(grids_dir, grid_dir, "grid.xml")
+            if not os.path.exists(grid_path):
+                continue
+
+            try:
+                tree = etree.parse(grid_path)
+                root = tree.getroot()
+                grid_modified = False
+
+                for cell in root.findall(".//Cell"):
+                    content = cell.find(".//Content")
+                    caption = (
+                        content.find(".//CaptionAndImage/Caption")
+                        if content is not None
+                        else None
+                    )
+                    if caption is not None and caption.text == target_caption:
+                        content.clear()
+                        content.extend(new_content_element)
+                        grid_modified = True
+
+                if grid_modified:
+                    tree.write(
+                        grid_path,
+                        encoding="utf-8",
+                        xml_declaration=True,
+                        pretty_print=True,
+                    )
+
+            except Exception as e:
+                self.debug(f"Error processing grid file {grid_path}: {str(e)}")
+
+        with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zip_ref:
+            for root, _, files in os.walk(temp_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, temp_dir)
+                    zip_ref.write(file_path, arcname)
+
+        self.debug(f"Created modified gridset file: {output_path}")
