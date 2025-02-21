@@ -50,7 +50,7 @@ def batchDetectLanguage(texts):
                 langMap[lang] = confidence
     return max(langMap, key=langMap.get)
 
-@app.post("/detect/")
+@app.post("/detect")
 async def detect_uploaded_file(file: UploadFile):
     filename = file.filename
     content = {
@@ -105,7 +105,7 @@ def translateBatch(texts, sourceLanguage, targetLanguage):
             translations[batch[j]] = result['translatedText']
     return translations
 
-@app.post("/upload/")
+@app.post("/upload")
 async def create_upload_file(file: UploadFile, sourceLanguage: Annotated[str, Form()], targetLanguage: Annotated[str, Form()], fileType: Annotated[str, Form()]):
     processor = GridsetProcessor()
 
