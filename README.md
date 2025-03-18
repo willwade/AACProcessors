@@ -13,6 +13,13 @@ A Python library to read, import, export and modify pagesets from different AAC 
 - TouchChat (`.touchChat`)
 - Snap Core First (`.spb`)
 
+And unusual formats:
+
+- Dot Processor (.dot)
+- OPML (.opml)
+- Apple Panels
+- Screenshot Processor (optional)
+
 ## Features
 
 - Extract text content from AAC pagesets
