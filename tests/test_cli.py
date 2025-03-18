@@ -17,11 +17,13 @@ def test_get_available_formats():
     """Test that available formats are returned correctly"""
     formats = get_available_formats()
     assert isinstance(formats, list)
-    assert len(formats) == 4
+    assert len(formats) == 6
     assert "grid" in formats
     assert "touchchat" in formats
     assert "snap" in formats
     assert "coughdrop" in formats
+    assert "opml" in formats
+    assert "dot" in formats
 
 
 def test_complete_path(tmp_path):
@@ -141,12 +143,12 @@ def test_main_convert_command(tmp_path, mock_processor):
     test_args = ["aac-processors", "convert", str(input_file), "--to", "grid"]
     with (
         patch("sys.argv", test_args),
-        patch("aac_processors.cli.get_processor_for_file") as mock_get_proc,
+        patch("aac_processors.cli.convert_file") as mock_convert,
         pytest.raises(SystemExit) as exit_info,
     ):
-        mock_get_proc.return_value = mock_processor
+        mock_convert.return_value = "output.grid"
         main()
-        mock_processor.export_tree.assert_called_once()
+        mock_convert.assert_called_once()
         assert exit_info.value.code == 0  # Should exit successfully
 
 
