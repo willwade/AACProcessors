@@ -8,7 +8,9 @@ import sys
 from typing import Optional, Union
 
 from .coughdrop_processor import CoughDropProcessor
+from .dot_processor import DotProcessor
 from .gridset_processor import GridsetProcessor
+from .opml_processor import OPMLProcessor
 from .snap_processor import SnapProcessor
 from .touchchat_processor import TouchChatProcessor
 from .tree_structure import AACTree
@@ -16,7 +18,8 @@ from .viewer import get_processor_for_file, print_tree
 
 # Type alias for processors
 ProcessorType = Union[
-    GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor
+    GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor,
+    OPMLProcessor, DotProcessor
 ]
 
 
@@ -51,7 +54,7 @@ def complete_path(text: str, state: int) -> Optional[str]:
 
 def get_available_formats() -> list[str]:
     """Get list of available format names"""
-    return ["grid", "touchchat", "snap", "coughdrop"]
+    return ["grid", "touchchat", "snap", "coughdrop", "opml", "dot"]
 
 
 def convert_format(
@@ -93,6 +96,10 @@ def convert_format(
             target_processor = SnapProcessor()
         elif output_format == "coughdrop":
             target_processor = CoughDropProcessor()
+        elif output_format == "opml":
+            target_processor = OPMLProcessor()
+        elif output_format == "dot":
+            target_processor = DotProcessor()
 
         if not target_processor:
             print(f"Error: Unsupported output format: {output_format}")

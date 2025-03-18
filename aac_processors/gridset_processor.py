@@ -504,6 +504,15 @@ class GridsetProcessor(FileProcessor):
 
         self.debug(f"Created gridset file: {output_path}")
 
+    def export_tree(self, tree: AACTree, output_path: str) -> None:
+        """Export tree to GridSet format.
+
+        Args:
+            tree (AACTree): Tree to export.
+            output_path (str): Path where to save the file.
+        """
+        self.save_from_tree(tree, output_path)
+
     def create_translated_file(
         self, file_path: str, translations: dict[str, str]
     ) -> Optional[str]:

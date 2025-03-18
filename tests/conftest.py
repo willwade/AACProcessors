@@ -361,36 +361,71 @@ def test_coughdrop_obf(temp_dir: str) -> str:
 def test_coughdrop_obz(temp_dir: str, test_coughdrop_obf: str) -> str:
     """Create a test CoughDrop OBZ file"""
     obz_path = os.path.join(temp_dir, "test.obz")
-
-    # Create boards directory
-    boards_dir = os.path.join(temp_dir, "boards")
-    os.makedirs(boards_dir, exist_ok=True)
-
-    # Copy test board
-    board_path = os.path.join(boards_dir, "home.obf")
-    shutil.copy2(test_coughdrop_obf, board_path)
-
-    # Create manifest
-    manifest = {
-        "format": "open-board-0.1",
-        "root": "boards/home.obf",
-        "paths": {"boards": {"home": "boards/home.obf"}},
-    }
-
-    # Create OBZ file
-    with zipfile.ZipFile(obz_path, "w", zipfile.ZIP_DEFLATED) as zip_ref:
-        # Add manifest
-        manifest_path = os.path.join(temp_dir, "manifest.json")
-        with open(manifest_path, "w") as f:
-            json.dump(manifest, f, indent=2)
-        zip_ref.write(manifest_path, "manifest.json")
-
-        # Add board file
-        zip_ref.write(board_path, "boards/home.obf")
-
+    with zipfile.ZipFile(obz_path, "w") as zipf:
+        zipf.write(test_coughdrop_obf, os.path.basename(test_coughdrop_obf))
     return obz_path
+
+
+@pytest.fixture
+def test_dot_file(temp_dir: str) -> str:
+    """Create a test DOT file"""
+    dot_path = os.path.join(temp_dir, "test.dot")
+    
+    # Create a simple DOT file with a few nodes and edges
+    dot_content = """digraph G {
+        node1 [label="Home Page"];
+        node2 [label="About"];
+        node3 [label="Contact"];
+        node4 [label="Products"];
+        
+        node1 -> node2 [label="Go to About"];
+        node1 -> node3 [label="Go to Contact"];
+        node1 -> node4 [label="View Products"];
+        
+        node2 -> node1 [label="Back to Home"];
+        node3 -> node1 [label="Back to Home"];
+        node4 -> node1 [label="Back to Home"];
+    }
+    """
+    
+    with open(dot_path, "w") as f:
+        f.write(dot_content)
+    
+    return dot_path
+
+
+@pytest.fixture
+def test_opml_file(temp_dir: str) -> str:
+    """Create a test OPML file"""
+    opml_path = os.path.join(temp_dir, "test.opml")
+    
+    # Create a simple OPML file with a few outlines
+    opml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <opml version="2.0">
+        <head>
+            <title>Test OPML</title>
+        </head>
+        <body>
+            <outline text="Main Page">
+                <outline text="Category 1">
+                    <outline text="Item 1" />
+                    <outline text="Item 2" />
+                </outline>
+                <outline text="Category 2">
+                    <outline text="Item 3" />
+                    <outline text="Item 4" />
+                </outline>
+            </outline>
+        </body>
+    </opml>
+    """
+    
+    with open(opml_path, "w") as f:
+        f.write(opml_content)
+    
+    return opml_path
 
 
 def pytest_configure(config: Any) -> None:
     """Register custom marks"""
-    config.addinivalue_line("markers", "integration: mark test as an integration test")
+    config.addinivalue_line("markers", "slow: mark test as slow to run")
