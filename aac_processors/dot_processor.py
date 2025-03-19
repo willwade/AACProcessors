@@ -345,9 +345,9 @@ class DotProcessor(AACProcessor):
         """
         # First, clean up the DOT content by removing comments
         lines = []
-        for line in dot_content.split('\n'):
+        for line in dot_content.split("\n"):
             line = line.strip()
-            if line and not line.startswith('//') and not line.startswith('#'):
+            if line and not line.startswith("//") and not line.startswith("#"):
                 lines.append(line)
 
         # Process line by line
@@ -358,8 +358,7 @@ class DotProcessor(AACProcessor):
             # Check if it's a node definition with explicit label
             # Pattern: node1 [label="Home Page"];
             node_match = re.match(
-                r'\s*(\w+|\".+?\")\s*\[\s*label\s*=\s*["\']([^"\']*)["\'].*?\];?',
-                line
+                r'\s*(\w+|\".+?\")\s*\[\s*label\s*=\s*["\']([^"\']*)["\'].*?\];?', line
             )
             if node_match:
                 node_id = node_match.group(1).strip('"')
@@ -371,9 +370,9 @@ class DotProcessor(AACProcessor):
             # Pattern: "more quick chat" -> "That tickles";
             # Or: node1 -> node2 [label="Go to About"];
             edge_match = re.match(
-                r'\s*(\w+|\".+?\")\s*->\s*(\w+|\".+?\")'
+                r"\s*(\w+|\".+?\")\s*->\s*(\w+|\".+?\")"
                 r'(?:\s*\[\s*label\s*=\s*["\']([^"\']*)["\'].*?\])?;?',
-                line
+                line,
             )
             if edge_match:
                 source = edge_match.group(1).strip('"')
