@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING
 
 from . import viewer
 from .coughdrop_processor import CoughDropProcessor
+from .dot_processor import DotProcessor
 from .gridset_processor import GridsetProcessor
+from .opml_processor import OPMLProcessor
 from .snap_processor import SnapProcessor
 from .touchchat_processor import TouchChatProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
-from .opml_processor import OPMLProcessor
-from .dot_processor import DotProcessor
 
 if TYPE_CHECKING:
     from .optional.screenshot_processor import ScreenshotProcessor

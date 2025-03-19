@@ -1,11 +1,11 @@
 """Demo script showing usage of AAC processors."""
 
 import os
+import sys
 from typing import NoReturn
 
-import sys
 # Add parent directory to path so we can import aac_processors
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from aac_processors import GridsetProcessor, viewer
 from aac_processors.cli import convert_format
@@ -97,7 +97,7 @@ def main() -> NoReturn:
 
     # DEMO 3: Convert DOT and OPML to GridSet
     print("\n=== DEMO 3: Convert DOT and OPML to GridSet ===")
-    
+
     # Convert DOT to GridSet
     if os.path.exists(dot_file):
         print("\n=== Converting DOT to GridSet ===")
@@ -130,7 +130,7 @@ def main() -> NoReturn:
 
     # DEMO 4: Convert between DOT and OPML formats
     print("\n=== DEMO 4: Convert between DOT and OPML formats ===")
-    
+
     # Convert DOT to OPML
     if os.path.exists(dot_file):
         print("\n=== Converting DOT to OPML ===")
@@ -145,7 +145,7 @@ def main() -> NoReturn:
             print("Conversion from DOT to OPML failed")
     else:
         print(f"DOT file not found: {dot_file}")
-    
+
     # Convert OPML to DOT
     if os.path.exists(opml_file):
         print("\n=== Converting OPML to DOT ===")

@@ -4,7 +4,7 @@ import shutil
 import pytest
 
 from aac_processors.dot_processor import DotProcessor
-from aac_processors.tree_structure import ButtonType
+from aac_processors.tree_structure import AACButton, AACPage, ButtonType
 
 
 def test_can_process() -> None:
@@ -21,7 +21,7 @@ def test_load_tree(test_dot_file: str) -> None:
     # Verify pages
     assert len(tree.pages) == 4  # Four nodes
 
-    # Find home page - the page ID might be different now
+    # Find home page by node label
     home_page = next((p for p in tree.pages.values() if p.name == "Home Page"), None)
     assert home_page is not None
     assert len(home_page.buttons) == 3  # Three outgoing edges
@@ -38,6 +38,8 @@ def test_load_tree(test_dot_file: str) -> None:
 
 
 def test_save_tree(test_dot_file: str, temp_dir: str) -> None:
+    import os
+
     processor = DotProcessor()
     tree = processor.load_into_tree(test_dot_file)
 
@@ -52,17 +54,17 @@ def test_save_tree(test_dot_file: str, temp_dir: str) -> None:
     with open(output_path) as f:
         content = f.read()
 
-    # The node IDs might be different now, so we need to check for the labels
-    assert "Home Page" in content
-    assert "About" in content
-    assert "Contact" in content
-    assert "Products" in content
+    # The node IDs might be different now, but the labels should be present
+    assert 'label="Home Page"' in content
+    assert 'label="About"' in content
+    assert 'label="Contact"' in content
+    assert 'label="Products"' in content
 
     # Verify edges - check for the labels which should be in the file
-    assert "Go to About" in content
-    assert "Go to Contact" in content
-    assert "View Products" in content
-    assert "Back to Home" in content
+    assert 'label="Go to About"' in content
+    assert 'label="Go to Contact"' in content
+    assert 'label="View Products"' in content
+    assert 'label="Back to Home"' in content
 
 
 @pytest.mark.slow
@@ -120,6 +122,8 @@ def test_translation(test_dot_file: str, temp_dir: str) -> None:
 @pytest.mark.integration
 def test_dot_workflow(test_dot_file: str, temp_dir: str) -> None:
     """Test full workflow with DOT files"""
+    import os
+
     # Setup
     processor = DotProcessor()
     test_file = os.path.join(temp_dir, "test_workflow.dot")
@@ -134,14 +138,21 @@ def test_dot_workflow(test_dot_file: str, temp_dir: str) -> None:
 
     # Modify tree
     new_page_id = "new_page"
-    tree.add_page(new_page_id, "New Page")
+    new_page = AACPage(id=new_page_id, name="New Page", grid_size=(3, 3))
+    tree.add_page(new_page)
 
-    # Get home page
+    # Get home page by node label
     home_page = next((p for p in tree.pages.values() if p.name == "Home Page"), None)
     assert home_page is not None
 
     # Add button to home page
-    home_page.add_button("Go to New Page", ButtonType.NAVIGATE, new_page_id)
+    new_button = AACButton(
+        id="new_button",
+        label="Go to New Page",
+        type=ButtonType.NAVIGATE,
+        target_page_id=new_page_id,
+    )
+    home_page.buttons.append(new_button)
 
     # Save modified tree
     processor.save_from_tree(tree, output_file)
@@ -157,6 +168,8 @@ def test_dot_workflow(test_dot_file: str, temp_dir: str) -> None:
     assert "New Page" in [p.name for p in modified_tree.pages.values()]
 
     # Verify new button exists
-    new_home_page = next((p for p in modified_tree.pages.values() if p.name == "Home Page"), None)
+    new_home_page = next(
+        (p for p in modified_tree.pages.values() if p.name == "Home Page"), None
+    )
     assert new_home_page is not None
     assert "Go to New Page" in [b.label for b in new_home_page.buttons]

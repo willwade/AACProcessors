@@ -13,8 +13,12 @@ from .touchchat_processor import TouchChatProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 ProcessorType = Union[
-    GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor,
-    DotProcessor, OPMLProcessor
+    GridsetProcessor,
+    TouchChatProcessor,
+    SnapProcessor,
+    CoughDropProcessor,
+    DotProcessor,
+    OPMLProcessor,
 ]
 
 

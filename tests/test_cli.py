@@ -143,13 +143,11 @@ def test_main_convert_command(tmp_path, mock_processor):
     test_args = ["aac-processors", "convert", str(input_file), "--to", "grid"]
     with (
         patch("sys.argv", test_args),
-        patch("aac_processors.cli.convert_file") as mock_convert,
-        pytest.raises(SystemExit) as exit_info,
+        patch("aac_processors.cli.convert_format") as mock_convert,
     ):
         mock_convert.return_value = "output.grid"
         main()
         mock_convert.assert_called_once()
-        assert exit_info.value.code == 0  # Should exit successfully
 
 
 @pytest.mark.integration

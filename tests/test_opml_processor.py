@@ -1,6 +1,5 @@
 import os
 import xml.etree.ElementTree as ET
-from typing import Optional
 
 from aac_processors.opml_processor import OPMLProcessor
 from aac_processors.tree_structure import ButtonType
@@ -26,7 +25,7 @@ def test_load_tree(test_opml_file: str) -> None:
     # Verify category pages
     category1_page = next(p for p in tree.pages.values() if p.name == "Category 1")
     category2_page = next(p for p in tree.pages.values() if p.name == "Category 2")
-    
+
     assert len(category1_page.buttons) == 2  # Two item buttons
     assert len(category2_page.buttons) == 2  # Two item buttons
 
@@ -49,30 +48,30 @@ def test_save_tree(test_opml_file: str, temp_dir: str) -> None:
     # Parse the saved file
     tree_xml = ET.parse(output_path)
     root = tree_xml.getroot()
-    
+
     # Verify structure
     body = root.find("body")
     assert body is not None
-    
+
     # Find main outline
     main_outline = body.find("outline")
     assert main_outline is not None
     assert main_outline.get("text") == "Main Page"
-    
+
     # Find category outlines
     categories = main_outline.findall("outline")
     assert len(categories) == 2
-    
+
     # Verify category names
     category_names = [cat.get("text") for cat in categories]
     assert "Category 1" in category_names
     assert "Category 2" in category_names
-    
+
     # Verify items
     for category in categories:
         items = category.findall("outline")
         assert len(items) == 2
-        
+
         if category.get("text") == "Category 1":
             item_names = [item.get("text") for item in items]
             assert "Item 1" in item_names
@@ -116,12 +115,12 @@ def test_translation(test_opml_file: str, temp_dir: str) -> None:
     # Verify translations
     tree_xml = ET.parse(result)
     root = tree_xml.getroot()
-    
+
     # Check main outline
     body = root.find("body")
     main_outline = body.find("outline")
     assert main_outline.get("text") == "Página Principal"
-    
+
     # Check categories
     categories = main_outline.findall("outline")
     for category in categories:
@@ -154,6 +153,7 @@ def test_opml_workflow(test_opml_file: str, temp_dir: str) -> None:
         # Copy test file to work dir
         test_file = os.path.join(work_dir, "test.opml")
         import shutil
+
         shutil.copy2(test_opml_file, test_file)
 
         # First phase: Extract texts
@@ -162,8 +162,12 @@ def test_opml_workflow(test_opml_file: str, temp_dir: str) -> None:
         logger.debug(f"Extracted texts: {texts}")
 
         # Verify file paths after extraction
-        assert processor.file_path == test_file, "File path not set correctly after extraction"
-        assert processor.original_file_path == test_file, "Original file path not set correctly"
+        assert (
+            processor.file_path == test_file
+        ), "File path not set correctly after extraction"
+        assert (
+            processor.original_file_path == test_file
+        ), "Original file path not set correctly"
 
         # Second phase: Translate texts
         # Create translations for each text

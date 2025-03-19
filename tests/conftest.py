@@ -370,27 +370,27 @@ def test_coughdrop_obz(temp_dir: str, test_coughdrop_obf: str) -> str:
 def test_dot_file(temp_dir: str) -> str:
     """Create a test DOT file"""
     dot_path = os.path.join(temp_dir, "test.dot")
-    
+
     # Create a simple DOT file with a few nodes and edges
     dot_content = """digraph G {
         node1 [label="Home Page"];
         node2 [label="About"];
         node3 [label="Contact"];
         node4 [label="Products"];
-        
+
         node1 -> node2 [label="Go to About"];
         node1 -> node3 [label="Go to Contact"];
         node1 -> node4 [label="View Products"];
-        
+
         node2 -> node1 [label="Back to Home"];
         node3 -> node1 [label="Back to Home"];
         node4 -> node1 [label="Back to Home"];
     }
     """
-    
+
     with open(dot_path, "w") as f:
         f.write(dot_content)
-    
+
     return dot_path
 
 
@@ -398,7 +398,7 @@ def test_dot_file(temp_dir: str) -> str:
 def test_opml_file(temp_dir: str) -> str:
     """Create a test OPML file"""
     opml_path = os.path.join(temp_dir, "test.opml")
-    
+
     # Create a simple OPML file with a few outlines
     opml_content = """<?xml version="1.0" encoding="UTF-8"?>
     <opml version="2.0">
@@ -419,10 +419,10 @@ def test_opml_file(temp_dir: str) -> str:
         </body>
     </opml>
     """
-    
+
     with open(opml_path, "w") as f:
         f.write(opml_content)
-    
+
     return opml_path
 
 

@@ -18,8 +18,12 @@ from .viewer import get_processor_for_file, print_tree
 
 # Type alias for processors
 ProcessorType = Union[
-    GridsetProcessor, TouchChatProcessor, SnapProcessor, CoughDropProcessor,
-    OPMLProcessor, DotProcessor
+    GridsetProcessor,
+    TouchChatProcessor,
+    SnapProcessor,
+    CoughDropProcessor,
+    OPMLProcessor,
+    DotProcessor,
 ]
 
 
