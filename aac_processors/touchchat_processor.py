@@ -31,7 +31,7 @@ class TouchChatProcessor(SQLiteProcessor):
         Returns:
             bool: True if file is a TouchChat export.
         """
-        return file_path.lower().endswith(".ce")
+        return file_path.lower().endswith((".ce", ".wf"))
 
     def process_texts(
         self,
