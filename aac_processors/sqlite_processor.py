@@ -26,7 +26,6 @@ class SQLiteProcessor(AACProcessor):
         self._conn: Optional[Connection] = None
         self._debug_output = print  # Default debug output
 
-
     def create_temp_dir(self) -> str:
         """Create a temporary directory and track it for cleanup.
 

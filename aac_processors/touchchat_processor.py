@@ -1,4 +1,3 @@
-import logging
 import os
 import os.path
 import shutil
@@ -318,7 +317,9 @@ class TouchChatProcessor(SQLiteProcessor):
                     )
                     if cursor.rowcount > 0:
                         modified = True
-                        self.debug(f"Updated {cursor.rowcount} button messages with trailing characters")
+                        self.debug(
+                            f"Updated {cursor.rowcount} button messages with trailing characters"
+                        )
 
                     # Update page names
                     cursor.execute(
