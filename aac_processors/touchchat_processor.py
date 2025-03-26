@@ -168,8 +168,8 @@ class TouchChatProcessor(SQLiteProcessor):
         if not file_path:
             return False
 
-        # Check if it's a .ce file
-        if not file_path.lower().endswith(".ce"):
+        # Check if it's a .ce or .wf file
+        if not file_path.lower().endswith((".ce", ".wf")):
             return False
 
         # Verify it's a valid ZIP file
@@ -183,10 +183,10 @@ class TouchChatProcessor(SQLiteProcessor):
             return False
 
     def extract_archive(self, file_path: str, target_dir: str) -> None:
-        """Extract TouchChat .ce archive.
+        """Extract TouchChat .ce or .wf archive.
 
         Args:
-            file_path (str): Path to .ce file
+            file_path (str): Path to .ce or .wf file
             target_dir (str): Directory to extract to
         """
         self.debug(
@@ -541,8 +541,10 @@ class TouchChatProcessor(SQLiteProcessor):
 
         # Save the translated tree
         target_lang = translations.get("target_lang", "translated")
-        base_name = os.path.splitext(os.path.basename(file_path))[0]
-        output_name = f"{base_name}_{target_lang}.ce"
+        base_name, ext = os.path.splitext(os.path.basename(file_path))
+        output_name = (
+            f"{base_name}_{target_lang}{ext}"  # Use the same extension as input
+        )
         output_path = os.path.join(os.path.dirname(file_path), output_name)
         self.save_from_tree(tree, output_path)
         return output_path
