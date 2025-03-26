@@ -16,7 +16,6 @@ class TouchChatProcessor(SQLiteProcessor):
     def __init__(self) -> None:
         """Initialize TouchChat processor."""
         super().__init__()
-        self.logger = logging.getLogger(__name__)
         self.is_archive = True  # CE files are archives containing SQLite DB
         self.file_path: Optional[str] = None
         self.original_filename: Optional[str] = None
@@ -306,7 +305,20 @@ class TouchChatProcessor(SQLiteProcessor):
                     )
                     if cursor.rowcount > 0:
                         modified = True
-                        self.debug(f"Updated {cursor.rowcount} button messages")
+                        self.debug(f"Updated {cursor.rowcount} exact button messages")
+
+                    # Update button messages WITH TRAILING SPACES/CHARACTERS
+                    cursor.execute(
+                        """
+                        UPDATE buttons
+                        SET message = ? || SUBSTR(message, LENGTH(?) + 1)
+                        WHERE message LIKE ? || ' %' OR message LIKE ? || ',%' OR message LIKE ? || '!%' OR message LIKE ? || '.%'
+                        """,
+                        (translated, original, original, original, original, original),
+                    )
+                    if cursor.rowcount > 0:
+                        modified = True
+                        self.debug(f"Updated {cursor.rowcount} button messages with trailing characters")
 
                     # Update page names
                     cursor.execute(

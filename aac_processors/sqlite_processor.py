@@ -24,6 +24,8 @@ class SQLiteProcessor(AACProcessor):
         self._temp_dirs: list[str] = []  # Track temporary directories for cleanup
         self.file_path: Optional[str] = None  # Store the current file path
         self._conn: Optional[Connection] = None
+        self._debug_output = print  # Default debug output
+
 
     def create_temp_dir(self) -> str:
         """Create a temporary directory and track it for cleanup.
