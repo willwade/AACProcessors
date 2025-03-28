@@ -84,7 +84,9 @@ class GridsetProcessor(FileProcessor):
                         # Create new Language element after Description or at the end
                         if description_elem is not None:
                             # Insert after Description
-                            description_index = list(settings_root).index(description_elem)
+                            description_index = list(settings_root).index(
+                                description_elem
+                            )
                             language_elem = etree.Element("Language")
                             settings_root.insert(description_index + 1, language_elem)
                         else:
@@ -215,14 +217,14 @@ class GridsetProcessor(FileProcessor):
         for s_elem in element.findall(".//s"):
             s_meta = dict(s_elem.attrib) if s_elem.attrib else {}
             for r_elem in s_elem.findall(".//r"):
-                if r_elem.text is not None:  
+                if r_elem.text is not None:
                     # Store whether this was originally a CDATA space
                     is_space = r_elem.text.isspace()
                     text = r_elem.text.strip() if not is_space else ""
                     # Always include the part, even if it's an empty string
                     text_parts.append((text, is_space))
             metadata.append(s_meta)
-        
+
         # Join only non-empty parts for translation, but keep track of all parts
         translatable_text = " ".join(part[0] for part in text_parts if part[0])
         return (
@@ -252,7 +254,7 @@ class GridsetProcessor(FileProcessor):
 
         # Rebuild the structure with translated text
         p_elem = etree.SubElement(element, "p")
-         # Split the translated text while preserving spaces
+        # Split the translated text while preserving spaces
         words = []
         current_word = ""
         for char in translated_text:
@@ -279,6 +281,7 @@ class GridsetProcessor(FileProcessor):
                 r_elem.text = etree.CDATA(" ")
             else:
                 r_elem.text = word
+
     def _create_cdata(self, text: str) -> etree.CDATA:
         """Create a CDATA section.
 
@@ -800,94 +803,93 @@ class GridsetProcessor(FileProcessor):
 
     def _map_language_code(self, lang_code: str) -> str:
         """Map standard language codes to Grid3 language format.
-        
+
         Args:
             lang_code (str): Standard language code (e.g., 'en', 'fr', 'es')
-            
+
         Returns:
             str: Grid3 language code (e.g., 'en-GB', 'fr-FR', 'es-ES')
         """
         # List of right-to-left languages
-        rtl_languages = ['ar', 'fa', 'ur', 'yi', 'dv', 'ha', 'ps']
-        
+        rtl_languages = ["ar", "fa", "ur", "yi", "dv", "ha", "ps"]
+
         # If the language is right-to-left and not explicitly mapped, use Arabic
-        if lang_code in rtl_languages and lang_code != 'ar' and lang_code != 'he':
-            return 'ar-SA'  # Default to Arabic for RTL languages
-            
+        if lang_code in rtl_languages and lang_code != "ar" and lang_code != "he":
+            return "ar-SA"  # Default to Arabic for RTL languages
+
         # Map of language codes to Grid3 language codes
         language_map = {
             # Common languages with short codes
-            'af': 'af-ZA',  # Afrikaans (South Africa)
-            'ar': 'ar-SA',  # Arabic (Saudi Arabia)
-            'eu': 'eu-ES',  # Basque (Spain)
-            'ca': 'ca-ES',  # Catalan (Spain)
-            'hr': 'hr-HR',  # Croatian (Croatia)
-            'cs': 'cs-CZ',  # Czech (Czechia)
-            'da': 'da-DK',  # Danish (Denmark)
-            'nl': 'nl-NL',  # Dutch (Netherlands)
-            'en': 'en-GB',  # English (United Kingdom)
-            'fo': 'fo-FO',  # Faroese (Faroe Islands)
-            'fi': 'fi-FI',  # Finnish (Finland)
-            'fr': 'fr-FR',  # French (France)
-            'de': 'de-DE',  # German (Germany)
-            'el': 'el-GR',  # Greek (Greece)
-            'he': 'he-IL',  # Hebrew (Israel)
-            'it': 'it-IT',  # Italian (Italy)
-            'nb': 'nb-NO',  # Norwegian Bokmål (Norway)
-            'no': 'nb-NO',  # Norwegian (Norway) - alias for nb-NO
-            'pl': 'pl-PL',  # Polish (Poland)
-            'pt': 'pt-PT',  # Portuguese (Portugal)
-            'ru': 'ru-RU',  # Russian (Russia)
-            'sk': 'sk-SK',  # Slovak (Slovakia)
-            'sl': 'sl-SI',  # Slovenian (Slovenia)
-            'es': 'es-ES',  # Spanish (Spain)
-            'sv': 'sv-SE',  # Swedish (Sweden)
-            'uk': 'uk-UA',  # Ukrainian (Ukraine)
-            'cy': 'cy-GB',  # Welsh (United Kingdom)
-            'zh': 'zh-CN',  # Chinese (China)
-            'ja': 'ja-JP',  # Japanese (Japan)
-            'ko': 'ko-KR',  # Korean (Korea)
-            
+            "af": "af-ZA",  # Afrikaans (South Africa)
+            "ar": "ar-SA",  # Arabic (Saudi Arabia)
+            "eu": "eu-ES",  # Basque (Spain)
+            "ca": "ca-ES",  # Catalan (Spain)
+            "hr": "hr-HR",  # Croatian (Croatia)
+            "cs": "cs-CZ",  # Czech (Czechia)
+            "da": "da-DK",  # Danish (Denmark)
+            "nl": "nl-NL",  # Dutch (Netherlands)
+            "en": "en-GB",  # English (United Kingdom)
+            "fo": "fo-FO",  # Faroese (Faroe Islands)
+            "fi": "fi-FI",  # Finnish (Finland)
+            "fr": "fr-FR",  # French (France)
+            "de": "de-DE",  # German (Germany)
+            "el": "el-GR",  # Greek (Greece)
+            "he": "he-IL",  # Hebrew (Israel)
+            "it": "it-IT",  # Italian (Italy)
+            "nb": "nb-NO",  # Norwegian Bokmål (Norway)
+            "no": "nb-NO",  # Norwegian (Norway) - alias for nb-NO
+            "pl": "pl-PL",  # Polish (Poland)
+            "pt": "pt-PT",  # Portuguese (Portugal)
+            "ru": "ru-RU",  # Russian (Russia)
+            "sk": "sk-SK",  # Slovak (Slovakia)
+            "sl": "sl-SI",  # Slovenian (Slovenia)
+            "es": "es-ES",  # Spanish (Spain)
+            "sv": "sv-SE",  # Swedish (Sweden)
+            "uk": "uk-UA",  # Ukrainian (Ukraine)
+            "cy": "cy-GB",  # Welsh (United Kingdom)
+            "zh": "zh-CN",  # Chinese (China)
+            "ja": "ja-JP",  # Japanese (Japan)
+            "ko": "ko-KR",  # Korean (Korea)
             # Full language-region codes
-            'af-ZA': 'af-ZA',  # Afrikaans (South Africa)
-            'ar-SA': 'ar-SA',  # Arabic (Saudi Arabia)
-            'eu-ES': 'eu-ES',  # Basque (Spain)
-            'ca-ES': 'ca-ES',  # Catalan (Spain)
-            'hr-HR': 'hr-HR',  # Croatian (Croatia)
-            'cs-CZ': 'cs-CZ',  # Czech (Czechia)
-            'da-DK': 'da-DK',  # Danish (Denmark)
-            'nl-BE': 'nl-BE',  # Dutch (Belgium)
-            'nl-NL': 'nl-NL',  # Dutch (Netherlands)
-            'en-AU': 'en-AU',  # English (Australia)
-            'en-CA': 'en-CA',  # English (Canada)
-            'en-NZ': 'en-NZ',  # English (New Zealand)
-            'en-ZA': 'en-ZA',  # English (South Africa)
-            'en-GB': 'en-GB',  # English (United Kingdom)
-            'en-US': 'en-US',  # English (United States)
-            'fo-FO': 'fo-FO',  # Faroese (Faroe Islands)
-            'fi-FI': 'fi-FI',  # Finnish (Finland)
-            'fr-CA': 'fr-CA',  # French (Canada)
-            'fr-FR': 'fr-FR',  # French (France)
-            'de-AT': 'de-AT',  # German (Austria)
-            'de-DE': 'de-DE',  # German (Germany)
-            'el-GR': 'el-GR',  # Greek (Greece)
-            'he-IL': 'he-IL',  # Hebrew (Israel)
-            'it-IT': 'it-IT',  # Italian (Italy)
-            'nb-NO': 'nb-NO',  # Norwegian Bokmål (Norway)
-            'pl-PL': 'pl-PL',  # Polish (Poland)
-            'pt-BR': 'pt-BR',  # Portuguese (Brazil)
-            'pt-PT': 'pt-PT',  # Portuguese (Portugal)
-            'ru-RU': 'ru-RU',  # Russian (Russia)
-            'sk-SK': 'sk-SK',  # Slovak (Slovakia)
-            'sl-SI': 'sl-SI',  # Slovenian (Slovenia)
-            'es-ES': 'es-ES',  # Spanish (Spain)
-            'es-US': 'es-US',  # Spanish (United States)
-            'sv-SE': 'sv-SE',  # Swedish (Sweden)
-            'uk-UA': 'uk-UA',  # Ukrainian (Ukraine)
-            'cy-GB': 'cy-GB',  # Welsh (United Kingdom)
-            'zh-CN': 'zh-CN',  # Chinese (China)
-            'ja-JP': 'ja-JP',  # Japanese (Japan)
-            'ko-KR': 'ko-KR',  # Korean (Korea)
+            "af-ZA": "af-ZA",  # Afrikaans (South Africa)
+            "ar-SA": "ar-SA",  # Arabic (Saudi Arabia)
+            "eu-ES": "eu-ES",  # Basque (Spain)
+            "ca-ES": "ca-ES",  # Catalan (Spain)
+            "hr-HR": "hr-HR",  # Croatian (Croatia)
+            "cs-CZ": "cs-CZ",  # Czech (Czechia)
+            "da-DK": "da-DK",  # Danish (Denmark)
+            "nl-BE": "nl-BE",  # Dutch (Belgium)
+            "nl-NL": "nl-NL",  # Dutch (Netherlands)
+            "en-AU": "en-AU",  # English (Australia)
+            "en-CA": "en-CA",  # English (Canada)
+            "en-NZ": "en-NZ",  # English (New Zealand)
+            "en-ZA": "en-ZA",  # English (South Africa)
+            "en-GB": "en-GB",  # English (United Kingdom)
+            "en-US": "en-US",  # English (United States)
+            "fo-FO": "fo-FO",  # Faroese (Faroe Islands)
+            "fi-FI": "fi-FI",  # Finnish (Finland)
+            "fr-CA": "fr-CA",  # French (Canada)
+            "fr-FR": "fr-FR",  # French (France)
+            "de-AT": "de-AT",  # German (Austria)
+            "de-DE": "de-DE",  # German (Germany)
+            "el-GR": "el-GR",  # Greek (Greece)
+            "he-IL": "he-IL",  # Hebrew (Israel)
+            "it-IT": "it-IT",  # Italian (Italy)
+            "nb-NO": "nb-NO",  # Norwegian Bokmål (Norway)
+            "pl-PL": "pl-PL",  # Polish (Poland)
+            "pt-BR": "pt-BR",  # Portuguese (Brazil)
+            "pt-PT": "pt-PT",  # Portuguese (Portugal)
+            "ru-RU": "ru-RU",  # Russian (Russia)
+            "sk-SK": "sk-SK",  # Slovak (Slovakia)
+            "sl-SI": "sl-SI",  # Slovenian (Slovenia)
+            "es-ES": "es-ES",  # Spanish (Spain)
+            "es-US": "es-US",  # Spanish (United States)
+            "sv-SE": "sv-SE",  # Swedish (Sweden)
+            "uk-UA": "uk-UA",  # Ukrainian (Ukraine)
+            "cy-GB": "cy-GB",  # Welsh (United Kingdom)
+            "zh-CN": "zh-CN",  # Chinese (China)
+            "ja-JP": "ja-JP",  # Japanese (Japan)
+            "ko-KR": "ko-KR",  # Korean (Korea)
         }
-        
+
         return language_map.get(lang_code, lang_code)
