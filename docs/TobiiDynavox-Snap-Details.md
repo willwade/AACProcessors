@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS "PageSetProperties" (
 	"IconImageId"	integer,
 	"SerializedPreferredGridDimensions"	VARCHAR,
 	"GridDimension"	VARCHAR,
-	"SmartSymLayout"	integer,
+	"SmartSymLayout"	int,
 	"FontFamily"	VARCHAR,
 	"FontSize"	float,
 	"FontStyle"	int,
@@ -331,22 +331,38 @@ Ref: Button.PageId > Page.Id
 
 ## Symbols
 
+### Symbol References in Snap Files
 
-Snap uses a separate symbol database called `SymbolsSnapCoreFoundation.db3`, located in: ``C:\Program Files\WindowsApps\TobiiDynavox.Snap_*\Assets\Data\Symbols\``
+Snap files (.sps) store symbols in the following way:
 
-This database contains the actual symbol image data (as binary blobs) along with tags, libraries, and labels.
+1. **Button and Page References**
+   - `Button.PageSetImageId`: References an entry in the PageSetData table
+   - `Page.PageSetImageId`: Similar to Button, for page symbols
 
-### How Snap references symbols
+2. **PageSetData Table**
+   - Contains the actual symbol data and references
+   - Each entry has:
+     - `Id`: Referenced by PageSetImageId
+     - `Identifier`: Can be:
+       - A symbol reference (e.g., 'SYM:33053')
+       - A custom image identifier
+     - `Data`: The actual image data as a BLOB
 
-In the `content.db` (within a `.sps` export or installed vocabulary), both the `Page` and `Button` tables contain a field called `LibrarySymbolId`.
+3. **Element Structure**
+   - `ElementReference`: Contains metadata about elements (buttons, pages, etc.)
+   - `ElementPlacement`: Controls where elements are placed in the grid
+   - Buttons link to ElementReference through `Button.ElementReferenceId`
 
-This value directly maps to the `Symbol.SymbolId` field in `SymbolsSnapCoreFoundation.db3`.
+When processing a Snap file, symbols should be loaded by:
+1. Getting the PageSetImageId from Button or Page
+2. Looking up the entry in PageSetData
+3. Using the image Data directly, with the Identifier as the label
 
----
+Note: While Snap uses a separate symbol database (`SymbolsSnapCoreFoundation.db3`) in its installed version, exported .sps files contain all necessary symbol data within the PageSetData table.
 
-### 📦 Symbol Database Schema
+### Symbol Resolution
 
-The `SymbolsSnapCoreFoundation.db3` SQLite database includes the following tables:
+`SymbolsSnapCoreFoundation.db3` is the symbol database used by Snap. It contains the following tables:
 
 | Table             | Description                                                  |
 |------------------|--------------------------------------------------------------|
@@ -356,12 +372,6 @@ The `SymbolsSnapCoreFoundation.db3` SQLite database includes the following table
 | `SymbolTag`       | Many-to-many join between symbols and tags.                 |
 | `SymbolLibrary`   | Many-to-many join between symbols and libraries.            |
 | `SymbolSetProperties` | Metadata for the symbol set (e.g., version, GUID).      |
-
-Each symbol record has:
-- `SymbolId`: Primary key (used in `content.db`)
-- `Image`: BLOB containing the main image (usually PNG)
-- `MonoImage`: Optional monochrome variant
-- `Label`: A human-readable gloss or name
 
 Full schema below
 
@@ -378,16 +388,7 @@ CREATE INDEX SymbolLibraryIndex ON SymbolLibrary (SymbolId ASC);
 ```
 
 
-### 🔗 How to resolve a symbol
-
-To fetch a symbol for a page or button:
-
-```sql
--- In content.db
-SELECT LibrarySymbolId FROM Button WHERE Id = ?;
-
--- In SymbolsSnapCoreFoundation.db3
-SELECT Label, Image FROM Symbol WHERE SymbolId = [LibrarySymbolId];
-
-Note: The Image BLOBs in SymbolsSnapCoreFoundation.db3 are WMF images. 
-
+So to resolve a symbol reference in a Snap file, you would need to:
+1. Get the PageSetImageId from Button or Page
+2. Look up the entry in PageSetData
+3. Use the image Data directly, with the Identifier as the label
