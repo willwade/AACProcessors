@@ -79,7 +79,7 @@ def test_save_tree(test_snap_db, temp_dir):
             SELECT b.Label, ba.action_type, ba.target_page_id
             FROM Button b
             JOIN ButtonAction ba ON b.id = ba.button_id
-            WHERE b.Label = 'Go to Page 2'
+            WHERE b.Label = 'Navigate'
         """
         )
         nav = cursor.fetchone()

@@ -32,7 +32,8 @@ def test_snap_db(temp_dir: str) -> str:
         """
         CREATE TABLE Page (
             id INTEGER PRIMARY KEY,
-            Title TEXT
+            Title TEXT,
+            PageSetImageId INTEGER
         );
 
         CREATE TABLE Button (
@@ -42,6 +43,7 @@ def test_snap_db(temp_dir: str) -> str:
             Message TEXT,
             position_x INTEGER,
             position_y INTEGER,
+            PageSetImageId INTEGER,
             FOREIGN KEY (page_id) REFERENCES Page(id)
         );
 
@@ -52,32 +54,60 @@ def test_snap_db(temp_dir: str) -> str:
             target_page_id INTEGER,
             FOREIGN KEY (button_id) REFERENCES Button(id)
         );
+
+        CREATE TABLE PageSetData (
+            Id INTEGER PRIMARY KEY,
+            Identifier TEXT,
+            Data BLOB
+        );
+
+        CREATE TABLE PageSetProperties (
+            Id INTEGER PRIMARY KEY,
+            DefaultHomePageUniqueId INTEGER
+        );
     """
     )
 
     # Add test pages
-    cursor.execute("INSERT INTO Page (id, Title) VALUES (1, 'Test Page')")
-    cursor.execute("INSERT INTO Page (id, Title) VALUES (2, 'Second Page')")
+    cursor.execute(
+        "INSERT INTO Page (id, Title, PageSetImageId) VALUES (1, 'Test Page', NULL)"
+    )
+    cursor.execute(
+        "INSERT INTO Page (id, Title, PageSetImageId) VALUES (2, 'Second Page', NULL)"
+    )
+
+    # Add PageSetProperties
+    cursor.execute(
+        "INSERT INTO PageSetProperties (Id, DefaultHomePageUniqueId) VALUES (1, 1)"
+    )
 
     # Add test buttons
     cursor.execute(
         """
-        INSERT INTO Button (id, page_id, Label, Message, position_x, position_y)
-        VALUES (1, 1, 'Speak Button', 'Hello', 0, 0)
+        INSERT INTO Button (id, page_id, Label, Message, position_x, position_y, PageSetImageId)
+        VALUES (1, 1, 'Speak Button', 'Hello', 0, 0, NULL)
     """
     )
     cursor.execute(
         """
-        INSERT INTO Button (id, page_id, Label, Message, position_x, position_y)
-        VALUES (2, 1, 'Navigate', NULL, 1, 0)
+        INSERT INTO Button (id, page_id, Label, Message, position_x, position_y, PageSetImageId)
+        VALUES (2, 1, 'Navigate', NULL, 1, 0, NULL)
     """
     )
 
-    # Add button action
+    # Add button action (renamed to match real schema)
     cursor.execute(
         """
         INSERT INTO ButtonAction (button_id, action_type, target_page_id)
-        VALUES (2, 'navigate', 2)
+        VALUES (2, 'Navigate', 2)
+    """
+    )
+
+    # Add sample PageSetData
+    cursor.execute(
+        """
+        INSERT INTO PageSetData (Id, Identifier, Data)
+        VALUES (1, 'SYM:12345', NULL)
     """
     )
 

@@ -6,7 +6,7 @@ import zipfile
 from typing import Any, Optional, Union
 
 from .file_processor import FileProcessor
-from .tree_structure import AACButton, AACPage, AACTree, ButtonType
+from .tree_structure import AACButton, AACPage, AACSymbol, AACTree, ButtonType
 
 
 class CoughDropProcessor(FileProcessor):
@@ -58,6 +58,9 @@ class CoughDropProcessor(FileProcessor):
             cols = grid.get("columns", 1)
 
             # Create page
+            # Map OBF image id to loaded image dict for faster lookup
+            images_map = {img.get("id"): img for img in board_data.get("images", []) if img.get("id")}
+
             page = AACPage(
                 id=board_data.get("id", ""),
                 name=board_data.get("name", ""),
@@ -92,18 +95,40 @@ class CoughDropProcessor(FileProcessor):
                         if button["id"] in row:
                             pos_y = i
                             pos_x = row.index(button["id"])
+                            break  # Found position, exit inner loop
 
                 # Get image data if present
-                image = None
+                symbol: Optional[AACSymbol] = None
                 if "image_id" in button:
                     image_id = button["image_id"]
-                    for img in board_data.get("images", []):
-                        if img.get("id") == image_id:
-                            image = img
+                    if image_id in images_map:
+                        img_data = images_map[image_id]
+                        internal_id = img_data.get("id")
+                        data_url = img_data.get("data")
+                        url = img_data.get("url")
+                        library = img_data.get("symbol_set")
+                        identifier = img_data.get("symbol_key")
+                        content_type = img_data.get("content_type")  # Usually present with data url
+
+                        if data_url:
+                            symbol = AACSymbol.from_data_url(data_url, internal_id=internal_id)
+                        elif url:
+                            symbol = AACSymbol(url=url, content_type=content_type, internal_id=internal_id)
+                        elif library and identifier:
+                            symbol = AACSymbol(library=library, identifier=identifier, internal_id=internal_id)
+                        # Add path handling here if supporting direct OBZ extraction later
+                        else:
+                            # Store raw image dict if no other info? Or create empty symbol?
+                            # Let's create an empty symbol for now, maybe log warning
+                            symbol = AACSymbol(internal_id=internal_id)
+                            self.debug(f"Image {internal_id} has no parsable data, url, or symbol info.")
 
                 # Get dimensions - these are percentages in OBF format
-                width = button.get("width", 1.0 / cols)  # Default to evenly divided
-                height = button.get("height", 1.0 / rows)
+                # Provide default grid-based sizes if width/height missing
+                default_width = 1.0 / cols if cols > 0 else 1.0
+                default_height = 1.0 / rows if rows > 0 else 1.0
+                width = button.get("width", default_width)
+                height = button.get("height", default_height)
                 left = button.get("left")  # Optional absolute position
                 top = button.get("top")
 
@@ -116,7 +141,7 @@ class CoughDropProcessor(FileProcessor):
                     target_page_id=target_page_id,
                     vocalization=button.get("vocalization", ""),
                     action=action,
-                    image=image,
+                    symbol=symbol,
                     width=width,
                     height=height,
                     left=left,
@@ -150,8 +175,12 @@ class CoughDropProcessor(FileProcessor):
         grid_order: list[list[Optional[str]]] = [[None] * cols for _ in range(rows)]
         buttons_data: list[dict[str, Any]] = []
         images_data: list[dict[str, Any]] = []
-        image_ids: set[str] = set()
+        # Keep track of added symbols to avoid duplicates in images_data
+        # Map symbol content representation (url, datahash, lib+id) to its OBF image_id
+        added_symbol_map: dict[str, str] = {}
+        next_image_id_counter = 0
 
+        # First pass: Create all buttons and track their positions
         for button in page.buttons:
             # Create button data
             button_data: dict[str, Any] = {"id": button.id, "label": button.label}
@@ -164,11 +193,51 @@ class CoughDropProcessor(FileProcessor):
                 button_data["vocalization"] = button.vocalization
 
             # Add image if present
-            if button.image:
-                image_id = button.image.get("id")
-                if image_id and image_id not in image_ids:
-                    images_data.append(button.image)
-                    image_ids.add(image_id)
+            if button.symbol:
+                symbol = button.symbol
+                image_id = None
+                symbol_key = None  # Key to check if this exact symbol data is already added
+
+                # Create base image entry with dimensions
+                base_image = {
+                    "width": symbol.width if symbol.width else 1024,  # Default width if not specified
+                    "height": symbol.height if symbol.height else 768,  # Default height if not specified
+                    "content_type": symbol.content_type or "image/png"
+                }
+
+                if symbol.url:
+                    symbol_key = symbol.url
+                    base_image["url"] = symbol.url
+                elif symbol.data:
+                    # Use hash of data as key to avoid duplicates
+                    symbol_key = str(hash(symbol.data))
+                    # Add data URI scheme prefix if not present
+                    data = symbol.data
+                    if isinstance(data, bytes):
+                        # Convert bytes to base64 string if needed
+                        import base64
+                        data = base64.b64encode(data).decode('utf-8')
+                    if not isinstance(data, str):
+                        data = str(data)
+                    if not data.startswith('data:'):
+                        data = f"data:{base_image['content_type']};base64,{data}"
+                    base_image["data"] = data
+                elif symbol.library and symbol.identifier:
+                    symbol_key = f"{symbol.library}:{symbol.identifier}"
+                    base_image["symbol_set"] = symbol.library
+                    base_image["symbol_key"] = symbol.identifier
+
+                if symbol_key in added_symbol_map:
+                    # Reuse existing image_id if we've seen this symbol before
+                    image_id = added_symbol_map[symbol_key]
+                else:
+                    # Create new image entry
+                    image_id = str(next_image_id_counter)
+                    next_image_id_counter += 1
+                    base_image["id"] = image_id
+                    added_symbol_map[symbol_key] = image_id
+                    images_data.append(base_image)
+
                 button_data["image_id"] = image_id
 
             # Only add navigation if target page exists in the tree
@@ -183,22 +252,83 @@ class CoughDropProcessor(FileProcessor):
                         f"Warning: Navigation target {button.target_page_id} not found, converting to speak button"
                     )
 
-            # Add to grid order
+            # Add to grid order if position is valid
             y, x = button.position
             if 0 <= y < rows and 0 <= x < cols:
                 grid_order[y][x] = button.id
+            else:
+                # If button position is outside grid, append to first available spot
+                placed = False
+                for i in range(rows):
+                    if placed:
+                        break
+                    for j in range(cols):
+                        if grid_order[i][j] is None:
+                            grid_order[i][j] = button.id
+                            placed = True
+                            break
 
             buttons_data.append(button_data)
+
+        # If there are no buttons, return a minimal valid board
+        if not buttons_data:
+            return {
+                "format": "open-board-0.1",
+                "id": page.id,
+                "name": page.name,
+                "locale": "en_US",
+                "grid": {
+                    "rows": 1,
+                    "columns": 1,
+                    "order": [[None]]
+                },
+                "buttons": [],
+                "images": [],
+                "sounds": []
+            }
+
+        # For pages with buttons, ensure grid only references existing button IDs
+        # Calculate minimum grid size needed to fit all buttons
+        if not any(any(cell is not None for cell in row) for row in grid_order):
+            # No buttons were placed in their original positions
+            # Calculate a reasonable grid size based on number of buttons
+            button_count = len(buttons_data)
+            grid_size = max(1, int((button_count ** 0.5) + 0.5))  # Square root rounded up
+            rows = cols = grid_size
+            grid_order = [[None] * cols for _ in range(rows)]
+
+            # Place buttons in a grid pattern
+            button_idx = 0
+            for i in range(rows):
+                for j in range(cols):
+                    if button_idx < len(buttons_data):
+                        grid_order[i][j] = buttons_data[button_idx]["id"]
+                        button_idx += 1
+
+        # Ensure all cells contain either a valid button ID or None
+        final_grid_order = []
+        for row in grid_order:
+            final_row = []
+            for cell in row:
+                if cell and any(b["id"] == cell for b in buttons_data):
+                    final_row.append(cell)
+                else:
+                    final_row.append(None)
+            final_grid_order.append(final_row)
 
         return {
             "format": "open-board-0.1",
             "id": page.id,
             "name": page.name,
             "locale": "en_US",
-            "grid": {"rows": rows, "columns": cols, "order": grid_order},
+            "grid": {
+                "rows": rows,
+                "columns": cols,
+                "order": final_grid_order
+            },
             "buttons": buttons_data,
             "images": images_data,
-            "sounds": [],
+            "sounds": []
         }
 
     def process_texts(
@@ -260,9 +390,7 @@ class CoughDropProcessor(FileProcessor):
                                             self.collected_texts.append(page.name)
                                         for button in page.buttons:
                                             if button.label:
-                                                self.collected_texts.append(
-                                                    button.label
-                                                )
+                                                self.collected_texts.append(button.label)
                                             if (
                                                 button.vocalization
                                                 and button.vocalization != button.label
@@ -277,9 +405,7 @@ class CoughDropProcessor(FileProcessor):
                                             page.name = translations[page.name]
                                         for button in page.buttons:
                                             if button.label in translations:
-                                                button.label = translations[
-                                                    button.label
-                                                ]
+                                                button.label = translations[button.label]
                                             if button.vocalization in translations:
                                                 button.vocalization = translations[
                                                     button.vocalization
@@ -322,7 +448,7 @@ class CoughDropProcessor(FileProcessor):
                 output_name = f"{self.original_filename}_{target_lang}.obz"
                 temp_output = os.path.join(temp_dir, output_name)
                 with zipfile.ZipFile(temp_output, "w", zipfile.ZIP_DEFLATED) as zip_ref:
-                    for root, _, files in os.walk(extract_dir):
+                    for root, _dirs, files in os.walk(extract_dir):
                         for file in files:
                             file_path = os.path.join(root, file)
                             arc_name = os.path.relpath(file_path, extract_dir)

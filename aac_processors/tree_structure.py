@@ -27,12 +27,108 @@ class ButtonStyle:
 
 
 @dataclass
+class AACSymbol:
+    """Represents a symbol or image used in an AAC button.
+
+    This class provides a unified way to reference symbols across different AAC systems:
+
+    1. Library References:
+       - Grid 3: [library]filename.wmf
+       - TouchChat: RID in symbol_links table
+       - Snap: LibrarySymbolId
+       - OBF: symbol_set + symbol_key
+
+    2. Direct References:
+       - Local file path
+       - Web URL
+       - Base64 data (OBF)
+
+    The class doesn't store actual image data, only references. Image resolution
+    is handled by the specific processor implementations.
+    """
+    # Library Reference (primary method)
+    library: Optional[str] = None      # Symbol library name (e.g., "widgit", "pcs", "grid3x")
+    library_key: Optional[str] = None  # Key within library (e.g., "apple", "123")
+
+    # System-specific IDs
+    system_id: Optional[str] = None    # ID used by source system (e.g., LibrarySymbolId in Snap)
+    system_name: Optional[str] = None  # Name of source system (e.g., "snap", "grid3")
+    internal_id: Optional[str] = None  # Internal ID for cross-referencing
+
+    # Direct References
+    local_path: Optional[str] = None   # Path to local file
+    url: Optional[str] = None          # URL to remote file
+    data: Optional[str] = None         # Base64 encoded data
+    content_type: Optional[str] = None # MIME type of the image (e.g., "image/png")
+
+    # Metadata
+    format: Optional[str] = None       # File format (e.g., "png", "wmf")
+    label: Optional[str] = None        # Display name/label
+    width: Optional[int] = None        # Image width in pixels
+    height: Optional[int] = None       # Image height in pixels
+
+    def __post_init__(self):
+        """Set internal_id if not provided and infer content_type if possible."""
+        if not self.internal_id:
+            # Use system_id if available, otherwise generate one
+            self.internal_id = self.system_id or f"{self.system_name}_{self.library_key}"
+
+        # Infer content_type from format if not set
+        if not self.content_type and self.format:
+            format_to_mime = {
+                'png': 'image/png',
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg',
+                'gif': 'image/gif',
+                'wmf': 'image/wmf',
+                'svg': 'image/svg+xml'
+            }
+            self.content_type = format_to_mime.get(self.format.lower(), 'image/png')
+
+    @property
+    def data_url(self) -> Optional[str]:
+        """Get data URL if data is present."""
+        if self.data:
+            content_type = self.content_type or 'image/png'
+            return f"data:{content_type};base64,{self.data}"
+        return None
+
+    @classmethod
+    def from_data_url(cls, data_url: str, internal_id: Optional[str] = None) -> 'AACSymbol':
+        """Create symbol from data URL.
+
+        Args:
+            data_url: Data URL string
+            internal_id: Optional internal ID
+
+        Returns:
+            New AACSymbol instance
+        """
+        try:
+            # Parse data URL format: data:[<media type>][;base64],<data>
+            header, data = data_url.split(',', 1)
+            content_type = None
+            if header.startswith('data:'):
+                content_type = header[5:].split(';')[0] or None
+
+            return cls(
+                data=data,
+                content_type=content_type,
+                internal_id=internal_id
+            )
+        except Exception:
+            # Return empty symbol if parsing fails
+            return cls(internal_id=internal_id)
+
+
+@dataclass
 class AACButton:
     """Button in an AAC system."""
 
     id: str
     label: str
     type: ButtonType = ButtonType.SPEAK
+    symbol: Optional[AACSymbol] = None
     position: tuple[int, int] = (0, 0)
     target_page_id: Optional[str] = None
     vocalization: Optional[str] = None
