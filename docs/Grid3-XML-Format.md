@@ -477,3 +477,41 @@ A command with additional settings can have parameters:
   - `letter`: Letter to insert into the message window
   
 
+## Symbols
+
+Symbols (images) are used in cells to represent words, actions, or other elements. They are defined using the <Image> tag. eg 
+
+```xml
+Image>[grid3x]star.wmf</Image>
+```
+
+So the part in square brackets is the library name, and the part in round brackets is the filename.
+
+### Libraries
+
+Libraries are collections of symbols that can be used in cells. The location of these are found in ``C:\Program Files (x86)\Smartbox\Grid3\Resources\Symbols\``
+
+Here are files names like ``WIDGIT.symbols``
+
+This is a zipped archive. With the following structure
+
+```bash
+categories.pix
+censored.txt
+library.pix
+symbols/  # Symbol files. Can be a organised structure of folders files eg widgit rebus/h/hello.wmf or just a list of wmf files
+symbols_rtl/  # Same as symbols but ones that have been flipped for rtl languages
+```
+
+#### .pix Files
+
+These .pix files contain binary data used internally by Grid 3:
+	•	categories.pix appears to store fixed-size 128-byte records that may relate to symbol categories or references, but contains limited human-readable content.
+	•	library.pix likely acts as a symbol metadata store or index, but does not contain readable paths or names and does not match .NET BinaryFormatter serialization formats.
+	•	Both files are not compressed using standard formats (like ZIP or Zlib) and appear to use a custom binary format, potentially with obfuscation or structured field layouts.
+	•	Initial attempts to decode fixed-size records or extract UTF-8/UTF-16 strings suggest these files do not store plain-text references to symbols.
+	•	Byte frequency analysis indicates structured data with null padding, suggesting fixed-width or aligned records.
+
+#### censored.txt
+
+Despite the .txt extension, censored.txt does not contain plain text or word lists. It appears to be binary or encoded content, possibly representing internal lookup data or encrypted keywords.
