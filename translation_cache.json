@@ -83314,5 +83314,3149 @@
             "button_type": "page",
             "page_name": "Version 2.52"
         }
+    },
+    "Dashboard": {
+        "google_translation": "Armaturenbrett",
+        "quality_score": null,
+        "context": {
+            "path": "Dashboard",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "page",
+            "page_name": "Dashboard"
+        }
+    },
+    "Message Bar": {
+        "google_translation": "Nachrichtenleiste",
+        "quality_score": null,
+        "context": {
+            "path": "Message Bar",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "page",
+            "page_name": "Message Bar"
+        }
+    },
+    "Medical Advocacy": {
+        "google_translation": "Medizinische Interessenvertretung",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "page",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Clear Message Window": {
+        "google_translation": "Nachrichtenfenster löschen",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Clear Message Window",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Can you hear me?": {
+        "google_translation": "Können Sie mich hören?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Can you hear me?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Can you please write it down for me?": {
+        "google_translation": "Können Sie es mir bitte aufschreiben?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Can you please write it down for me?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Can I please use pen and paper?": {
+        "google_translation": "Kann ich bitte Stift und Papier benutzen?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Can I please use pen and paper?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Can you please explain again?": {
+        "google_translation": "Können Sie das bitte noch einmal erklären?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Can you please explain again?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I am not a child.": {
+        "google_translation": "Ich bin kein Kind.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I am not a child.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm an adult. Treat me like one.": {
+        "google_translation": "Ich bin erwachsen. Behandeln Sie mich auch so.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm an adult. Treat me like one.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Talk to me, not my assistant.": {
+        "google_translation": "Sprechen Sie mit mir, nicht mit meinem Assistenten.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Talk to me, not my assistant.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I need you to take me seriously.": {
+        "google_translation": "Sie müssen mich ernst nehmen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I need you to take me seriously.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Let me decide.": {
+        "google_translation": "Lass mich entscheiden.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Let me decide.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Let me finish.": {
+        "google_translation": "Lassen Sie mich ausreden.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Let me finish.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I don't want that.": {
+        "google_translation": "Das will ich nicht.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I don't want that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I don't feel well.": {
+        "google_translation": "Mir geht es nicht gut.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I don't feel well.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I have a problem.": {
+        "google_translation": "Ich habe ein Problem.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I have a problem.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Please stop and listen.": {
+        "google_translation": "Bitte halten Sie inne und hören Sie zu.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Please stop and listen.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I don't like that.": {
+        "google_translation": "Das gefällt mir nicht.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I don't like that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Stop it!": {
+        "google_translation": "Hör auf!",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Stop it!",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "You put me in danger.": {
+        "google_translation": "Du hast mich in Gefahr gebracht.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > You put me in danger.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Please say that a different way.": {
+        "google_translation": "Sagen Sie das bitte anders.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Please say that a different way.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I am autistic and need this device to help me communicate. Please respect my": {
+        "google_translation": "Ich bin Autist und brauche dieses Gerät, um zu kommunizieren. Bitte respektieren Sie meine",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I am autistic and need this device to help me communicate. Please respect my",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "What are my other options?": {
+        "google_translation": "Welche anderen Möglichkeiten habe ich?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > What are my other options?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "What happens if I do nothing?": {
+        "google_translation": "Was passiert, wenn ich nichts tue?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > What happens if I do nothing?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "How long will it take t take effect?": {
+        "google_translation": "Wie lange dauert es, bis die Wirkung eintritt?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > How long will it take t take effect?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "How long will I need to do that?": {
+        "google_translation": "Wie lange werde ich dafür brauchen?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > How long will I need to do that?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "That's not what I meant.": {
+        "google_translation": "Das habe ich nicht gemeint.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > That's not what I meant.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Don't want to talk about that.": {
+        "google_translation": "Ich möchte nicht darüber reden.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Don't want to talk about that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "You are going too fast. Please slow down.": {
+        "google_translation": "Sie fahren zu schnell. Bitte verlangsamen Sie.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > You are going too fast. Please slow down.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "That hurts my brain.": {
+        "google_translation": "Das tut meinem Gehirn weh.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > That hurts my brain.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Don't touch me.": {
+        "google_translation": "Fass mich nicht an.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Don't touch me.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Don't patronize me.": {
+        "google_translation": "Behandeln Sie mich nicht bevormundend.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Don't patronize me.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Don't touch my device.": {
+        "google_translation": "Berühren Sie mein Gerät nicht.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Don't touch my device.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Don't read my screen.": {
+        "google_translation": "Lesen Sie nicht meinen Bildschirm.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Don't read my screen.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I want a second opinion.": {
+        "google_translation": "Ich möchte eine zweite Meinung.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I want a second opinion.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'd like to talk to my family.": {
+        "google_translation": "Ich möchte mit meiner Familie sprechen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'd like to talk to my family.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'd like to speak with an SLP": {
+        "google_translation": "Ich möchte mit einem Logopäden sprechen",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'd like to speak with an SLP",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm not ready to make a decision.": {
+        "google_translation": "Ich bin nicht bereit, eine Entscheidung zu treffen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm not ready to make a decision.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm not going to consent to that.": {
+        "google_translation": "Dem werde ich nicht zustimmen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm not going to consent to that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I don't have a guardian and I don't need one.": {
+        "google_translation": "Ich habe keinen Vormund und brauche auch keinen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I don't have a guardian and I don't need one.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm not willing to do that.": {
+        "google_translation": "Dazu bin ich nicht bereit.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm not willing to do that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I can make my own decisions.": {
+        "google_translation": "Ich kann meine eigenen Entscheidungen treffen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I can make my own decisions.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Why do you say that?": {
+        "google_translation": "Warum sagst du das?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Why do you say that?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "What should I do next?": {
+        "google_translation": "Was soll ich als nächstes tun?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > What should I do next?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "How would that effect my care?": {
+        "google_translation": "Welche Auswirkungen hätte das auf meine Pflege?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > How would that effect my care?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "How do I make an appointment with them?": {
+        "google_translation": "Wie vereinbare ich einen Termin mit ihnen?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > How do I make an appointment with them?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'd like to try a different medication.": {
+        "google_translation": "Ich möchte ein anderes Medikament ausprobieren.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'd like to try a different medication.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm having side effects.": {
+        "google_translation": "Ich habe Nebenwirkungen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm having side effects.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "The medication is making things worse.": {
+        "google_translation": "Die Medikamente machen alles schlimmer.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > The medication is making things worse.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "It's not getting any better.": {
+        "google_translation": "Es wird nicht besser.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > It's not getting any better.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Symptoms": {
+        "google_translation": "Symptome",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Symptoms",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm having these symptoms.": {
+        "google_translation": "Ich habe diese Symptome.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Symptoms (vocalization)",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Pain": {
+        "google_translation": "Schmerz",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Pain",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm in pain.": {
+        "google_translation": "Ich habe Schmerzen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Pain (vocalization)",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Psych Symptoms": {
+        "google_translation": "Psychische Symptome",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Psych Symptoms",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm having psychiatric symptoms.": {
+        "google_translation": "Ich habe psychiatrische Symptome.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Psych Symptoms (vocalization)",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "My Body": {
+        "google_translation": "Mein Körper",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > My Body",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm having an issue with my": {
+        "google_translation": "Ich habe ein Problem mit meinem",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > My Body (vocalization)",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I need a referral to a specialist.": {
+        "google_translation": "Ich brauche eine Überweisung zu einem Spezialisten.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I need a referral to a specialist.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I've been on this medication before.": {
+        "google_translation": "Ich habe dieses Medikament schon einmal eingenommen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I've been on this medication before.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I saw a different doctor about this before.": {
+        "google_translation": "Ich war deswegen schon einmal bei einem anderen Arzt.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I saw a different doctor about this before.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "This isn't what I've heard from other providers.": {
+        "google_translation": "Das habe ich von anderen Anbietern nicht gehört.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > This isn't what I've heard from other providers.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I disagree. Here's what I think.": {
+        "google_translation": "Ich bin anderer Meinung. Hier ist meine Meinung.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I disagree. Here's what I think.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Let's discuss other options.": {
+        "google_translation": "Lassen Sie uns andere Optionen besprechen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Let's discuss other options.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I don't understand what you're describing": {
+        "google_translation": "Ich verstehe nicht, was du beschreibst",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I don't understand what you're describing",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I don't think I need that.": {
+        "google_translation": "Ich glaube nicht, dass ich das brauche.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I don't think I need that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Will it hurt?": {
+        "google_translation": "Wird es weh tun?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Will it hurt?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Will it require fasting?": {
+        "google_translation": "Ist Fasten erforderlich?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Will it require fasting?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Could you tell me who you are again?": {
+        "google_translation": "Könntest du mir noch mal sagen, wer du bist?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Could you tell me who you are again?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Yes": {
+        "google_translation": "Ja",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Yes",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "No": {
+        "google_translation": "NEIN",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > No",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Could you please help me with that?": {
+        "google_translation": "Können Sie mir dabei bitte helfen?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Could you please help me with that?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Will it require surgery?": {
+        "google_translation": "Ist eine Operation erforderlich?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Will it require surgery?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Will it require blood tests?": {
+        "google_translation": "Sind Blutuntersuchungen erforderlich?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Will it require blood tests?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm concerned about the side effects.": {
+        "google_translation": "Ich mache mir Sorgen wegen der Nebenwirkungen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm concerned about the side effects.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I would rather not do that.": {
+        "google_translation": "Das würde ich lieber nicht tun.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I would rather not do that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "hold floor": {
+        "google_translation": "Boden halten",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > hold floor",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "please wait for me to finish typing": {
+        "google_translation": "bitte warten Sie, bis ich mit dem Tippen fertig bin",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > hold floor (vocalization)",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I can give you my text relay number.": {
+        "google_translation": "Ich kann Ihnen meine SMS-Relay-Nummer geben.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I can give you my text relay number.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I can't use the phone; can you contact me a different way?": {
+        "google_translation": "Ich kann das Telefon nicht benutzen. Können Sie mich auf andere Weise kontaktieren?",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I can't use the phone; can you contact me a different way?",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "It takes me longer to type then to speak.": {
+        "google_translation": "Ich brauche länger zum Tippen als zum Sprechen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > It takes me longer to type then to speak.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'd need to prepare for that.": {
+        "google_translation": "Darauf müsste ich mich vorbereiten.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'd need to prepare for that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm worried about that.": {
+        "google_translation": "Darüber mache ich mir Sorgen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm worried about that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I need you to explain with precise language.": {
+        "google_translation": "Sie müssen es mir in präzisen Worten erklären.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I need you to explain with precise language.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm still paying attention even if I don't look at you.": {
+        "google_translation": "Ich achte immer noch darauf, auch wenn ich dich nicht ansehe.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm still paying attention even if I don't look at you.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Tell me exactly what I need to do.": {
+        "google_translation": "Sagen Sie mir genau, was ich tun muss.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Tell me exactly what I need to do.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I need someone to walk me there.": {
+        "google_translation": "Ich brauche jemanden, der mich dorthin begleitet.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I need someone to walk me there.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I need your questions to be as specific as possible.": {
+        "google_translation": "Ich möchte, dass Ihre Fragen so konkret wie möglich sind.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I need your questions to be as specific as possible.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I need more detailed instructions on that.": {
+        "google_translation": "Ich brauche dazu genauere Anweisungen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I need more detailed instructions on that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I'm not sure how to do that.": {
+        "google_translation": "Ich bin nicht sicher, wie das geht.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I'm not sure how to do that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Please ask me yes/no questions whenever possible.": {
+        "google_translation": "Bitte stellen Sie mir nach Möglichkeit Ja/Nein-Fragen.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Please ask me yes/no questions whenever possible.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I need a break.": {
+        "google_translation": "Ich brauche eine Pause.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I need a break.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "It's too bright.": {
+        "google_translation": "Es ist zu hell.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > It's too bright.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "It's too loud.": {
+        "google_translation": "Es ist zu laut.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > It's too loud.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Please give me space.": {
+        "google_translation": "Bitte geben Sie mir Freiraum.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Please give me space.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Thank you.": {
+        "google_translation": "Danke schön.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Thank you.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "That would work for me.": {
+        "google_translation": "Das würde für mich funktionieren.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > That would work for me.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "That is helpful.": {
+        "google_translation": "Das ist hilfreich.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > That is helpful.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I will do that.": {
+        "google_translation": "Das werde ich tun.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I will do that.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Please": {
+        "google_translation": "Bitte",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Please",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Stop": {
+        "google_translation": "Stoppen",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Stop",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Right now": {
+        "google_translation": "Im Augenblick",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Right now",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Now": {
+        "google_translation": "Jetzt",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Now",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "That isn't accessible for me.": {
+        "google_translation": "Das ist für mich nicht zugänglich.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > That isn't accessible for me.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Let me explain what would work for me.": {
+        "google_translation": "Lassen Sie mich erklären, was für mich funktionieren würde.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Let me explain what would work for me.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "I don't find that helpful.": {
+        "google_translation": "Ich finde das nicht hilfreich.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > I don't find that helpful.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Please take my access needs seriously.": {
+        "google_translation": "Bitte nehmen Sie meine Zugangsbedürfnisse ernst.",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Please take my access needs seriously.",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Original Board by": {
+        "google_translation": "Original-Board von",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Original Board by",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Donnie TC Denome": {
+        "google_translation": "Donnie TC Denome",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > Donnie TC Denome",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "https://donnie.lgbt/2020/11/02/aac-phrases-for-medical-advocacy/": {
+        "google_translation": "https://donnie.lgbt/2020/11/02/aac-phrases-for-medical-advocacy/",
+        "quality_score": null,
+        "context": {
+            "path": "Medical Advocacy > https://donnie.lgbt/2020/11/02/aac-phrases-for-medical-advocacy/",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Medical Advocacy"
+        }
+    },
+    "Main List: Body & Health": {
+        "google_translation": "Hauptliste: Körper &amp; Gesundheit",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "page",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "health": {
+        "google_translation": "Gesundheit",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > health",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "medicine": {
+        "google_translation": "Medizin",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > medicine",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "privacy": {
+        "google_translation": "Datenschutz",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > privacy",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "sweat": {
+        "google_translation": "Schweiß",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > sweat",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "weight": {
+        "google_translation": "Gewicht",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > weight",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "nutrition": {
+        "google_translation": "Ernährung",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > nutrition",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "blood pressure": {
+        "google_translation": "Blutdruck",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > blood pressure",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "medical": {
+        "google_translation": "medizinisch",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > medical",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "breath": {
+        "google_translation": "Atem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > breath",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "digestion": {
+        "google_translation": "Verdauung",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > digestion",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "deodorant": {
+        "google_translation": "Deodorant",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > deodorant",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "hair": {
+        "google_translation": "Haar",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > hair",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "forehead": {
+        "google_translation": "Stirn",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > forehead",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "eye": {
+        "google_translation": "Auge",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > eye",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "ear": {
+        "google_translation": "Ohr",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > ear",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "body part": {
+        "google_translation": "Körperteil",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > body part",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "face": {
+        "google_translation": "Gesicht",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > face",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "body": {
+        "google_translation": "Körper",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > body",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "skin": {
+        "google_translation": "Haut",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > skin",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "nose": {
+        "google_translation": "Nase",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > nose",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "cheek": {
+        "google_translation": "Wange",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > cheek",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "mouth": {
+        "google_translation": "Mund",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > mouth",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "Head": {
+        "google_translation": "Kopf",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > Head",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "tongue": {
+        "google_translation": "Zunge",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > tongue",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "chin": {
+        "google_translation": "kinn",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > chin",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "jaw": {
+        "google_translation": "Kiefer",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > jaw",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "neck": {
+        "google_translation": "Nacken",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > neck",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "shoulder": {
+        "google_translation": "Schulter",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > shoulder",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "arm": {
+        "google_translation": "Arm",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > arm",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "upper arm": {
+        "google_translation": "Oberarm",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > upper arm",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "Limbs": {
+        "google_translation": "Glieder",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > Limbs",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "elbow": {
+        "google_translation": "Ellbogen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > elbow",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "forearm": {
+        "google_translation": "Unterarm",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > forearm",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "wrist": {
+        "google_translation": "Handgelenk",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > wrist",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "chest": {
+        "google_translation": "Brust",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > chest",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "breast": {
+        "google_translation": "Brust",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > breast",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "spine": {
+        "google_translation": "Wirbelsäule",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > spine",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "hand": {
+        "google_translation": "Hand",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > hand",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "finger": {
+        "google_translation": "Finger",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > finger",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "thumb": {
+        "google_translation": "Daumen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > thumb",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "upper back": {
+        "google_translation": "oberer Rücken",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > upper back",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "lower back": {
+        "google_translation": "unterer Rücken",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > lower back",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "hip": {
+        "google_translation": "Hüfte",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > hip",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "thigh": {
+        "google_translation": "Oberschenkel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > thigh",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "stomach": {
+        "google_translation": "Magen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > stomach",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "waist": {
+        "google_translation": "Taille",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > waist",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "Torso": {
+        "google_translation": "Torso",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > Torso",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "Genitalia & Sex": {
+        "google_translation": "Genitalien &amp; Sex",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > Genitalia & Sex",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "knee": {
+        "google_translation": "Knie",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > knee",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "calf": {
+        "google_translation": "Kalb",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > calf",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "bottom": {
+        "google_translation": "unten",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > bottom",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "ankle": {
+        "google_translation": "Knöchel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > ankle",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "foot": {
+        "google_translation": "Fuß",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > foot",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "toe": {
+        "google_translation": "Dann",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > toe",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "skull": {
+        "google_translation": "Schädel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > skull",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "brain": {
+        "google_translation": "Gehirn",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > brain",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "vocal cords": {
+        "google_translation": "Stimmbänder",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > vocal cords",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "bone": {
+        "google_translation": "Knochen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > bone",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "digestive system": {
+        "google_translation": "Verdauungssystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > digestive system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "endocrine system": {
+        "google_translation": "endokrines System",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > endocrine system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "excretory system": {
+        "google_translation": "Ausscheidungssystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > excretory system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "immune system": {
+        "google_translation": "Immunsystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > immune system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "esophagus": {
+        "google_translation": "Speiseröhre",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > esophagus",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "teeth": {
+        "google_translation": "Zähne",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > teeth",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "throat": {
+        "google_translation": "Kehle",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > throat",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "muscle": {
+        "google_translation": "Muskel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > muscle",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "lymphatic system": {
+        "google_translation": "Lymphsystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > lymphatic system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "male reproductive system": {
+        "google_translation": "männliches Fortpflanzungssystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > male reproductive system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "female reproductive system": {
+        "google_translation": "weibliches Fortpflanzungssystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > female reproductive system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "airway": {
+        "google_translation": "Atemweg",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > airway",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "lungs": {
+        "google_translation": "Lunge",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > lungs",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "ribs": {
+        "google_translation": "Rippen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > ribs",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "glands": {
+        "google_translation": "Drüsen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > glands",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "circulatory system": {
+        "google_translation": "Kreislaufsystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > circulatory system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "nervous system": {
+        "google_translation": "Nervensystem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > nervous system",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "autonomic": {
+        "google_translation": "autonomen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > autonomic",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "spinal cord": {
+        "google_translation": "Rückenmark",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > spinal cord",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "heart": {
+        "google_translation": "Herz",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > heart",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "joint": {
+        "google_translation": "gemeinsam",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > joint",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "pelvis": {
+        "google_translation": "Becken",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > pelvis",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "liver": {
+        "google_translation": "Leber",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > liver",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "bowel": {
+        "google_translation": "Darm",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > bowel",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "skeleton": {
+        "google_translation": "Skeleton",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > skeleton",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "saliva": {
+        "google_translation": "Speichel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > saliva",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "bladder": {
+        "google_translation": "Blase",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > bladder",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "kidney": {
+        "google_translation": "Niere",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > kidney",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "uterus": {
+        "google_translation": "Uterus",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > uterus",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "organ": {
+        "google_translation": "Orgel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > organ",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "blood": {
+        "google_translation": "Blut",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > blood",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "connective tissue": {
+        "google_translation": "Bindegewebe",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > connective tissue",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "blood vessel": {
+        "google_translation": "Blutgefäß",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > blood vessel",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "heart rate": {
+        "google_translation": "Herzfrequenz",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > heart rate",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "pill": {
+        "google_translation": "Pille",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > pill",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "liquid": {
+        "google_translation": "flüssig",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > liquid",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "ointment": {
+        "google_translation": "Salbe",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > ointment",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "IV": {
+        "google_translation": "IV",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > IV",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "bandage": {
+        "google_translation": "Bandage",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > bandage",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "ice pack": {
+        "google_translation": "Eisbeutel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > ice pack",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "thermometer": {
+        "google_translation": "Thermometer",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > thermometer",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "stethoscope": {
+        "google_translation": "Stethoskop",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > stethoscope",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "splint": {
+        "google_translation": "Schiene",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > splint",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "braces": {
+        "google_translation": "Zahnspange",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > braces",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "pill box": {
+        "google_translation": "Pillendose",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > pill box",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "shot": {
+        "google_translation": "Schuss",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > shot",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "retainer": {
+        "google_translation": "Halter",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > retainer",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "stitches": {
+        "google_translation": "Stiche",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > stitches",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "doctor's scale": {
+        "google_translation": "Arztwaage",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > doctor's scale",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "ace bandage": {
+        "google_translation": "Ace-Verband",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > ace bandage",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "aids": {
+        "google_translation": "AIDS",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > aids",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "sling": {
+        "google_translation": "Schlinge",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > sling",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "MRI": {
+        "google_translation": "MRT",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > MRI",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "x-ray": {
+        "google_translation": "Röntgen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > x-ray",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "swab": {
+        "google_translation": "Tupfer",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > swab",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "syringe": {
+        "google_translation": "Spritze",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > syringe",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "ventilator": {
+        "google_translation": "Ventilator",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > ventilator",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "medicine cup": {
+        "google_translation": "Medizinbecher",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > medicine cup",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "temperature": {
+        "google_translation": "Temperatur",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > temperature",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "vitals": {
+        "google_translation": "Vitalwerte",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > vitals",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "blood draw": {
+        "google_translation": "Blutabnahme",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > blood draw",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "headache": {
+        "google_translation": "Kopfschmerzen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > headache",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "stomachache": {
+        "google_translation": "Magenschmerzen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > stomachache",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "dizzy": {
+        "google_translation": "schwindlig",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > dizzy",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "vertigo": {
+        "google_translation": "Schwindel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > vertigo",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "fever": {
+        "google_translation": "Fieber",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > fever",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "tired": {
+        "google_translation": "müde",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > tired",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "allergy": {
+        "google_translation": "Allergie",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > allergy",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "cavity": {
+        "google_translation": "Hohlraum",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > cavity",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "nausea": {
+        "google_translation": "Brechreiz",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > nausea",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "diarrhea": {
+        "google_translation": "Durchfall",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > diarrhea",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "injury": {
+        "google_translation": "Verletzung",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > injury",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "itch": {
+        "google_translation": "jucken",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > itch",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "toothache": {
+        "google_translation": "Zahnschmerzen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > toothache",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "numb": {
+        "google_translation": "betäuben",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > numb",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "swell": {
+        "google_translation": "quellen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > swell",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "runny nose": {
+        "google_translation": "laufende Nase",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > runny nose",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "shaky": {
+        "google_translation": "wackelig",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > shaky",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "wound": {
+        "google_translation": "Wunde",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > wound",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "sore": {
+        "google_translation": "wund",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > sore",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "spasm": {
+        "google_translation": "Krampf",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > spasm",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "rash": {
+        "google_translation": "Ausschlag",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > rash",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "hives": {
+        "google_translation": "Nesselsucht",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > hives",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "health problem": {
+        "google_translation": "Gesundheitsproblem",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > health problem",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "hungry": {
+        "google_translation": "hungrig",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > hungry",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "thirsty": {
+        "google_translation": "durstig",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > thirsty",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "treatment": {
+        "google_translation": "Behandlung",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > treatment",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "test": {
+        "google_translation": "prüfen",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > test",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "illness": {
+        "google_translation": "Erkrankung",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > illness",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "deficiency": {
+        "google_translation": "Mangel",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > deficiency",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "cure": {
+        "google_translation": "Heilung",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > cure",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "speak",
+            "page_name": "Main List: Body & Health"
+        }
+    },
+    "Medical Test": {
+        "google_translation": "Medizinischer Test",
+        "quality_score": null,
+        "context": {
+            "path": "Main List: Body & Health > Medical Test",
+            "symbol_name": null,
+            "symbol_library": null,
+            "symbol_id": null,
+            "button_type": "navigate",
+            "page_name": "Main List: Body & Health"
+        }
     }
 }
