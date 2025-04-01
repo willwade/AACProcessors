@@ -1,7 +1,7 @@
 Exports are .sps files. these are sqlite files. no encryption. 
 
 
-here is the sttructre
+here is the structure
 
 ERD Diagram here : https://dbdiagram.io/d/TobiiDynavoxSnap-651a8680ffbf5169f0da45d5
 
@@ -328,4 +328,66 @@ Ref: Button.PageId > Page.Id
 ## Button/Language data
 
 - There are really only two tables with this data in it `Button`- `Label` and `Button`- `Message` and `Page` - `Title`
+
+## Symbols
+
+
+Snap uses a separate symbol database called `SymbolsSnapCoreFoundation.db3`, located in: ``C:\Program Files\WindowsApps\TobiiDynavox.Snap_*\Assets\Data\Symbols\``
+
+This database contains the actual symbol image data (as binary blobs) along with tags, libraries, and labels.
+
+### How Snap references symbols
+
+In the `content.db` (within a `.sps` export or installed vocabulary), both the `Page` and `Button` tables contain a field called `LibrarySymbolId`.
+
+This value directly maps to the `Symbol.SymbolId` field in `SymbolsSnapCoreFoundation.db3`.
+
+---
+
+### 📦 Symbol Database Schema
+
+The `SymbolsSnapCoreFoundation.db3` SQLite database includes the following tables:
+
+| Table             | Description                                                  |
+|------------------|--------------------------------------------------------------|
+| `Symbol`          | Stores the main symbol image and label text.                |
+| `Library`         | Defines named symbol libraries (e.g., PCS, SymbolStix).      |
+| `Tag`             | Defines tags or categories (e.g., “people”, “actions”).      |
+| `SymbolTag`       | Many-to-many join between symbols and tags.                 |
+| `SymbolLibrary`   | Many-to-many join between symbols and libraries.            |
+| `SymbolSetProperties` | Metadata for the symbol set (e.g., version, GUID).      |
+
+Each symbol record has:
+- `SymbolId`: Primary key (used in `content.db`)
+- `Image`: BLOB containing the main image (usually PNG)
+- `MonoImage`: Optional monochrome variant
+- `Label`: A human-readable gloss or name
+
+Full schema below
+
+```sql
+CREATE TABLE Symbol (SymbolId INTEGER NOT NULL, Image BLOB NOT NULL, MonoImage BLOB, Label TEXT NOT NULL, PRIMARY KEY(SymbolId)) WITHOUT ROWID;
+CREATE TABLE Library (Id INTEGER NOT NULL UNIQUE, LibraryName varchar NOT NULL UNIQUE, LibraryCategory varchar NOT NULL, PRIMARY KEY(Id));
+CREATE TABLE Tag (Id INTEGER NOT NULL UNIQUE, TagCategory varchar NOT NULL, TagName varchar NOT NULL, PRIMARY KEY(Id));
+CREATE TABLE SymbolTag (SymbolId INTEGER NOT NULL, TagId INTEGER NOT NULL, CONSTRAINT SymbolTag_pk PRIMARY KEY(SymbolId, TagId));
+CREATE TABLE SymbolLibrary (SymbolId INTEGER NOT NULL, LibraryId INTEGER NOT NULL, CONSTRAINT SymbolLibrary_pk PRIMARY KEY(SymbolId, LibraryId));
+CREATE TABLE SymbolSetProperties (Guid varchar NOT NULL UNIQUE, Version varchar NOT NULL, Description varchar, DisplayName varchar, IsBuiltIn INTEGER NOT NULL);
+CREATE INDEX LabelIndex ON Symbol (Label collate nocase ASC);
+CREATE INDEX SymbolTagIndex ON SymbolTag (SymbolId ASC);
+CREATE INDEX SymbolLibraryIndex ON SymbolLibrary (SymbolId ASC);
+```
+
+
+### 🔗 How to resolve a symbol
+
+To fetch a symbol for a page or button:
+
+```sql
+-- In content.db
+SELECT LibrarySymbolId FROM Button WHERE Id = ?;
+
+-- In SymbolsSnapCoreFoundation.db3
+SELECT Label, Image FROM Symbol WHERE SymbolId = [LibrarySymbolId];
+
+Note: The Image BLOBs in SymbolsSnapCoreFoundation.db3 are WMF images. 
 
