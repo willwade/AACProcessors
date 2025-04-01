@@ -196,14 +196,26 @@ class AACProcessor(ABC):
         pass
 
     @abstractmethod
-    def extract_texts(self, file_path: str) -> list[str]:
+    def extract_texts(
+        self, file_path: str, include_context: bool = False
+    ) -> Union[list[str], list[dict[str, Any]]]:
         """Extract translatable texts from file.
 
         Args:
             file_path: Path to file to extract texts from.
+            include_context: Whether to include contextual information for each text.
 
         Returns:
-            List of translatable texts.
+            If include_context is False, returns a list of translatable texts.
+            If include_context is True, returns a list of dictionaries with these keys:
+                - text: The translatable text
+                - path: The path to the text in the AAC system
+                  (e.g., "Home > Feelings > Happy")
+                - symbol_name: The name of the symbol associated with the text, if any
+                - symbol_library: The library of the symbol, if any
+                - symbol_id: The ID of the symbol, if any
+                - button_type: The type of button (e.g., "speak", "navigate")
+                - page_name: The name of the page containing the text
         """
         pass
 
@@ -227,16 +239,22 @@ class AACProcessor(ABC):
         file_path: str,
         translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Optional[Union[list[str], str]]:
+        include_context: bool = False,
+    ) -> Optional[Union[list[str], list[dict[str, Any]], str]]:
         """Process texts in file.
 
         Args:
             file_path: Path to file to process.
             translations: Dictionary of translations.
             output_path: Path where to save translated file.
+            include_context: Whether to include contextual information for each text.
 
         Returns:
-            List of texts if extracting, path to translated file if translating,
+            If extracting (translations=None):
+                - If include_context=False: List of texts
+                - If include_context=True: List of dictionaries with context info
+            If translating (translations provided):
+                - Path to translated file if successful
             None if error.
         """
         try:
@@ -245,7 +263,7 @@ class AACProcessor(ABC):
 
             if translations is None:
                 # Extract texts
-                texts = self.extract_texts(file_path)
+                texts = self.extract_texts(file_path, include_context)
                 return texts
 
             # Create translated file

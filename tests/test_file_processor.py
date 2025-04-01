@@ -4,7 +4,7 @@ import shutil
 import tempfile
 import zipfile
 from collections.abc import Generator
-from typing import Optional
+from typing import Any, Optional, Union
 
 import pytest
 
@@ -41,7 +41,9 @@ def test_processor() -> FileProcessor:
             """Test implementation."""
             pass
 
-        def extract_texts(self, file_path: str) -> list[str]:
+        def extract_texts(
+            self, file_path: str, include_context: bool = False
+        ) -> Union[list[str], list[dict[str, Any]]]:
             """Test implementation."""
             try:
                 with open(file_path) as f:
@@ -204,7 +206,7 @@ def test_process_texts_extract(
     test_processor: FileProcessor, temp_test_file: str
 ) -> None:
     """Test text extraction mode"""
-    result = test_processor.process_texts(temp_test_file)
+    result = test_processor.process_texts(temp_test_file, include_context=False)
     assert isinstance(result, list)
     assert result == ["test"]
 

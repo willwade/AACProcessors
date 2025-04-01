@@ -3,7 +3,7 @@ import os
 import tempfile
 import zipfile
 from collections.abc import Generator
-from typing import Optional
+from typing import Any, Optional, Union
 
 import pytest
 
@@ -30,7 +30,9 @@ def test_processor() -> AACProcessor:
             """Test implementation."""
             pass
 
-        def extract_texts(self, file_path: str) -> list[str]:
+        def extract_texts(
+            self, file_path: str, include_context: bool = False
+        ) -> Union[list[str], list[dict[str, Any]]]:
             """Test implementation."""
             return ["test1", "test2"]
 
@@ -121,7 +123,7 @@ def test_process_texts_extract(
     test_processor: AACProcessor, temp_test_file: str
 ) -> None:
     """Test text extraction mode"""
-    texts = test_processor.process_texts(temp_test_file)
+    texts = test_processor.process_texts(temp_test_file, include_context=False)
     assert texts == ["test1", "test2"]
 
 

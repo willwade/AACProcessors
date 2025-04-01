@@ -205,17 +205,23 @@ class FileProcessor(AACProcessor):
         file_path: str,
         translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[list[str], str, None]:
+        include_context: bool = False,
+    ) -> Union[list[str], list[dict[str, Any]], str, None]:
         """Process texts in file.
 
         Args:
             file_path: Path to file to process.
             translations: Dictionary of translations.
             output_path: Optional path where to save translated file.
+            include_context: Whether to include contextual information for each text.
 
         Returns:
-            Union[List[str], str, None]: List of texts if extracting,
-            path to translated file if translating, None if error.
+            If extracting (translations=None):
+                - If include_context=False: List of texts
+                - If include_context=True: List of dictionaries with context info
+            If translating (translations provided):
+                - Path to translated file if successful
+            None if error.
         """
         try:
             # Reset state for new translation
@@ -238,7 +244,7 @@ class FileProcessor(AACProcessor):
 
             if translations is None:
                 # In extract mode, return extracted texts
-                return self.extract_texts(file_path)
+                return self.extract_texts(file_path, include_context)
 
             if result:
                 if output_path:

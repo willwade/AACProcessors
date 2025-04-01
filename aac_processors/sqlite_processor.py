@@ -50,17 +50,23 @@ class SQLiteProcessor(AACProcessor):
         file_path: str,
         translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[list[str], str, None]:
+        include_context: bool = False,
+    ) -> Union[list[str], list[dict[str, Any]], str, None]:
         """Process texts in SQLite database.
 
         Args:
             file_path (str): Path to the SQLite database file.
             translations (Optional[Dict[str, str]]): Dictionary of translations.
             output_path (Optional[str]): Path where to save the translated file.
+            include_context (bool): Whether to include context info for each text.
 
         Returns:
-            Union[List[str], str, None]: List of texts if extracting,
-            path to translated file if translating, None if error.
+            If extracting (translations=None):
+                - If include_context=False: List of texts
+                - If include_context=True: List of dictionaries with context info
+            If translating (translations provided):
+                - Path to translated file if successful
+            None if error.
         """
         try:
             # Reset state for new translation
@@ -74,7 +80,11 @@ class SQLiteProcessor(AACProcessor):
             result = self.process_files(workspace, translations)
 
             if translations is None:
-                return self.collected_texts
+                if include_context:
+                    # Use extract_texts with context info
+                    return self.extract_texts(file_path, include_context=True)
+                else:
+                    return self.collected_texts
 
             if result and output_path:
                 self._create_output(workspace, output_path)
@@ -233,6 +243,127 @@ class SQLiteProcessor(AACProcessor):
 
         return page
 
+    def extract_texts(
+        self, file_path: str, include_context: bool = False
+    ) -> Union[list[str], list[dict[str, Any]]]:
+        """Extract translatable texts from file.
+
+        Args:
+            file_path: Path to file to extract texts from.
+            include_context: Whether to include contextual information.
+
+        Returns:
+            If include_context is False: List of translatable texts.
+            If include_context is True: List of dictionaries with context info.
+        """
+        try:
+            # Reset state for new extraction
+            self.collected_texts = []
+            self.set_source_file(file_path)
+
+            if not include_context:
+                # Simple text extraction without context
+                # Prepare workspace
+                workspace = self._prepare_workspace(file_path)
+
+                # Process the files
+                self.process_files(workspace, None)
+                return self.collected_texts
+            else:
+                # Extract texts with context information
+                # Load the file into a tree structure to get context
+                tree = self.load_into_tree(file_path)
+                texts_with_context = []
+
+                # Process each page and button to extract texts with context
+                for page_id, page in tree.pages.items():
+                    # Add page title
+                    if page.name and page.name.strip():
+                        # Get path to page
+                        path = " > ".join(
+                            [tree.pages[p].name for p in tree.get_path_to_page(page_id)]
+                        )
+
+                        texts_with_context.append(
+                            {
+                                "text": page.name,
+                                "path": path,
+                                "symbol_name": None,
+                                "symbol_library": None,
+                                "symbol_id": None,
+                                "button_type": "page",
+                                "page_name": page.name,
+                            }
+                        )
+
+                    # Process buttons on the page
+                    for button in page.buttons:
+                        # Add button label
+                        if button.label and button.label.strip():
+                            # Get path to button
+                            button_path = f"{path} > {button.label}"
+
+                            # Get symbol information if available
+                            symbol_name = None
+                            symbol_library = None
+                            symbol_id = None
+                            if hasattr(button, "symbol") and button.symbol:
+                                symbol_name = button.symbol.label
+                                symbol_library = button.symbol.library
+                                symbol_id = (
+                                    button.symbol.system_id or button.symbol.internal_id
+                                )
+
+                            texts_with_context.append(
+                                {
+                                    "text": button.label,
+                                    "path": button_path,
+                                    "symbol_name": symbol_name,
+                                    "symbol_library": symbol_library,
+                                    "symbol_id": symbol_id,
+                                    "button_type": button.type.value,
+                                    "page_name": page.name,
+                                }
+                            )
+
+                        # Add button vocalization if different from label
+                        if (
+                            button.vocalization
+                            and button.vocalization.strip()
+                            and button.vocalization != button.label
+                        ):
+                            # Get path to button vocalization
+                            vocal_path = f"{path} > {button.label} (vocalization)"
+
+                            texts_with_context.append(
+                                {
+                                    "text": button.vocalization,
+                                    "path": vocal_path,
+                                    "symbol_name": (
+                                        symbol_name
+                                        if "symbol_name" in locals()
+                                        else None
+                                    ),
+                                    "symbol_library": (
+                                        symbol_library
+                                        if "symbol_library" in locals()
+                                        else None
+                                    ),
+                                    "symbol_id": (
+                                        symbol_id if "symbol_id" in locals() else None
+                                    ),
+                                    "button_type": button.type.value,
+                                    "page_name": page.name,
+                                }
+                            )
+
+                return texts_with_context
+
+        except Exception as e:
+            msg = f"Error extracting texts: {e}"
+            self.debug(msg)
+            return []
+
     def debug(self, message: str) -> None:
         """Output debug message.
 
@@ -276,10 +407,12 @@ class SQLiteProcessor(AACProcessor):
             cursor = conn.cursor()
 
             # Load pages
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT Id, UniqueId, Title, GridDimension
                 FROM Page
-            """)
+            """
+            )
             pages = cursor.fetchall()
 
             for page_id, unique_id, title, grid_dim in pages:
@@ -287,20 +420,19 @@ class SQLiteProcessor(AACProcessor):
                 grid_size = (1, 1)  # Default
                 if grid_dim:
                     try:
-                        rows, cols = grid_dim.split(',')
+                        rows, cols = grid_dim.split(",")
                         grid_size = (int(rows), int(cols))
                     except:
                         pass
 
                 page = AACPage(
-                    id=str(unique_id or page_id),
-                    name=title or "",
-                    grid_size=grid_size
+                    id=str(unique_id or page_id), name=title or "", grid_size=grid_size
                 )
                 tree.pages[page.id] = page
 
                 # Load buttons for this page
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT b.Id, b.Label, b.Message, b.LibrarySymbolId, b.ElementReferenceId,
                            ep.GridPosition, bpl.PageUniqueId
                     FROM Button b
@@ -309,15 +441,25 @@ class SQLiteProcessor(AACProcessor):
                     JOIN PageLayout pl ON ep.PageLayoutId = pl.Id
                     LEFT JOIN ButtonPageLink bpl ON bpl.ButtonId = b.Id
                     WHERE er.PageId = ?
-                """, (page_id,))
+                """,
+                    (page_id,),
+                )
                 buttons = cursor.fetchall()
 
-                for btn_id, label, message, symbol_id, _ref_id, grid_pos, target_page_id in buttons:
+                for (
+                    btn_id,
+                    label,
+                    message,
+                    symbol_id,
+                    _ref_id,
+                    grid_pos,
+                    target_page_id,
+                ) in buttons:
                     # Parse grid position
                     pos = (0, 0)  # Default
                     if grid_pos:
                         try:
-                            row, col = grid_pos.split(',')
+                            row, col = grid_pos.split(",")
                             pos = (int(row), int(col))
                         except:
                             pass
@@ -333,7 +475,7 @@ class SQLiteProcessor(AACProcessor):
                         type=btn_type,
                         position=pos,
                         target_page_id=target_page_id,
-                        vocalization=message or label or ""
+                        vocalization=message or label or "",
                     )
 
                     # Add symbol ID for later processing
@@ -343,11 +485,13 @@ class SQLiteProcessor(AACProcessor):
                     page.buttons.append(button)
 
             # Set root page
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT DefaultHomePageUniqueId
                 FROM PageSetProperties
                 LIMIT 1
-            """)
+            """
+            )
             root = cursor.fetchone()
             if root and root[0]:
                 tree.root_id = root[0]

@@ -3,7 +3,7 @@ import os.path
 import shutil
 import sqlite3
 import zipfile
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from .sqlite_processor import SQLiteProcessor
 from .tree_structure import AACButton, AACPage, AACTree, ButtonType
@@ -36,7 +36,8 @@ class TouchChatProcessor(SQLiteProcessor):
         file_path: str,
         translations: Optional[dict[str, str]] = None,
         output_path: Optional[str] = None,
-    ) -> Union[list[str], str, None]:
+        include_context: bool = False,
+    ) -> Union[list[str], list[dict[str, Any]], str, None]:
         """Process texts from a TouchChat file.
 
         Process and optionally translate texts from a TouchChat file.
@@ -45,10 +46,14 @@ class TouchChatProcessor(SQLiteProcessor):
             file_path: Path to the TouchChat file.
             translations: Optional dictionary of translations.
             output_path: Optional path where to save the translated file.
+            include_context: Whether to include contextual information for each text.
 
         Returns:
-            List[str]: List of extracted texts if no translations provided.
-            str: Path to translated file if translations provided.
+            If extracting (translations=None):
+                - If include_context=False: List of texts
+                - If include_context=True: List of dictionaries with context info
+            If translating (translations provided):
+                - Path to translated file if successful
             None: If an error occurs during processing.
         """
         try:
@@ -86,7 +91,11 @@ class TouchChatProcessor(SQLiteProcessor):
 
             if translations is None:
                 # self.debug(f"Returning collected texts: {self.collected_texts}")
-                return self.collected_texts
+                if include_context:
+                    # Use extract_texts with context info
+                    return self.extract_texts(file_path, include_context=True)
+                else:
+                    return self.collected_texts
 
             if result:
                 # Create output path if not provided
@@ -378,31 +387,21 @@ class TouchChatProcessor(SQLiteProcessor):
                 conn.close()
             return None
 
-    def extract_texts(self, file_path: str) -> list[str]:
+    def extract_texts(
+        self, file_path: str, include_context: bool = False
+    ) -> Union[list[str], list[dict[str, Any]]]:
         """Extract texts from TouchChat file.
 
         Args:
             file_path (str): Path to the file to extract texts from.
+            include_context (bool): Whether to include contextual information.
 
         Returns:
-            List[str]: List of extracted texts.
+            If include_context is False: List of translatable texts.
+            If include_context is True: List of dictionaries with context info.
         """
-        try:
-            # Reset state for new extraction
-            self.collected_texts = []
-            self.set_source_file(file_path)
-
-            # Prepare workspace
-            workspace = self._prepare_workspace(file_path)
-
-            # Process the files
-            self.process_files(workspace, None)
-            return self.collected_texts
-
-        except Exception as e:
-            msg = f"Error extracting texts: {e}"
-            self.debug(msg)
-            return []
+        # Use the parent class implementation
+        return super().extract_texts(file_path, include_context)
 
     def _check_database_schema(self, cursor: sqlite3.Cursor) -> None:
         """Check and create database schema if needed.

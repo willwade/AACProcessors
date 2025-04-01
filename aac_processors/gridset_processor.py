@@ -1,7 +1,7 @@
 import logging
 import os
 import zipfile
-from typing import Optional, cast
+from typing import Any, Optional, Union, cast
 
 from lxml import etree
 from lxml.etree import _Element, _ElementTree
@@ -293,52 +293,151 @@ class GridsetProcessor(FileProcessor):
         """
         return etree.CDATA(text)
 
-    def extract_texts(self, file_path: str) -> list[str]:
+    def extract_texts(
+        self, file_path: str, include_context: bool = False
+    ) -> Union[list[str], list[dict[str, Any]]]:
         """Extract translatable texts from gridset.
 
         Args:
             file_path (str): Path to the gridset file.
+            include_context (bool): Whether to include contextual information.
 
         Returns:
-            List[str]: List of translatable texts.
+            If include_context is False: List of translatable texts.
+            If include_context is True: List of dictionaries with context info.
         """
-        texts = []
-        temp_dir = self.create_temp_dir()
+        if not include_context:
+            # Simple text extraction without context
+            texts = []
+            temp_dir = self.create_temp_dir()
 
-        with zipfile.ZipFile(file_path, "r") as zf:
-            zf.extractall(temp_dir)
+            with zipfile.ZipFile(file_path, "r") as zf:
+                zf.extractall(temp_dir)
 
-            # Process each grid.xml file
-            grids_dir = os.path.join(temp_dir, "Grids")
-            if os.path.exists(grids_dir):
-                for grid_dir in os.listdir(grids_dir):
-                    grid_path = os.path.join(grids_dir, grid_dir, "grid.xml")
-                    if not os.path.exists(grid_path):
-                        continue
+                # Process each grid.xml file
+                grids_dir = os.path.join(temp_dir, "Grids")
+                if os.path.exists(grids_dir):
+                    for grid_dir in os.listdir(grids_dir):
+                        grid_path = os.path.join(grids_dir, grid_dir, "grid.xml")
+                        if not os.path.exists(grid_path):
+                            continue
 
-                    try:
-                        tree = etree.parse(grid_path)
-                        root = tree.getroot()
+                        try:
+                            tree = etree.parse(grid_path)
+                            root = tree.getroot()
 
-                        # Extract grid name
-                        name = root.get("Name")
-                        if name:
-                            texts.append(name)
+                            # Extract grid name
+                            name = root.get("Name")
+                            if name:
+                                texts.append(name)
 
-                        # Extract captions
-                        for caption in root.findall(".//CaptionAndImage/Caption"):
-                            if caption.text and caption.text.strip():
-                                texts.append(caption.text.strip())
+                            # Extract captions
+                            for caption in root.findall(".//CaptionAndImage/Caption"):
+                                if caption.text and caption.text.strip():
+                                    texts.append(caption.text.strip())
 
-                        # Extract wordlist items
-                        for text in root.findall(".//WordList/Items/WordListItem/Text"):
-                            if text.text and text.text.strip():
-                                texts.append(text.text.strip())
+                            # Extract wordlist items
+                            for text in root.findall(
+                                ".//WordList/Items/WordListItem/Text"
+                            ):
+                                if text.text and text.text.strip():
+                                    texts.append(text.text.strip())
 
-                    except Exception as e:
-                        self.debug(f"Error processing grid file {grid_path}: {str(e)}")
+                        except Exception as e:
+                            self.debug(
+                                f"Error processing grid file {grid_path}: {str(e)}"
+                            )
 
-        return list(set(texts))  # Remove duplicates
+            return list(set(texts))  # Remove duplicates
+        else:
+            # Extract texts with context information
+            texts_with_context = []
+            temp_dir = self.create_temp_dir()
+
+            # Load the gridset into a tree structure to get context
+            tree = self.load_into_tree(file_path)
+
+            # Process each page and button to extract texts with context
+            for page_id, page in tree.pages.items():
+                # Add page title
+                if page.name and page.name.strip():
+                    # Get path to page
+                    path = " > ".join(
+                        [tree.pages[p].name for p in tree.get_path_to_page(page_id)]
+                    )
+
+                    texts_with_context.append(
+                        {
+                            "text": page.name,
+                            "path": path,
+                            "symbol_name": None,
+                            "symbol_library": None,
+                            "symbol_id": None,
+                            "button_type": "page",
+                            "page_name": page.name,
+                        }
+                    )
+
+                # Process buttons on the page
+                for button in page.buttons:
+                    # Add button label
+                    if button.label and button.label.strip():
+                        # Get path to button
+                        button_path = f"{path} > {button.label}"
+
+                        # Get symbol information if available
+                        symbol_name = None
+                        symbol_library = None
+                        symbol_id = None
+                        if button.symbol:
+                            symbol_name = button.symbol.label
+                            symbol_library = button.symbol.library
+                            symbol_id = (
+                                button.symbol.system_id or button.symbol.internal_id
+                            )
+
+                        texts_with_context.append(
+                            {
+                                "text": button.label,
+                                "path": button_path,
+                                "symbol_name": symbol_name,
+                                "symbol_library": symbol_library,
+                                "symbol_id": symbol_id,
+                                "button_type": button.type.value,
+                                "page_name": page.name,
+                            }
+                        )
+
+                    # Add button vocalization if different from label
+                    if (
+                        button.vocalization
+                        and button.vocalization.strip()
+                        and button.vocalization != button.label
+                    ):
+                        # Get path to button vocalization
+                        vocal_path = f"{path} > {button.label} (vocalization)"
+
+                        texts_with_context.append(
+                            {
+                                "text": button.vocalization,
+                                "path": vocal_path,
+                                "symbol_name": (
+                                    symbol_name if "symbol_name" in locals() else None
+                                ),
+                                "symbol_library": (
+                                    symbol_library
+                                    if "symbol_library" in locals()
+                                    else None
+                                ),
+                                "symbol_id": (
+                                    symbol_id if "symbol_id" in locals() else None
+                                ),
+                                "button_type": button.type.value,
+                                "page_name": page.name,
+                            }
+                        )
+
+            return texts_with_context
 
     def load_into_tree(self, file_path: str) -> AACTree:
         """Load gridset into tree structure.
