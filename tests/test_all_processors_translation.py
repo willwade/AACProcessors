@@ -2,17 +2,16 @@
 
 import os
 import tempfile
-from typing import Type
 
 import pytest
 
 from aac_processors.base_processor import AACProcessor
 from aac_processors.coughdrop_processor import CoughDropProcessor
+from aac_processors.dot_processor import DotProcessor
 from aac_processors.gridset_processor import GridsetProcessor
 from aac_processors.opml_processor import OPMLProcessor
 from aac_processors.snap_processor import SnapProcessor
 from aac_processors.touchchat_processor import TouchChatProcessor
-from aac_processors.dot_processor import DotProcessor
 
 # Get the absolute path to the demofiles directory
 DEMOFILES_DIR = os.path.join(
@@ -39,7 +38,7 @@ PROCESSOR_TEST_FILES = [
 
 @pytest.mark.parametrize("processor_cls,demo_file", PROCESSOR_TEST_FILES)
 def test_processor_translation(
-    processor_cls: Type[AACProcessor], demo_file: str
+    processor_cls: type[AACProcessor], demo_file: str
 ) -> None:
     """Test translation functionality for a specific processor.
 
