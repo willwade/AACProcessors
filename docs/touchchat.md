@@ -427,3 +427,94 @@ WHERE label IS NOT NULL OR message IS NOT NULL;
 ``
 
 will get you most of the lang data
+
+## Symbols
+
+Symbols in TouchChat are referenced indirectly in `.c4v` vocabulary files and resolved via external symbol library files located in:
+
+```
+C:\Program Files (x86)\Chat Editor\Symbols\
+```
+
+### Symbol Library Files
+
+These are SQLite databases containing symbol image data in the form of binary blobs. Example files include:
+
+```
+AntiquatedLink.db
+Imagine.c4s
+Metacom.c4s
+MinSpeak.c4s
+PCS.c45
+Pixon.c4s
+PRC.c4s
+Saltillo.c4s
+Sample.c4s
+SymbolStix.c4s
+Tawasol.c4s
+```
+
+Each file typically includes a `Symbols` table, where:
+- `id` is the internal symbol identifier.
+- `rid` is a UUID (RID) used to reference the symbol from vocabularies.
+- `data` is a BLOB that stores the image (usually PNG or WMF).
+
+
+###  How Symbols Link to Buttons
+
+In a `.c4v` vocabulary (also a SQLite file), symbols are referenced using two tables:
+
+#### `Buttons` table
+Each button can include a `symbol_link_id` column:
+
+```csv
+id  resource_id  label     message    symbol_link_id
+1   3            building  building   1
+```
+
+#### `symbol_links` table
+This table provides the mapping from `symbol_link_id` to a symbol RID (UUID):
+
+```csv
+id  rid                                     feature
+1   {32BA0E22-7FE1F748-AA1C879C-BF24066D}   14
+```
+
+- `rid` is a globally unique identifier for the symbol.
+- `feature` may control symbol variants (e.g. color, rotation, skin tone).
+
+
+### How the Symbol Library is Resolved
+
+The `.c4v` file does **not** explicitly record which symbol library a RID comes from. Instead, Chat Editor or TouchChat:
+
+1. Scans all installed symbol libraries (e.g., `PCS.c45`, `SymbolStix.c4s`).
+2. Finds the first matching RID.
+3. Loads the corresponding symbol from that file.
+
+This means:
+- RIDs must be unique across all symbol libraries.
+- If the matching `.c4s` file is missing, the symbol won't display.
+
+
+### Suggested Usage for Developers
+
+To resolve symbols programmatically:
+
+1. Extract `symbol_link_id` from the `Buttons` table.
+2. Join with `symbol_links` to get the `rid` (UUID).
+3. Search across all `.c4s`/`.c45` symbol databases for that RID.
+4. Extract the `data` BLOB for the matching symbol (image).
+
+You can use SQLite queries such as:
+
+```sql
+SELECT data FROM Symbols WHERE rid = '{UUID}';
+```
+
+Then write the BLOB as a `.png` or `.wmf` file, depending on the symbol system.
+
+---
+
+By building an index of RIDs across all available libraries, you can create a full symbol mapping layer for any `.c4v` vocabulary file.
+
