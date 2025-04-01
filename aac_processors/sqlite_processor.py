@@ -9,7 +9,7 @@ from threading import Lock
 from typing import Any, Optional, Union
 
 from .base_processor import AACProcessor
-from .tree_structure import AACButton, AACPage, ButtonType
+from .tree_structure import AACButton, AACPage, AACTree, ButtonType
 
 
 class SQLiteProcessor(AACProcessor):
@@ -259,3 +259,100 @@ class SQLiteProcessor(AACProcessor):
         """
         super().set_source_file(file_path)  # Call parent implementation
         self.file_path = file_path  # Set file_path for SQLite operations
+
+    def load_into_tree(self, file_path: str) -> AACTree:
+        """Load SQLite database into tree structure.
+
+        Args:
+            file_path: Path to SQLite database file.
+
+        Returns:
+            AACTree: Tree structure representing the database.
+        """
+        tree = AACTree()
+
+        # Connect to database
+        with sqlite3.connect(file_path) as conn:
+            cursor = conn.cursor()
+
+            # Load pages
+            cursor.execute("""
+                SELECT Id, UniqueId, Title, GridDimension
+                FROM Page
+            """)
+            pages = cursor.fetchall()
+
+            for page_id, unique_id, title, grid_dim in pages:
+                # Parse grid dimension
+                grid_size = (1, 1)  # Default
+                if grid_dim:
+                    try:
+                        rows, cols = grid_dim.split(',')
+                        grid_size = (int(rows), int(cols))
+                    except:
+                        pass
+
+                page = AACPage(
+                    id=str(unique_id or page_id),
+                    name=title or "",
+                    grid_size=grid_size
+                )
+                tree.pages[page.id] = page
+
+                # Load buttons for this page
+                cursor.execute("""
+                    SELECT b.Id, b.Label, b.Message, b.LibrarySymbolId, b.ElementReferenceId,
+                           ep.GridPosition, bpl.PageUniqueId
+                    FROM Button b
+                    JOIN ElementReference er ON b.ElementReferenceId = er.Id
+                    JOIN ElementPlacement ep ON ep.ElementReferenceId = er.Id
+                    JOIN PageLayout pl ON ep.PageLayoutId = pl.Id
+                    LEFT JOIN ButtonPageLink bpl ON bpl.ButtonId = b.Id
+                    WHERE er.PageId = ?
+                """, (page_id,))
+                buttons = cursor.fetchall()
+
+                for btn_id, label, message, symbol_id, _ref_id, grid_pos, target_page_id in buttons:
+                    # Parse grid position
+                    pos = (0, 0)  # Default
+                    if grid_pos:
+                        try:
+                            row, col = grid_pos.split(',')
+                            pos = (int(row), int(col))
+                        except:
+                            pass
+
+                    # Determine button type
+                    btn_type = ButtonType.SPEAK
+                    if target_page_id:
+                        btn_type = ButtonType.NAVIGATE
+
+                    button = AACButton(
+                        id=str(btn_id),
+                        label=label or "",
+                        type=btn_type,
+                        position=pos,
+                        target_page_id=target_page_id,
+                        vocalization=message or label or ""
+                    )
+
+                    # Add symbol ID for later processing
+                    if symbol_id:
+                        button.LibrarySymbolId = str(symbol_id)
+
+                    page.buttons.append(button)
+
+            # Set root page
+            cursor.execute("""
+                SELECT DefaultHomePageUniqueId
+                FROM PageSetProperties
+                LIMIT 1
+            """)
+            root = cursor.fetchone()
+            if root and root[0]:
+                tree.root_id = root[0]
+            elif tree.pages:
+                # If no root specified, use first page
+                tree.root_id = next(iter(tree.pages))
+
+        return tree
