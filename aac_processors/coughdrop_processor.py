@@ -6,7 +6,7 @@ import zipfile
 from typing import Any, Optional, Union
 
 from .file_processor import FileProcessor
-from .tree_structure import AACButton, AACPage, AACSymbol, AACTree, ButtonType
+from .tree_structure import AACButton, AACPage, AACSound, AACSymbol, AACTree, ButtonType
 
 
 class CoughDropProcessor(FileProcessor):
@@ -40,12 +40,19 @@ class CoughDropProcessor(FileProcessor):
         """
         self.save_from_tree(tree, output_path)
 
-    def _load_board_into_tree(self, file_path: str, tree: AACTree) -> None:
+    def _load_board_into_tree(
+        self,
+        file_path: str,
+        tree: AACTree,
+        board_path_to_id: Optional[dict[str, str]] = None,
+    ) -> None:
         """Load board data into tree structure.
 
         Args:
             file_path: Path to the OBF file to load
             tree: Tree to add the board to
+            board_path_to_id: Optional mapping from board path to board ID,
+                used to resolve navigation targets when load_board has no id.
         """
         try:
             # Load and parse the JSON file first
@@ -60,6 +67,8 @@ class CoughDropProcessor(FileProcessor):
             # Create page
             # Map OBF image id to loaded image dict for faster lookup
             images_map = {img.get("id"): img for img in board_data.get("images", []) if img.get("id")}
+            # Map OBF sound id to loaded sound dict for faster lookup
+            sounds_map = {snd.get("id"): snd for snd in board_data.get("sounds", []) if snd.get("id")}
 
             page = AACPage(
                 id=board_data.get("id", ""),
@@ -78,10 +87,14 @@ class CoughDropProcessor(FileProcessor):
 
                 if "load_board" in button:
                     button_type = ButtonType.NAVIGATE
-                    target_page_id = button["load_board"].get("id", "")
-                    # Set parent_id for the target page if it exists
-                    if target_page_id and target_page_id in tree.pages:
-                        tree.pages[target_page_id].parent_id = page.id
+                    load_board = button["load_board"]
+                    target_page_id = load_board.get("id", "")
+                    if not target_page_id:
+                        board_path = load_board.get("path", "")
+
+                        if board_path_to_id and board_path in board_path_to_id:
+                            target_page_id = board_path_to_id[board_path]
+
                 elif "action" in button:
                     button_type = ButtonType.ACTION
                     action = button["action"]
@@ -123,6 +136,28 @@ class CoughDropProcessor(FileProcessor):
                             symbol = AACSymbol(internal_id=internal_id)
                             self.debug(f"Image {internal_id} has no parsable data, url, or symbol info.")
 
+                # Get sound data if present
+                sound: Optional[AACSound] = None
+                if "sound_id" in button:
+                    sound_id = button["sound_id"]
+                    if sound_id in sounds_map:
+                        snd_data = sounds_map[sound_id]
+                        snd_internal_id = snd_data.get("id")
+                        snd_data_url = snd_data.get("data")
+                        snd_url = snd_data.get("url")
+                        snd_path = snd_data.get("path")
+                        snd_content_type = snd_data.get("content_type")
+
+                        if snd_data_url:
+                            sound = AACSound.from_data_url(snd_data_url, internal_id=snd_internal_id)
+                        elif snd_url:
+                            sound = AACSound(url=snd_url, content_type=snd_content_type, internal_id=snd_internal_id)
+                        elif snd_path:
+                            sound = AACSound(local_path=snd_path, content_type=snd_content_type, internal_id=snd_internal_id)
+                        else:
+                            sound = AACSound(internal_id=snd_internal_id)
+                            self.debug(f"Sound {snd_internal_id} has no parsable data, url, or path info.")
+
                 # Get dimensions - these are percentages in OBF format
                 # Provide default grid-based sizes if width/height missing
                 default_width = 1.0 / cols if cols > 0 else 1.0
@@ -142,6 +177,7 @@ class CoughDropProcessor(FileProcessor):
                     vocalization=button.get("vocalization", ""),
                     action=action,
                     symbol=symbol,
+                    sound=sound,
                     width=width,
                     height=height,
                     left=left,
@@ -175,10 +211,14 @@ class CoughDropProcessor(FileProcessor):
         grid_order: list[list[Optional[str]]] = [[None] * cols for _ in range(rows)]
         buttons_data: list[dict[str, Any]] = []
         images_data: list[dict[str, Any]] = []
+        sounds_data: list[dict[str, Any]] = []
         # Keep track of added symbols to avoid duplicates in images_data
         # Map symbol content representation (url, datahash, lib+id) to its OBF image_id
         added_symbol_map: dict[str, str] = {}
+        # Keep track of added sounds to avoid duplicates in sounds_data
+        added_sound_map: dict[str, str] = {}
         next_image_id_counter = 0
+        next_sound_id_counter = 0
 
         # First pass: Create all buttons and track their positions
         for button in page.buttons:
@@ -240,6 +280,46 @@ class CoughDropProcessor(FileProcessor):
 
                 button_data["image_id"] = image_id
 
+            # Add sound if present
+            if button.sound:
+                snd = button.sound
+                sound_id = None
+                sound_key = None  # Key to check if this exact sound data is already added
+
+                base_sound: dict[str, Any] = {
+                    "content_type": snd.content_type or "audio/wav"
+                }
+
+                if snd.url:
+                    sound_key = snd.url
+                    base_sound["url"] = snd.url
+                elif snd.data:
+                    sound_key = str(hash(snd.data))
+                    data = snd.data
+                    if isinstance(data, bytes):
+                        import base64
+                        data = base64.b64encode(data).decode('utf-8')
+                    if not isinstance(data, str):
+                        data = str(data)
+                    if not data.startswith('data:'):
+                        data = f"data:{base_sound['content_type']};base64,{data}"
+                    base_sound["data"] = data
+                elif snd.local_path:
+                    sound_key = snd.local_path
+                    base_sound["path"] = snd.local_path
+
+                if sound_key and sound_key in added_sound_map:
+                    sound_id = added_sound_map[sound_key]
+                elif sound_key:
+                    sound_id = str(next_sound_id_counter)
+                    next_sound_id_counter += 1
+                    base_sound["id"] = sound_id
+                    added_sound_map[sound_key] = sound_id
+                    sounds_data.append(base_sound)
+
+                if sound_id:
+                    button_data["sound_id"] = sound_id
+
             # Only add navigation if target page exists in the tree
             if button.type == ButtonType.NAVIGATE and button.target_page_id:
                 if button.target_page_id in tree.pages:
@@ -284,7 +364,7 @@ class CoughDropProcessor(FileProcessor):
                 },
                 "buttons": [],
                 "images": [],
-                "sounds": []
+                "sounds": sounds_data
             }
 
         # For pages with buttons, ensure grid only references existing button IDs
@@ -328,7 +408,7 @@ class CoughDropProcessor(FileProcessor):
             },
             "buttons": buttons_data,
             "images": images_data,
-            "sounds": []
+            "sounds": sounds_data
         }
 
     def process_texts(
@@ -665,14 +745,31 @@ class CoughDropProcessor(FileProcessor):
                     paths = manifest.get("paths", {})
                     boards = paths.get("boards", {})
 
+                    # Build reverse mapping: board path -> board ID
+                    board_path_to_id = {v: k for k, v in boards.items()}
+
                     # Process each board file
                     for _board_id, board_path in boards.items():
+                        if board_path == manifest.get('root'):
+                            tree.root_id = _board_id
+
                         full_path = os.path.join(temp_dir, board_path)
                         if os.path.exists(full_path):
-                            self._load_board_into_tree(full_path, tree)
+                            self._load_board_into_tree(full_path, tree, board_path_to_id)
+
             else:
                 # Single OBF file
                 self._load_board_into_tree(file_path, tree)
+
+            # Set parent IDs for navigation after all pages are loaded
+            for page in tree.pages.values():
+                for button in page.buttons:
+                    if (
+                        button.type == ButtonType.NAVIGATE
+                        and button.target_page_id
+                        and button.target_page_id in tree.pages
+                    ):
+                        tree.pages[button.target_page_id].parent_id = page.id
 
             return tree
 
